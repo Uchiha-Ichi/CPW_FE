@@ -41,5 +41,5 @@ Status: COMPLETED
 Brief: Wire /about to pages and photos APIs
 
 ## Task 8
-Status: IN_PROGRESS
+Status: COMPLETED
 Brief: Final review and merge

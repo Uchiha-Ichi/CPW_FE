@@ -1,6 +1,6 @@
 "use client";
 
-import Lenis from "lenis";
+import Lenis from "@studio-freight/lenis";
 import { useEffect } from "react";
 
 export function LenisProvider({ children }: { children: React.ReactNode }) {

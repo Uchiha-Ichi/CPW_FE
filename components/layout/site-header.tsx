@@ -44,10 +44,12 @@ export function SiteHeader() {
             VI
           </Button>
           <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Mở menu">
-                <Menu className="h-5 w-5" />
-              </Button>
+            <SheetTrigger
+              render={
+                <Button variant="ghost" size="icon" aria-label="Mở menu" />
+              }
+            >
+              <Menu className="h-5 w-5" />
             </SheetTrigger>
             <SheetContent side="right">
               <nav className="mt-8 flex flex-col gap-4">

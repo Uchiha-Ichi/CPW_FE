@@ -37,7 +37,7 @@ export const NETWORK_CONFIG: ResourceConfig = {
       required: true,
       options: ["Hiển thị", "Ẩn"],
     },
-    { key: "pos", label: "Vị trí (x,y %)", type: "text" },
+    { key: "pos", label: "Vị trí trên bản đồ", type: "mappos" },
   ],
   columns: [
     { key: "name", label: "Quốc gia" },

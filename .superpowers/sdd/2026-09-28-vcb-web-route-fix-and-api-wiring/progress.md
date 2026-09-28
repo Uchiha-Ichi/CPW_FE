@@ -17,5 +17,17 @@ Status: COMPLETED
 Brief: Fix routing structure, remove next-intl
 
 ## Task 2
-Status: IN_PROGRESS
+Status: COMPLETED
 Brief: API client scaffolding — generate types, shared fetch helper
+
+## Task 3
+Status: COMPLETED
+Brief: pages API wrapper, wire Home's content-managed sections
+
+## Task 4
+Status: COMPLETED
+Brief: network/products API wrappers and Home sections
+
+## Task 5
+Status: IN_PROGRESS
+Brief: Wire /careers and /careers/[slug] to the jobs API

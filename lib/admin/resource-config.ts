@@ -1,4 +1,4 @@
-export type FieldType = "text" | "select";
+export type FieldType = "text" | "select" | "textarea" | "image" | "mappos";
 
 export interface ResourceField {
   key: string;

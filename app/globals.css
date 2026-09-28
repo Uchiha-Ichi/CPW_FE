@@ -70,6 +70,8 @@
 }
 
 :root {
+  --header-bg: color-mix(in srgb, var(--background) 90%, transparent);
+  --header-height: 66px;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);

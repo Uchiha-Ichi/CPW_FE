@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
-import { Inter, Fraunces } from "next/font/google";
+import { Inter, Fraunces, Geist } from "next/font/google";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const bodyFont = Inter({
   subsets: ["vietnamese", "latin"],
@@ -26,7 +29,7 @@ export default function RootLayout({
   return (
     <html
       lang="vi"
-      className={`${bodyFont.variable} ${displayFont.variable} h-full antialiased`}
+      className={cn("h-full", "antialiased", bodyFont.variable, displayFont.variable, "font-sans", geist.variable)}
     >
       <body className="min-h-full flex flex-col font-body">{children}</body>
     </html>

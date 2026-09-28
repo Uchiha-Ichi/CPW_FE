@@ -25,5 +25,5 @@ Status: COMPLETED
 Brief: News list page (/news)
 
 ## Task 10
-Status: IN_PROGRESS
+Status: COMPLETED
 Brief: /admin placeholder route + full responsive pass

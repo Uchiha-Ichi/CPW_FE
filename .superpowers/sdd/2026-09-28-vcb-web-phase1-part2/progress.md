@@ -21,5 +21,9 @@ Status: COMPLETED
 Brief: Contact page (/contact) — form UI only
 
 ## Task 9
-Status: IN_PROGRESS
+Status: COMPLETED
 Brief: News list page (/news)
+
+## Task 10
+Status: IN_PROGRESS
+Brief: /admin placeholder route + full responsive pass

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export function SiteFooter() {
   return (
     <footer className="w-full border-t px-4 py-10 text-sm">
@@ -11,11 +13,11 @@ export function SiteFooter() {
         <div>
           <h4 className="font-semibold mb-3">Điều hướng</h4>
           <ul className="space-y-2 text-muted-foreground">
-            <li><a href="/">Trang chủ</a></li>
-            <li><a href="/about">Về chúng tôi</a></li>
-            <li><a href="/careers">Tuyển dụng</a></li>
-            <li><a href="/contact">Liên hệ</a></li>
-            <li><a href="/news">Tin tức</a></li>
+            <li><Link href="/">Trang chủ</Link></li>
+            <li><Link href="/about">Về chúng tôi</Link></li>
+            <li><Link href="/careers">Tuyển dụng</Link></li>
+            <li><Link href="/contact">Liên hệ</Link></li>
+            <li><Link href="/news">Tin tức</Link></li>
           </ul>
         </div>
         <div>

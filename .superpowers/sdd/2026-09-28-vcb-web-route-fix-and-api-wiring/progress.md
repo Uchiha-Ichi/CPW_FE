@@ -33,5 +33,9 @@ Status: COMPLETED
 Brief: Wire /careers and /careers/[slug] to the jobs API
 
 ## Task 6
-Status: IN_PROGRESS
+Status: COMPLETED
 Brief: Wire /news to the news API
+
+## Task 7
+Status: IN_PROGRESS
+Brief: Wire /about to pages and photos APIs

@@ -501,9 +501,11 @@ export interface components {
             d: string;
         };
         PublicPageBlockDto: {
-            page: string;
+            /** @enum {string} */
+            page: "Trang chủ" | "Về chúng tôi" | "Tuyển dụng" | "Liên hệ" | "Tin tức";
             block: string;
-            layout: string;
+            /** @enum {string} */
+            layout: "hero" | "text" | "imgleft" | "imgright" | "banner" | "cards" | "cta";
             title: string;
             text?: string;
             image?: string;

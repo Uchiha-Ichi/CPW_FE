@@ -8,14 +8,14 @@ export default async function HomePage() {
   const blocks = await getPublicPageBlocks("home");
 
   const contentBlocks: ContentBlockData[] = blocks.map((b) => ({
-    layout: b.layout as any,
+    layout: b.layout,
     title: b.title,
     text: b.text,
     image: b.image,
     imageAlt: b.title,
     btnLabel: b.btnLabel,
     btnLink: b.btnLink,
-    items: b.items as any,
+    items: b.items,
   }));
 
   const hero = contentBlocks.find((b) => b.layout === "hero");

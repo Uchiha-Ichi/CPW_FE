@@ -37,5 +37,9 @@ Status: COMPLETED
 Brief: Wire /news to the news API
 
 ## Task 7
-Status: IN_PROGRESS
+Status: COMPLETED
 Brief: Wire /about to pages and photos APIs
+
+## Task 8
+Status: IN_PROGRESS
+Brief: Final review and merge

@@ -117,3 +117,20 @@ export const JOBS_CONFIG: ResourceConfig = {
     { key: "status", label: "Trạng thái" },
   ],
 };
+
+export const TEAM_CONFIG: ResourceConfig = {
+  path: "team",
+  label: "Đội ngũ",
+  singular: "thành viên",
+  fields: [
+    { key: "name", label: "Họ tên", type: "text", required: true },
+    { key: "role", label: "Chức danh", type: "text" },
+    { key: "bio", label: "Giới thiệu ngắn", type: "textarea" },
+    { key: "image", label: "Ảnh chân dung", type: "image" },
+  ],
+  columns: [
+    { key: "image", label: "Ảnh" },
+    { key: "name", label: "Họ tên" },
+    { key: "role", label: "Chức danh" },
+  ],
+};

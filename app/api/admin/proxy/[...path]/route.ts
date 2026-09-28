@@ -20,10 +20,10 @@ async function proxy(req: NextRequest, path: string[]) {
         ? { "Content-Type": req.headers.get("content-type") ?? "application/json" }
         : {}),
     },
-    body: hasBody ? await req.text() : undefined,
+    body: hasBody ? await req.arrayBuffer() : undefined,
   });
 
-  const data = await res.text();
+  const data = await res.arrayBuffer();
   return new NextResponse(data, {
     status: res.status,
     headers: { "Content-Type": res.headers.get("content-type") ?? "application/json" },

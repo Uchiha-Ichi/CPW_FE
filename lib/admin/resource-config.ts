@@ -1,4 +1,4 @@
-export type FieldType = "text" | "select";
+export type FieldType = "text" | "select" | "textarea" | "image" | "mappos";
 
 export interface ResourceField {
   key: string;
@@ -37,7 +37,7 @@ export const NETWORK_CONFIG: ResourceConfig = {
       required: true,
       options: ["Hiển thị", "Ẩn"],
     },
-    { key: "pos", label: "Vị trí (x,y %)", type: "text" },
+    { key: "pos", label: "Vị trí trên bản đồ", type: "mappos" },
   ],
   columns: [
     { key: "name", label: "Quốc gia" },
@@ -115,5 +115,22 @@ export const JOBS_CONFIG: ResourceConfig = {
     { key: "title", label: "Vị trí" },
     { key: "department", label: "Nhóm" },
     { key: "status", label: "Trạng thái" },
+  ],
+};
+
+export const TEAM_CONFIG: ResourceConfig = {
+  path: "team",
+  label: "Đội ngũ",
+  singular: "thành viên",
+  fields: [
+    { key: "name", label: "Họ tên", type: "text", required: true },
+    { key: "role", label: "Chức danh", type: "text" },
+    { key: "bio", label: "Giới thiệu ngắn", type: "textarea" },
+    { key: "image", label: "Ảnh chân dung", type: "image" },
+  ],
+  columns: [
+    { key: "image", label: "Ảnh" },
+    { key: "name", label: "Họ tên" },
+    { key: "role", label: "Chức danh" },
   ],
 };

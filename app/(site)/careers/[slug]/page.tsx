@@ -1,13 +1,13 @@
 import { notFound } from "next/navigation";
-import { findJobBySlug } from "@/lib/careers";
-import { JOBS } from "@/data/careers";
+import { getPublicJobBySlug } from "@/lib/api/jobs";
 
-export default function JobDetailPage({
+export default async function JobDetailPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const job = findJobBySlug(JOBS, params.slug);
+  const resolvedParams = await params;
+  const job = await getPublicJobBySlug(resolvedParams.slug);
   if (!job) {
     notFound();
   }
@@ -18,7 +18,7 @@ export default function JobDetailPage({
       <p className="mt-2 text-sm text-muted-foreground">
         {job.department} · {job.location} · {job.type} · {job.status}
       </p>
-      <p className="mt-6">{job.description}</p>
+      <p className="mt-6 whitespace-pre-wrap">{job.description}</p>
     </section>
   );
 }

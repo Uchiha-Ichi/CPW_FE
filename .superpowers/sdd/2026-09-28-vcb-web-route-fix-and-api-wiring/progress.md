@@ -29,5 +29,9 @@ Status: COMPLETED
 Brief: network/products API wrappers and Home sections
 
 ## Task 5
-Status: IN_PROGRESS
+Status: COMPLETED
 Brief: Wire /careers and /careers/[slug] to the jobs API
+
+## Task 6
+Status: IN_PROGRESS
+Brief: Wire /news to the news API

@@ -69,77 +69,101 @@
   }
 }
 
+/* ─────────────────────────────────────────────────────────────────
+   VCB Design Tokens — Neo Tech / Luxury Dark (website.slim.html:2716-3164)
+   ───────────────────────────────────────────────────────────────── */
 :root {
-  --header-bg: color-mix(in srgb, var(--background) 90%, transparent);
-  --header-height: 66px;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
+  /* Tech palette */
+  --tech-bg: #F4F7FB;
+  --tech-bg-2: #EAF0F8;
+  --tech-ink: #071426;
+  --tech-muted: #617086;
+  --tech-blue: #177DF2;
+  --tech-cyan: #53D8FF;
+  --tech-violet: #7C6CFF;
+  --tech-border: rgba(7, 20, 38, 0.10);
+  --tech-glass: rgba(255, 255, 255, 0.72);
+  --tech-shadow: 0 24px 80px -42px rgba(7, 24, 48, 0.32);
+  --tech-grid: rgba(23, 125, 242, 0.055);
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  /* shadcn tokens — Dark theme (website.slim.html:2748-2761) */
+  --background: #050A14;
+  --foreground: #EEF6FF;
+  --card: #0C1422;
+  --card-foreground: #EEF6FF;
+  --popover: #0C1422;
+  --popover-foreground: #EEF6FF;
+  --primary: #177DF2;
+  --primary-foreground: #ffffff;
+  --secondary: #111D2F;
+  --secondary-foreground: #EEF6FF;
+  --muted: #111D2F;
+  --muted-foreground: #91A2B8;
+  --accent: #111D2F;
+  --accent-foreground: #EEF6FF;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --border: rgba(133, 184, 230, 0.13);
+  --input: rgba(133, 184, 230, 0.15);
+  --ring: #177DF2;
+  --radius: 0.625rem;
+
+  /* VCB semantic aliases */
+  --vcb-gold: #58B7FF;
+  --vcb-gold-hi: #8ED6FF;
+  --vcb-gold-soft: rgba(88, 183, 255, 0.10);
+  --vcb-silver: #8FA7C1;
+  --vcb-silver-soft: rgba(143, 167, 193, 0.10);
+  --vcb-line: rgba(133, 184, 230, 0.13);
+  --vcb-line-strong: rgba(88, 183, 255, 0.27);
+  --vcb-panel: #0C1422;
+  --vcb-panel-2: #111D2F;
+  --vcb-ink: #050A14;
+
+  /* Sidebar */
+  --sidebar: #0C1422;
+  --sidebar-foreground: #EEF6FF;
+  --sidebar-primary: #177DF2;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #111D2F;
+  --sidebar-accent-foreground: #EEF6FF;
+  --sidebar-border: rgba(133, 184, 230, 0.13);
+  --sidebar-ring: #177DF2;
+
+  /* Charts */
+  --chart-1: #177DF2;
+  --chart-2: #53D8FF;
+  --chart-3: #7C6CFF;
+  --chart-4: #58B7FF;
+  --chart-5: #8ED6FF;
+
+  /* Header */
+  --header-bg: color-mix(in srgb, var(--vcb-panel) 76%, transparent);
+  --header-height: 66px;
 }
 
+/* Global atmosphere — radial gradients on body (website.slim.html:2764-2782) */
+html, body {
+  background:
+    radial-gradient(circle at 12% -10%, rgba(83, 216, 255, 0.09), transparent 28%),
+    radial-gradient(circle at 90% 8%, rgba(124, 108, 255, 0.07), transparent 26%),
+    var(--background) !important;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.55;
+  background-image:
+    linear-gradient(var(--tech-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--tech-grid) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, #000, transparent 88%);
+}
+
+/* ─── Marquee animation ─────────────────────────────────────────── */
 @keyframes marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
@@ -148,4 +172,10 @@
 .animate-marquee {
   animation: marquee 30s linear infinite;
   width: max-content;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
 }

@@ -1,192 +1,313 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ImagePlaceholder } from "@/components/content-block/image-placeholder";
-import { uploadAdminImage } from "@/lib/admin/upload-image";
-import { renderNewsBody } from "@/lib/news/render-body";
-import type { NewsArticle } from "@/lib/admin/news-types";
+import { ImagePlaceholder } from "@/components/shared/image-placeholder";
+import { CoverField } from "@/components/admin/post-cover-field";
+import { PostEditor } from "@/components/admin/post-editor";
+import {
+  createPost,
+  getAdminPost,
+  updatePost,
+  uploadPostImage,
+} from "@/lib/admin/post-api";
+import { errorMessages, isSessionExpired } from "@/lib/admin/post-errors";
+import {
+  clearDraft,
+  loadDraft,
+  saveDraft,
+  shouldOfferDraft,
+  type StoredDraft,
+} from "@/lib/admin/post-draft-storage";
+import {
+  emptyForm,
+  englishWarning,
+  fromPost,
+  isEnglishBlank,
+  readingMinutes,
+  toPayload,
+  validateForm,
+  type FormIssue,
+  type PostForm,
+} from "@/lib/admin/post-form";
+import {
+  POST_CATEGORIES,
+  POST_CATEGORY_LABELS,
+  type AdminPost,
+  type PostCategory,
+  type PostLang,
+  type PostStatus,
+} from "@/lib/admin/post-types";
 
-const CATEGORIES: NewsArticle["category"][] = ["Tin công ty", "Thị trường", "Sự kiện"];
-
-interface FormState {
-  title: string;
-  category: NewsArticle["category"];
-  date: string;
-  summary: string;
-  body: string;
-  cover: string;
-}
-
-function today(): string {
-  return new Date().toISOString().slice(0, 10);
-}
-
-const EMPTY_FORM: FormState = {
-  title: "",
-  category: "Tin công ty",
-  date: today(),
-  summary: "",
-  body: "",
-  cover: "",
+const LANG_LABELS: Record<PostLang, string> = {
+  vi: "Tiếng Việt",
+  en: "English",
 };
+
+function formatDate(iso?: string): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString("vi-VN");
+}
 
 export function NewsComposerView({ articleId }: { articleId: string | null }) {
   const router = useRouter();
-  const [form, setForm] = useState<FormState>(EMPTY_FORM);
-  const [status, setStatus] = useState<NewsArticle["status"]>("Bản nháp");
+  const [form, setForm] = useState<PostForm>(emptyForm);
+  const [serverPost, setServerPost] = useState<AdminPost | null>(null);
+  const [lang, setLang] = useState<PostLang>("vi");
   const [loading, setLoading] = useState(!!articleId);
-  const [uploading, setUploading] = useState(false);
+  const [loadError, setLoadError] = useState<string[] | null>(null);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [titleError, setTitleError] = useState(false);
-  const [bodyError, setBodyError] = useState(false);
-  const bodyRef = useRef<HTMLTextAreaElement | null>(null);
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const [errors, setErrors] = useState<string[]>([]);
+  const [issues, setIssues] = useState<FormIssue[]>([]);
+  const [sessionExpired, setSessionExpired] = useState(false);
+  const [dirty, setDirty] = useState(false);
+  const [editorKey, setEditorKey] = useState(0);
+  const [pendingDraft, setPendingDraft] = useState<StoredDraft | null>(null);
+  const [newCoverFile, setNewCoverFile] = useState<File | null>(null);
+
+  const busy = saving || uploadingImages;
+
+  // Xem trước ảnh bìa vừa chọn (giá trị dẫn xuất, giải phóng URL khi unmount/đổi tệp).
+  const newCoverPreview = useMemo(() => {
+    return newCoverFile ? URL.createObjectURL(newCoverFile) : null;
+  }, [newCoverFile]);
 
   useEffect(() => {
-    if (!articleId) return;
-    (async () => {
-      const res = await fetch("/api/admin/proxy/news");
-      if (res.ok) {
-        const all: NewsArticle[] = await res.json();
-        const found = all.find((a) => a._id === articleId);
-        if (found) {
-          setForm({
-            title: found.title,
-            category: found.category,
-            date: found.date,
-            summary: found.summary ?? "",
-            body: found.body ?? "",
-            cover: found.cover ?? "",
-          });
-          setStatus(found.status);
-        }
+    return () => {
+      if (newCoverPreview) URL.revokeObjectURL(newCoverPreview);
+    };
+  }, [newCoverPreview]);
+
+  // Dán ảnh (Ctrl+V) làm ảnh bìa CHỈ khi con trỏ ở ngoài khung soạn; trong khung soạn ảnh chèn vào bài.
+  useEffect(() => {
+    const onPaste = (e: ClipboardEvent) => {
+      const target = e.target instanceof Element ? e.target : null;
+      if (target?.closest(".ProseMirror")) return;
+      const file = Array.from(e.clipboardData?.items ?? [])
+        .find((item) => item.type.startsWith("image/"))
+        ?.getAsFile();
+      if (file) {
+        setNewCoverFile(file);
+        setDirty(true);
       }
-      setLoading(false);
+    };
+    const preventDefault = (e: DragEvent) => e.preventDefault();
+    document.addEventListener("paste", onPaste);
+    window.addEventListener("dragover", preventDefault);
+    window.addEventListener("drop", preventDefault);
+    return () => {
+      document.removeEventListener("paste", onPaste);
+      window.removeEventListener("dragover", preventDefault);
+      window.removeEventListener("drop", preventDefault);
+    };
+  }, []);
+
+  // Tải bài (sửa) hoặc kiểm tra bản nháp còn sót (bài mới).
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (!articleId) {
+        const draft = loadDraft(window.localStorage, null);
+        if (
+          !cancelled &&
+          draft &&
+          shouldOfferDraft(draft, undefined, emptyForm())
+        ) {
+          setPendingDraft(draft);
+        }
+        return;
+      }
+      try {
+        const post = await getAdminPost(articleId);
+        if (cancelled) return;
+        const loaded = fromPost(post);
+        setServerPost(post);
+        setForm(loaded);
+        setEditorKey((k) => k + 1);
+        const draft = loadDraft(window.localStorage, articleId);
+        if (draft && shouldOfferDraft(draft, post.updatedAt, loaded)) {
+          setPendingDraft(draft);
+        }
+      } catch (err) {
+        if (cancelled) return;
+        setLoadError(errorMessages(err));
+        if (isSessionExpired(err)) setSessionExpired(true);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
     })();
+    return () => {
+      cancelled = true;
+    };
   }, [articleId]);
 
-  const wasLive = status === "Đã đăng" && !!articleId;
+  // Tự lưu nháp vào trình duyệt sau 1,5 giây ngừng gõ.
+  useEffect(() => {
+    if (!dirty || loading) return;
+    const timer = setTimeout(
+      () => saveDraft(window.localStorage, articleId, form),
+      1500
+    );
+    return () => clearTimeout(timer);
+  }, [form, dirty, loading, articleId]);
 
-  function touch<K extends keyof FormState>(key: K, value: FormState[K]) {
-    setForm((f) => ({ ...f, [key]: value }));
+  // Cảnh báo khi rời trang lúc còn thay đổi chưa lưu.
+  useEffect(() => {
+    if (!dirty) return;
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [dirty]);
+
+  function updateLocale(
+    l: PostLang,
+    key: "title" | "excerpt" | "content",
+    value: string
+  ) {
+    setForm((f) => ({ ...f, [l]: { ...f[l], [key]: value } }));
+    setDirty(true);
   }
 
-  function applyFmt(kind: "h" | "l" | "q") {
-    const prefix = { h: "## ", l: "- ", q: "> " }[kind];
-    const ta = bodyRef.current;
-    if (!ta) return;
-    const v = ta.value;
-    const st = ta.selectionStart;
-    const en = ta.selectionEnd;
-    const ls = v.lastIndexOf("\n", st - 1) + 1;
-    let le = v.indexOf("\n", en);
-    if (le < 0) le = v.length;
-    const seg = v
-      .slice(ls, le)
-      .split("\n")
-      .map((l) => (l.startsWith(prefix) ? l.slice(prefix.length) : prefix + l))
-      .join("\n");
-    const next = v.slice(0, ls) + seg + v.slice(le);
-    touch("body", next);
-    requestAnimationFrame(() => {
-      ta.focus();
-      ta.setSelectionRange(ls, ls + seg.length);
-    });
+  function updateCategory(category: PostCategory) {
+    setForm((f) => ({ ...f, category }));
+    setDirty(true);
   }
 
-  async function handleCoverChosen(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file) return;
-    setUploading(true);
-    setError(null);
-    try {
-      const url = await uploadAdminImage(file);
-      touch("cover", url);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Tải ảnh thất bại");
-    } finally {
-      setUploading(false);
-    }
+  function pickCover(file: File) {
+    setNewCoverFile(file);
+    setDirty(true);
   }
 
-  async function save(targetStatus: NewsArticle["status"], goBack: boolean) {
-    setTitleError(false);
-    setBodyError(false);
-    setError(null);
-    if (!form.title.trim()) {
-      setTitleError(true);
-      return;
-    }
-    if (targetStatus === "Đã đăng" && !form.body.trim()) {
-      setBodyError(true);
+  function removeCover() {
+    setNewCoverFile(null);
+    setForm((f) => ({ ...f, coverUrl: "" }));
+    setDirty(true);
+  }
+
+  function restoreDraft() {
+    if (!pendingDraft) return;
+    setForm(pendingDraft.form);
+    setEditorKey((k) => k + 1);
+    setDirty(true);
+    setPendingDraft(null);
+  }
+
+  function discardDraft() {
+    clearDraft(window.localStorage, articleId);
+    setPendingDraft(null);
+  }
+
+  async function save(target: PostStatus) {
+    setErrors([]);
+    setIssues([]);
+    const found = validateForm(form, target);
+    if (found.length > 0) {
+      setIssues(found);
+      const firstTab = found[0].tab;
+      if (firstTab === "vi" || firstTab === "en") setLang(firstTab);
       return;
     }
     setSaving(true);
-    const record = {
-      title: form.title.trim(),
-      category: form.category,
-      date: form.date,
-      status: targetStatus,
-      summary: form.summary.trim(),
-      body: form.body,
-      cover: form.cover,
-    };
-    const url = articleId ? `/api/admin/proxy/news/${articleId}` : "/api/admin/proxy/news";
-    const method = articleId ? "PATCH" : "POST";
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(record),
-    });
-    setSaving(false);
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({ message: "Có lỗi xảy ra" }));
-      setError(body.message ?? "Có lỗi xảy ra");
-      return;
+    try {
+      let coverUrl = form.coverUrl;
+      if (newCoverFile) {
+        coverUrl = (await uploadPostImage(newCoverFile)).url;
+        // Giữ URL đã tải để lần bấm lại (nếu lưu bài lỗi) không tải lại ảnh.
+        setForm((f) => ({ ...f, coverUrl }));
+        setNewCoverFile(null);
+      }
+      const payload = toPayload({ ...form, coverUrl }, target);
+      if (articleId) await updatePost(articleId, payload);
+      else await createPost(payload);
+      clearDraft(window.localStorage, articleId);
+      setDirty(false);
+      router.push("/admin/news");
+    } catch (err) {
+      setErrors(errorMessages(err));
+      if (isSessionExpired(err)) setSessionExpired(true);
+    } finally {
+      setSaving(false);
     }
-    setStatus(targetStatus);
-    if (goBack) router.push("/admin/news");
   }
 
   if (loading) {
     return <p className="p-6 text-sm text-muted-foreground">Đang tải…</p>;
   }
 
-  const words = form.body.trim().split(/\s+/).filter(Boolean).length;
-  const minutes = Math.max(1, Math.round(words / 200));
-  const blocks = renderNewsBody(form.body);
+  if (loadError) {
+    return (
+      <div className="p-6">
+        <p className="text-sm text-destructive">{loadError.join(" ")}</p>
+        {sessionExpired && <LoginAgainLink />}
+        <Button
+          className="mt-4"
+          variant="outline"
+          onClick={() => router.push("/admin/news")}
+        >
+          Danh sách bài viết
+        </Button>
+      </div>
+    );
+  }
+
+  const wasLive = serverPost?.status === "published";
+  const current = form[lang];
+  const previewHtml = current.content;
+  const coverPreview = newCoverPreview || form.coverUrl || null;
+  const langIssues = issues.filter((i) => i.tab === lang);
+  const titleInvalid = langIssues.some((i) => /tiêu đề/i.test(i.message));
+  const warning = englishWarning(form);
+  const publishedDate = wasLive ? formatDate(serverPost?.publishedAt) : "";
 
   return (
     <div className="p-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={() => router.push("/admin/news")}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.push("/admin/news")}
+          >
             Danh sách bài viết
           </Button>
           <h1 className="text-xl font-semibold">
             {articleId ? "Sửa bài viết" : "Thêm bài viết"}
           </h1>
         </div>
-        <div className="space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {uploadingImages && (
+            <span className="text-sm text-muted-foreground">Đang tải ảnh…</span>
+          )}
           {wasLive ? (
             <>
-              <Button variant="outline" disabled={saving} onClick={() => save("Bản nháp", true)}>
+              <Button
+                variant="outline"
+                disabled={busy}
+                onClick={() => save("draft")}
+              >
                 Gỡ về bản nháp
               </Button>
-              <Button disabled={saving} onClick={() => save("Đã đăng", true)}>
+              <Button disabled={busy} onClick={() => save("published")}>
                 Lưu thay đổi
               </Button>
             </>
           ) : (
             <>
-              <Button variant="outline" disabled={saving} onClick={() => save("Bản nháp", true)}>
+              <Button
+                variant="outline"
+                disabled={busy}
+                onClick={() => save("draft")}
+              >
                 Lưu bản nháp
               </Button>
-              <Button disabled={saving} onClick={() => save("Đã đăng", true)}>
+              <Button disabled={busy} onClick={() => save("published")}>
                 Đăng bài
               </Button>
             </>
@@ -194,189 +315,212 @@ export function NewsComposerView({ articleId }: { articleId: string | null }) {
         </div>
       </div>
 
-      {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
+      {pendingDraft && (
+        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-md border p-3 text-sm">
+          <span>
+            Tìm thấy bản chưa lưu lúc{" "}
+            {new Date(pendingDraft.savedAt).toLocaleString("vi-VN")}.
+          </span>
+          <Button size="sm" onClick={restoreDraft}>
+            Khôi phục
+          </Button>
+          <Button size="sm" variant="ghost" onClick={discardDraft}>
+            Bỏ
+          </Button>
+        </div>
+      )}
+
+      {sessionExpired && (
+        <div className="mt-3 rounded-md border border-destructive p-3 text-sm text-destructive">
+          Phiên đăng nhập đã hết hạn. Nội dung của bạn vẫn còn trên trang này.
+          <LoginAgainLink /> rồi quay lại đây bấm lưu lại.
+        </div>
+      )}
+
+      {(errors.length > 0 || issues.length > 0) && (
+        <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-destructive">
+          {[...issues.map((i) => i.message), ...errors].map((m, i) => (
+            <li key={i}>{m}</li>
+          ))}
+        </ul>
+      )}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <Card className="space-y-3 p-4">
-          <div>
-            <label className="text-sm font-medium">Tiêu đề</label>
-            <input
-              className="mt-1 w-full rounded-md border p-2 text-sm aria-invalid:border-destructive"
-              aria-invalid={titleError}
-              value={form.title}
-              onChange={(e) => touch("title", e.target.value)}
-            />
-            {titleError && (
-              <p className="mt-1 text-xs text-destructive">Cần nhập tiêu đề để lưu.</p>
-            )}
-          </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-sm font-medium">Chuyên mục</label>
+              <label className="text-sm font-medium" htmlFor="post-category">
+                Chuyên mục
+              </label>
               <select
+                id="post-category"
                 className="mt-1 w-full rounded-md border p-2 text-sm"
                 value={form.category}
-                onChange={(e) =>
-                  touch("category", e.target.value as NewsArticle["category"])
-                }
+                onChange={(e) => updateCategory(e.target.value as PostCategory)}
               >
-                {CATEGORIES.map((c) => (
+                {POST_CATEGORIES.map((c) => (
                   <option key={c} value={c}>
-                    {c}
+                    {POST_CATEGORY_LABELS[c]}
                   </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="text-sm font-medium">Ngày đăng</label>
-              <input
-                type="date"
-                className="mt-1 w-full rounded-md border p-2 text-sm"
-                value={form.date}
-                onChange={(e) => touch("date", e.target.value)}
-              />
+              <p className="text-sm font-medium">Ngày đăng</p>
+              <p className="mt-1 p-2 text-sm text-muted-foreground">
+                {publishedDate || "Chưa đăng"}
+              </p>
             </div>
           </div>
-          <div>
-            <label className="text-sm font-medium">Ảnh bìa</label>
-            <div className="mt-1 flex items-center gap-3">
-              {form.cover ? (
-                <img src={form.cover} alt="" className="h-16 w-24 rounded-md object-cover" />
-              ) : (
-                <ImagePlaceholder label="ảnh bìa" className="h-16 w-24 min-h-0 text-[10px]" />
-              )}
-              <div className="space-x-2">
-                <label className="inline-block cursor-pointer rounded-md border px-3 py-1.5 text-sm hover:bg-muted/50">
-                  {uploading ? "Đang tải…" : form.cover ? "Đổi ảnh" : "Tải ảnh lên"}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    hidden
-                    disabled={uploading}
-                    onChange={handleCoverChosen}
+
+          <CoverField
+            previewUrl={coverPreview}
+            disabled={busy}
+            onPick={pickCover}
+            onRemove={removeCover}
+          />
+          <p className="text-xs text-muted-foreground">
+            Ảnh bìa và chuyên mục dùng chung cho cả tiếng Việt và tiếng Anh.
+          </p>
+
+          <p className="text-xs text-muted-foreground">
+            Đường dẫn bài viết:{" "}
+            {serverPost?.slug ? (
+              <span className="font-mono text-foreground">
+                /news/{serverPost.slug}
+              </span>
+            ) : (
+              "sẽ tự tạo từ tiêu đề khi lưu"
+            )}
+          </p>
+
+          <div role="tablist" className="flex gap-1 border-b">
+            {(["vi", "en"] as const).map((l) => (
+              <button
+                key={l}
+                type="button"
+                role="tab"
+                aria-selected={lang === l}
+                onClick={() => setLang(l)}
+                className={`-mb-px border-b-2 px-3 py-2 text-sm ${
+                  lang === l
+                    ? "border-primary font-medium"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {LANG_LABELS[l]}
+                {l === "en" && !isEnglishBlank(form.en) && (
+                  <span
+                    className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-primary align-middle"
+                    aria-label="đã nhập"
                   />
-                </label>
-                {form.cover && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => touch("cover", "")}
-                  >
-                    Bỏ ảnh
-                  </Button>
                 )}
-              </div>
-            </div>
+              </button>
+            ))}
           </div>
+
           <div>
-            <label className="text-sm font-medium">Tóm tắt</label>
+            <label className="text-sm font-medium" htmlFor="post-title">
+              Tiêu đề ({LANG_LABELS[lang]})
+            </label>
+            <input
+              id="post-title"
+              className="mt-1 w-full rounded-md border p-2 text-sm aria-invalid:border-destructive"
+              aria-invalid={titleInvalid}
+              value={current.title}
+              onChange={(e) => updateLocale(lang, "title", e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium" htmlFor="post-excerpt">
+              Mô tả ngắn ({LANG_LABELS[lang]})
+            </label>
             <textarea
+              id="post-excerpt"
               className="mt-1 w-full rounded-md border p-2 text-sm"
               style={{ minHeight: 80 }}
-              value={form.summary}
-              onChange={(e) => touch("summary", e.target.value)}
+              placeholder="Để trống thì hệ thống tự lấy từ phần đầu nội dung."
+              value={current.excerpt}
+              onChange={(e) => updateLocale(lang, "excerpt", e.target.value)}
             />
           </div>
+
           <div>
-            <label className="text-sm font-medium">Nội dung</label>
-            <div className="mt-1 space-x-2">
-              <Button type="button" variant="outline" size="sm" onClick={() => applyFmt("h")}>
-                Tiêu đề nhỏ
-              </Button>
-              <Button type="button" variant="outline" size="sm" onClick={() => applyFmt("l")}>
-                Danh sách
-              </Button>
-              <Button type="button" variant="outline" size="sm" onClick={() => applyFmt("q")}>
-                Trích dẫn
-              </Button>
+            <label className="text-sm font-medium">
+              Nội dung ({LANG_LABELS[lang]})
+            </label>
+            <div className="mt-1">
+              <PostEditor
+                key={`${lang}-${editorKey}`}
+                value={current.content}
+                onChange={(html) => updateLocale(lang, "content", html)}
+                onError={setErrors}
+                onBusyChange={setUploadingImages}
+                disabled={saving}
+                ariaLabel={`Nội dung bài viết (${LANG_LABELS[lang]})`}
+              />
             </div>
-            <textarea
-              ref={bodyRef}
-              className="mt-2 w-full rounded-md border p-2 font-mono text-sm aria-invalid:border-destructive"
-              style={{ minHeight: 240 }}
-              aria-invalid={bodyError}
-              placeholder="Bắt đầu viết bài ở đây"
-              value={form.body}
-              onChange={(e) => touch("body", e.target.value)}
-            />
-            {bodyError && (
-              <p className="mt-1 text-xs text-destructive">
-                Cần nhập nội dung bài viết trước khi đăng.
-              </p>
+            {warning && lang === "en" && (
+              <p className="mt-2 text-xs text-muted-foreground">{warning}</p>
             )}
-            <p className="mt-1 text-xs text-muted-foreground">
-              Dòng trống để sang đoạn mới. Chọn dòng rồi bấm nút ở trên để định dạng.
-            </p>
           </div>
         </Card>
 
         <Card className="p-4">
-          <p className="text-sm font-medium">Xem trước</p>
+          <p className="text-sm font-medium">Xem trước ({LANG_LABELS[lang]})</p>
           <article className="mt-3">
-            {form.cover ? (
-              <img src={form.cover} alt="" className="h-40 w-full rounded-md object-cover" />
+            {coverPreview ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={coverPreview}
+                alt=""
+                className="h-40 w-full rounded-md object-cover"
+              />
             ) : (
               <ImagePlaceholder label="ảnh bìa bài viết" className="h-40" />
             )}
             <div className="mt-3 space-x-1 text-xs text-muted-foreground">
-              <span>{form.category}</span>
+              <span>{POST_CATEGORY_LABELS[form.category]}</span>
               <span>·</span>
-              <span>{form.date}</span>
+              <span>{publishedDate || "Chưa đăng"}</span>
               <span>·</span>
-              <span>{minutes} phút đọc</span>
+              <span>{readingMinutes(previewHtml)} phút đọc</span>
             </div>
             <h1 className="mt-2 text-2xl font-semibold">
-              {form.title || "Tiêu đề bài viết"}
+              {current.title || "Tiêu đề bài viết"}
             </h1>
-            {form.summary && <p className="mt-2 text-muted-foreground">{form.summary}</p>}
-            <div className="mt-4 space-y-3">
-              {blocks.length === 0 && (
-                <p className="text-sm text-muted-foreground">
-                  Nội dung bài viết sẽ hiện ở đây khi bắt đầu viết.
-                </p>
-              )}
-              {blocks.map((b, i) => {
-                if (b.type === "heading")
-                  return (
-                    <h2 key={i} className="text-lg font-semibold">
-                      {b.text}
-                    </h2>
-                  );
-                if (b.type === "list")
-                  return (
-                    <ul key={i} className="list-disc pl-5">
-                      {b.items.map((item, j) => (
-                        <li key={j}>{item}</li>
-                      ))}
-                    </ul>
-                  );
-                if (b.type === "quote")
-                  return (
-                    <blockquote key={i} className="border-l-2 pl-3 italic text-muted-foreground">
-                      {b.lines.map((line, j) => (
-                        <span key={j}>
-                          {line}
-                          {j < b.lines.length - 1 && <br />}
-                        </span>
-                      ))}
-                    </blockquote>
-                  );
-                return (
-                  <p key={i}>
-                    {b.lines.map((line, j) => (
-                      <span key={j}>
-                        {line}
-                        {j < b.lines.length - 1 && <br />}
-                      </span>
-                    ))}
-                  </p>
-                );
-              })}
-            </div>
+            {current.excerpt && (
+              <p className="mt-2 text-muted-foreground">{current.excerpt}</p>
+            )}
+            {previewHtml.trim() ? (
+              // Ngoại lệ D7 (DOCS/superpowers/specs/2026-09-30-vcb-web-admin-posts-design.md):
+              // Khung Xem trước dùng dangerouslySetInnerHTML với HTML do Tiptap tạo ra hoặc server đã sanitize.
+              <div
+                className="post-content mt-4"
+                dangerouslySetInnerHTML={{ __html: previewHtml }}
+              />
+            ) : (
+              <p className="mt-4 text-sm text-muted-foreground">
+                Nội dung bài viết sẽ hiện ở đây khi bắt đầu viết.
+              </p>
+            )}
           </article>
         </Card>
       </div>
     </div>
+  );
+}
+
+function LoginAgainLink() {
+  return (
+    <a
+      href="/admin/login"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="ml-1 font-medium underline"
+    >
+      Đăng nhập lại ở tab mới
+    </a>
   );
 }

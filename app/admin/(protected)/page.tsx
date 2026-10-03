@@ -1,15 +1,12 @@
 import { cookies } from "next/headers";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api";
+import { API_BASE } from "@/lib/api/config";
 
 const COLLECTIONS: { path: string; label: string }[] = [
   { path: "pages", label: "Nội dung trang" },
-  { path: "news", label: "Tin tức" },
+  { path: "posts/admin?limit=1", label: "Tin tức" },
   { path: "products", label: "Sản phẩm" },
   { path: "jobs", label: "Tuyển dụng" },
-  { path: "photos", label: "Thư viện ảnh" },
   { path: "network", label: "Bản đồ quốc gia" },
-  { path: "team", label: "Đội ngũ" },
 ];
 
 async function countFor(path: string, token: string): Promise<number> {
@@ -20,7 +17,9 @@ async function countFor(path: string, token: string): Promise<number> {
     });
     if (!res.ok) return 0;
     const data = await res.json();
-    return Array.isArray(data) ? data.length : 0;
+    if (Array.isArray(data)) return data.length;
+    if (data && typeof data.total === "number") return data.total;
+    return 0;
   } catch {
     return 0;
   }

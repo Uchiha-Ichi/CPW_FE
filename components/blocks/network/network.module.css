@@ -1,0 +1,280 @@
+.globalNetwork {
+  position: relative;
+  overflow: hidden;
+  padding: 86px 0 72px;
+}
+
+/* Base Stage */
+.networkStage {
+  position: relative;
+  aspect-ratio: 950 / 620; /* cùng tỉ lệ world.svg: pos % khớp với ô chọn vị trí ở admin */
+  border-radius: 16px;
+  overflow: hidden;
+  isolation: isolate;
+  background: linear-gradient(135deg, var(--vcb-panel-2), var(--vcb-panel));
+  border: 1px solid var(--vcb-line-strong);
+  box-shadow: var(--tech-shadow);
+}
+.networkStage::before {
+  content: "";
+  position: absolute;
+  inset: -15% -30%;
+  background: linear-gradient(115deg, transparent 42%, rgba(255, 255, 255, 0.23) 49%, rgba(23, 125, 242, 0.11) 51%, transparent 58%);
+  transform: translateX(-45%) skewX(-12deg);
+  animation: mapGlint 9s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 2;
+}
+.networkStage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent 49.7%, rgba(83, 216, 255, 0.09) 50%, transparent 50.3%);
+  opacity: 0.45;
+  z-index: 2;
+}
+
+@keyframes mapGlint {
+  0%, 58% { transform: translateX(-45%) skewX(-12deg); opacity: 0; }
+  68% { opacity: 1; }
+  84%, 100% { transform: translateX(45%) skewX(-12deg); opacity: 0; }
+}
+
+.networkMapBg {
+  position: absolute;
+  inset: 0;
+  -webkit-mask-image: url("/maps/world.svg");
+  mask-image: url("/maps/world.svg");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-position: center center;
+  mask-position: center center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  background: linear-gradient(135deg, var(--vcb-gold), var(--tech-cyan) 48%, var(--tech-violet));
+  opacity: 0.4;
+  transform: scale(1.012);
+  animation: mapBreath 14s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes mapBreath {
+  0%, 100% { transform: scale(1.012); }
+  50% { transform: scale(1.025); }
+}
+
+.networkVignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 52% 48%, transparent 30%, var(--vcb-panel-2) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* SVG Routes */
+.networkSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+.networkSvg .route {
+  fill: none;
+  stroke: rgba(23, 125, 242, 0.4);
+  stroke-width: 1.1;
+  stroke-dasharray: 4 9;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  animation: routeDash 8s linear infinite;
+}
+.networkSvg .routeGlow {
+  fill: none;
+  stroke: rgba(23, 125, 242, 0.2);
+  stroke-width: 7;
+  vector-effect: non-scaling-stroke;
+  filter: blur(4px);
+}
+@keyframes routeDash {
+  to { stroke-dashoffset: -120; }
+}
+
+.plane {
+  font-size: 15px;
+  fill: var(--vcb-gold);
+  filter: drop-shadow(0 2px 4px rgba(10, 25, 47, 0.35));
+}
+
+/* Pins */
+.networkPin {
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--vcb-gold);
+  box-shadow: 0 0 0 6px rgba(23, 125, 242, 0.08), 0 4px 13px rgba(10, 25, 47, 0.18);
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  outline-offset: 6px;
+}
+.networkPin:before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border: 1px solid rgba(23, 125, 242, 0.3);
+  border-radius: 50%;
+  animation: pinPulse 2.8s ease-out infinite;
+}
+.networkPin:after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--vcb-gold);
+  box-shadow: 0 0 13px rgba(23, 125, 242, 0.42);
+}
+@keyframes pinPulse {
+  0% { transform: scale(0.5); opacity: 0.7; }
+  80%, 100% { transform: scale(1.8); opacity: 0; }
+}
+
+.flagIcon {
+  position: absolute;
+  left: 18px;
+  top: -18px;
+  transform: scale(0.88);
+  transform-origin: left bottom;
+  z-index: 6;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.88);
+  box-shadow: 0 5px 16px rgba(10, 25, 47, 0.18), 0 0 0 5px rgba(255, 255, 255, 0.58);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.networkPin:hover .flagIcon,
+.networkPin.isActive .flagIcon {
+  transform: scale(1);
+}
+
+.networkPin.isActive {
+  z-index: 8;
+  transform: translate(-50%, -50%) scale(1.15);
+}
+
+/* Legend */
+.networkLegend {
+  position: absolute;
+  right: 24px;
+  bottom: 22px;
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  padding: 9px 13px;
+  background: color-mix(in srgb, var(--vcb-panel) 72%, transparent);
+  border: 1px solid var(--vcb-line);
+  backdrop-filter: blur(9px);
+  font-size: 0.64rem;
+  letter-spacing: 0.13em;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  z-index: 6;
+  border-radius: 6px;
+}
+.networkLegend i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--vcb-gold);
+  box-shadow: 0 0 0 4px rgba(23, 125, 242, 0.08);
+}
+
+/* Countries List */
+.networkCountries {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--vcb-line-strong);
+  border-top: 0;
+  background: color-mix(in srgb, var(--vcb-panel) 86%, transparent);
+  border-radius: 0 0 16px 16px;
+  overflow: hidden;
+  box-shadow: 0 18px 55px -40px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+}
+@media (max-width: 800px) {
+  .networkCountries { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 520px) {
+  .networkCountries { grid-template-columns: 1fr; }
+  .plane { display: none; }
+}
+
+.networkCountry {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  column-gap: 14px;
+  align-items: center;
+  min-height: 92px;
+  padding: 18px 20px;
+  border-right: 1px solid var(--vcb-line);
+  border-bottom: 1px solid var(--vcb-line);
+  transition: background 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease;
+  position: relative;
+}
+.networkCountry:hover,
+.networkCountry.isActive {
+  background: var(--vcb-gold-soft);
+  transform: translateY(-3px);
+  box-shadow: inset 0 2px 0 var(--vcb-gold), 0 14px 32px -26px rgba(0, 0, 0, 0.5);
+  border-color: var(--vcb-line-strong);
+}
+
+.cardFlag {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+}
+.networkCountry b {
+  grid-column: 2;
+  font-family: var(--font-display), serif;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+.networkCountry small {
+  grid-column: 2;
+  color: var(--muted-foreground);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+}
+
+.mapCredit {
+  margin-top: 12px;
+  font-size: 0.7rem;
+  color: var(--muted-foreground);
+}
+.mapCredit a { text-decoration: underline; }
+
+@media (prefers-reduced-motion: reduce) {
+  .networkStage::before,
+  .networkMapBg,
+  .networkSvg .route,
+  .networkPin:before {
+    animation: none;
+  }
+  .networkCountry,
+  .flagIcon {
+    transition: none;
+  }
+}

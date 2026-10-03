@@ -1,18 +1,29 @@
-export const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api";
+import { API_BASE } from "./config";
+import type { ApiResult } from "./result";
 
-export async function fetchPublicList<T>(path: string): Promise<T[]> {
+export const DEFAULT_REVALIDATE_SECONDS = 60;
+
+// Đọc một endpoint public. Không bao giờ ném lỗi: trang public không được sập khi API tắt.
+// `tags` cho phép xóa cache theo tag (revalidateTag) khi admin ghi dữ liệu.
+export async function apiGet<T>(
+  path: string,
+  options: { revalidate?: number; tags?: readonly string[] } = {}
+): Promise<ApiResult<T>> {
   try {
     const res = await fetch(`${API_BASE}${path}`, {
-      next: { revalidate: 60 },
+      next: {
+        revalidate: options.revalidate ?? DEFAULT_REVALIDATE_SECONDS,
+        ...(options.tags ? { tags: [...options.tags] } : {}),
+      },
     });
+    if (res.status === 404) return { status: "not-found" };
     if (!res.ok) {
-      console.error(`fetchPublicList(${path}): API responded ${res.status}`);
-      return [];
+      console.error(`apiGet(${path}): API responded ${res.status}`);
+      return { status: "error" };
     }
-    return (await res.json()) as T[];
+    return { status: "ok", data: (await res.json()) as T };
   } catch (err) {
-    console.error(`fetchPublicList(${path}): fetch failed`, err);
-    return [];
+    console.error(`apiGet(${path}): request failed`, err);
+    return { status: "error" };
   }
 }

@@ -1,5 +1,242 @@
 {
-  "Index": {
-    "title": "Home"
+  "Meta": {
+    "siteName": "Viễn Chí Bảo",
+    "siteDescription": "Viễn Chí Bảo builds an ecosystem connecting craft heritage, brands, media and digital commerce.",
+    "ogTagline": "Taking Vietnamese craft to the world",
+    "home": {
+      "title": "Viễn Chí Bảo | Taking Vietnamese craft to the world",
+      "description": "Viễn Chí Bảo builds an ecosystem connecting craft heritage, brands, media and digital commerce."
+    },
+    "about": {
+      "title": "About us",
+      "description": "Viễn Chí Bảo is a technology and digital media company building premium craft brands with AI, market data and cross-border e-commerce."
+    },
+    "news": {
+      "title": "News & Reports",
+      "description": "Updates on retail technology, global market trends and notable events from Viễn Chí Bảo."
+    },
+    "careers": {
+      "title": "Careers",
+      "description": "Find the right role and open a new chapter with Viễn Chí Bảo: business, creative, operations, technology."
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "Contact Viễn Chí Bảo: hotline, email, head office and showroom in Hanoi, or send a partnership request directly on the website."
+    }
+  },
+  "Header": {
+    "nav": {
+      "home": "Home",
+      "about": "About us",
+      "careers": "Careers",
+      "news": "News",
+      "contact": "Contact"
+    },
+    "primaryNav": "Main navigation",
+    "language": "Language",
+    "themeToggle": "Switch between light and dark theme",
+    "openMenu": "Open menu",
+    "close": "Close menu",
+    "menuTitle": "Menu",
+    "logoAlt": "Viễn Chí Bảo"
+  },
+  "Footer": {
+    "tagline": "Jewelry shaped by meticulous design, materials and craftsmanship.",
+    "navigation": "Navigation",
+    "contact": "Contact",
+    "rights": "All rights reserved.",
+    "taxId": "Enterprise code"
+  },
+  "Empty": {
+    "title": "Content is being updated",
+    "text": "This page will have content soon. Please check back later.",
+    "errorTitle": "Content is temporarily unavailable",
+    "errorText": "The system is busy. Please reload the page in a few minutes."
+  },
+  "Carousel": {
+    "region": "Carousel",
+    "prev": "Previous card",
+    "next": "Next card"
+  },
+  "Network": {
+    "mapCredit": "Map: Al MacDonald, CC BY-SA 3.0",
+    "routes": "International routes"
+  },
+  "NotFound": {
+    "text": "We could not find the page you are looking for.",
+    "home": "Back to home"
+  },
+  "Common": {
+    "home": "Home",
+    "skipToContent": "Skip to main content",
+    "loading": "Loading..."
+  },
+  "Errors": {
+    "title": "Something went wrong",
+    "text": "This page cannot be displayed. Please try again in a few minutes.",
+    "retry": "Try again",
+    "home": "Back to home"
+  },
+  "News": {
+    "eyebrow": "News & Reports",
+    "title": "Market <em>news</em> & Activities",
+    "lead": "Updates on retail technology, global market trends and notable events from Viễn Chí Bảo.",
+    "categoriesLabel": "Filter by category",
+    "categories": {
+      "all": "All",
+      "news": "News",
+      "life-at-company": "Life at the company",
+      "recruitment": "Recruitment"
+    },
+    "empty": "No articles yet.",
+    "error": "The article list is temporarily unavailable. Please reload the page in a few minutes.",
+    "pagination": {
+      "label": "Pagination",
+      "prev": "Previous page",
+      "next": "Next page",
+      "status": "Page {page} of {total}"
+    },
+    "backToList": "← All news"
+  },
+  "Careers": {
+    "eyebrow": "Careers",
+    "title": "Open a <em>new chapter.</em>",
+    "lead": "Find a role that lets you use your strengths, alongside people who care about quality in every small task.",
+    "chips": {
+      "vn": "🇻🇳 Vietnam",
+      "us": "🇺🇸 United States",
+      "th": "🇹🇭 Thailand",
+      "jp": "🇯🇵 Japan",
+      "team": "Cross-functional team"
+    },
+    "listEyebrow": "Open positions",
+    "listTitle": "Find the right role.",
+    "filterLabel": "Filter by team",
+    "all": "All",
+    "departments": {
+      "business": "Business",
+      "creative": "Creative",
+      "operations": "Operations",
+      "technology": "Technology"
+    },
+    "empty": "There are no open positions right now.",
+    "emptyFiltered": "There are no open positions in this team.",
+    "error": "The job list is temporarily unavailable. Please reload the page in a few minutes.",
+    "application": {
+      "eyebrow": "Apply",
+      "title": "Send your application to the team.",
+      "lead": "Pick a role above, then fill in your details and attach your CV right here on the Careers page.",
+      "name": "Full name",
+      "namePlaceholder": "Jane Doe",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "phone": "Phone number",
+      "phonePlaceholder": "09xx xxx xxx",
+      "position": "Position applying for",
+      "positionPlaceholder": "-- Select a position --",
+      "portfolio": "Portfolio / LinkedIn",
+      "cv": "CV / Resume",
+      "cvDropzone": "Drag and drop your CV here, paste (Ctrl+V), or click to choose — PDF, DOC, DOCX",
+      "cvRemove": "Remove selected file",
+      "note": "Short introduction",
+      "notePlaceholder": "Tell us about your experience, skills or anything you would like to share...",
+      "consent": "I agree to share this personal information with Viễn Chí Bảo for recruitment purposes.",
+      "submit": "Send application →",
+      "sending": "Sending...",
+      "errors": {
+        "required": "Please fill in this field",
+        "email": "Invalid email address",
+        "tooLong": "This is too long",
+        "url": "Invalid link",
+        "fileRequired": "Please attach your CV",
+        "fileType": "Only PDF or Word files (doc, docx) are accepted",
+        "fileTooLarge": "The CV file exceeds 10MB",
+        "consent": "You need to agree to share your personal information to apply"
+      },
+      "toast": {
+        "success": "Application sent. We will get back to you soon.",
+        "failed": "Could not send your application. Please try again or reach us by phone or email.",
+        "invalid": "Some information is invalid. Please check the fields."
+      }
+    },
+    "cultureEyebrow": "Life at the company",
+    "cultureTitle": "An environment to learn, share and move forward together.",
+    "culture": {
+      "one": { "title": "Team Culture", "text": "Share ideas, listen to new perspectives and support each other every day." },
+      "two": { "title": "Global mindset", "text": "Connecting diverse perspectives in work and creativity." },
+      "three": { "title": "Growth", "text": "Always room to learn more, try new things and grow in your role." }
+    },
+    "ctaTitle": "Let's build <em>something meaningful.</em>",
+    "apply": "Contact us to apply →",
+    "detail": {
+      "back": "← All positions",
+      "department": "Team",
+      "location": "Location",
+      "type": "Type",
+      "noDescription": "Please contact us for more details about this position.",
+      "applyNote": "Applications are received through the contact page. Job details are currently available in Vietnamese only."
+    }
+  },
+  "Contact": {
+    "eyebrow": "Contact",
+    "title": "Let's <em>connect.</em>",
+    "lead": "We are always ready to hear your partnership ideas, product questions and anything you would like to share.",
+    "cityTag": "VIỄN CHÍ BẢO / HANOI",
+    "tagline": "Every conversation starts with listening.",
+    "emailCta": "Email us ↗",
+    "methods": {
+      "eyebrow": "Talk to us",
+      "title": "The right person. <accent>The right job.</accent>",
+      "lead": "Pick the channel that suits you to talk directly with the Viễn Chí Bảo team.",
+      "start": "01 / START A CONVERSATION ↗",
+      "hotline": "01 · Hotline",
+      "email": "02 · Email",
+      "social": "03 · Social media"
+    },
+    "locations": {
+      "eyebrow": "Locations",
+      "title": "Meet us in Hanoi.",
+      "lead": "Two addresses to choose from depending on the purpose of your visit.",
+      "headquarters": { "tag": "01 / OFFICE", "title": "Head office" },
+      "showroom": { "tag": "02 / SHOWROOM", "title": "Showroom" },
+      "directions": "Get directions ↗"
+    },
+    "form": {
+      "eyebrow": "Send a request",
+      "title": "Share what you <accent>care about.</accent>",
+      "lead": "Tell us what you need. We will reply by email or phone.",
+      "note": "A connection starts with a hello.",
+      "panelTag": "CONTACT DETAILS",
+      "name": "Full name",
+      "namePlaceholder": "Jane Doe",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "phone": "Phone number (optional)",
+      "company": "Company / organization (optional)",
+      "companyPlaceholder": "Company name",
+      "topic": "Topic",
+      "topics": {
+        "business": "Business partnership",
+        "products": "Products and showroom",
+        "media": "Media",
+        "careers": "Careers",
+        "other": "Other"
+      },
+      "job": "Position applied for",
+      "message": "Message",
+      "messagePlaceholder": "What would you like to discuss?",
+      "submit": "Send request",
+      "sending": "Sending..."
+    },
+    "errors": {
+      "required": "Please fill in this field",
+      "email": "Invalid email address",
+      "tooLong": "This text is too long"
+    },
+    "toast": {
+      "success": "Request sent. We will get back to you soon.",
+      "failed": "We could not send your request. Please try again or contact us by hotline or email.",
+      "invalid": "Some information is not valid. Please check the fields."
+    }
   }
 }

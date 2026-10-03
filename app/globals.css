@@ -10,7 +10,7 @@
   --font-body: var(--font-body);
   --font-display: var(--font-display);
   --font-heading: var(--font-sans);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-body);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -47,6 +47,16 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-vcb-gold: var(--vcb-gold);
+  --color-vcb-gold-hi: var(--vcb-gold-hi);
+  --color-vcb-gold-soft: var(--vcb-gold-soft);
+  --color-vcb-silver: var(--vcb-silver);
+  --color-vcb-silver-soft: var(--vcb-silver-soft);
+  --color-vcb-line: var(--vcb-line);
+  --color-vcb-line-strong: var(--vcb-line-strong);
+  --color-vcb-panel: var(--vcb-panel);
+  --color-vcb-panel-2: var(--vcb-panel-2);
+  --color-vcb-ink: var(--vcb-ink);
 }
 
 @layer base {
@@ -84,7 +94,7 @@
   --tech-border: rgba(7, 20, 38, 0.10);
   --tech-glass: rgba(255, 255, 255, 0.72);
   --tech-shadow: 0 24px 80px -42px rgba(7, 24, 48, 0.32);
-  --tech-grid: rgba(23, 125, 242, 0.055);
+  --tech-grid: rgba(83, 216, 255, 0.1);
 
   /* shadcn tokens — Dark theme (website.slim.html:2748-2761) */
   --background: #050A14;
@@ -102,7 +112,7 @@
   --accent: #111D2F;
   --accent-foreground: #EEF6FF;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: rgba(133, 184, 230, 0.13);
+  --border: rgba(133, 184, 230, 0.24);
   --input: rgba(133, 184, 230, 0.15);
   --ring: #177DF2;
   --radius: 0.625rem;
@@ -138,14 +148,64 @@
 
   /* Header */
   --header-bg: color-mix(in srgb, var(--vcb-panel) 76%, transparent);
-  --header-height: 66px;
+  --header-height: 78px;
 }
 
-/* Global atmosphere — radial gradients on body (website.slim.html:2764-2782) */
-html, body {
+/* ── Light theme (data-theme="light") — website.slim.html:2735-2747 ── */
+[data-theme="light"] {
+  --background: #F4F7FB;
+  --foreground: #071426;
+  --card: #ffffff;
+  --card-foreground: #071426;
+  --popover: #ffffff;
+  --popover-foreground: #071426;
+  --primary: #177DF2;
+  --primary-foreground: #ffffff;
+  --secondary: #EEF3F9;
+  --secondary-foreground: #071426;
+  --muted: #EEF3F9;
+  --muted-foreground: #617086;
+  --accent: #EEF3F9;
+  --accent-foreground: #071426;
+  --border: rgba(7, 20, 38, 0.16);
+  --input: rgba(7, 20, 38, 0.10);
+  --ring: #177DF2;
+
+  --vcb-gold: #177DF2;
+  --vcb-gold-hi: #4AA7FF;
+  --vcb-gold-soft: rgba(23, 125, 242, 0.09);
+  --vcb-silver: #68809D;
+  --vcb-silver-soft: rgba(104, 128, 157, 0.10);
+  --vcb-line: rgba(7, 20, 38, 0.10);
+  --vcb-line-strong: rgba(23, 125, 242, 0.22);
+  --vcb-panel: #ffffff;
+  --vcb-panel-2: #EEF3F9;
+  --vcb-ink: #F4F7FB;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #071426;
+  --sidebar-primary: #177DF2;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #EEF3F9;
+  --sidebar-accent-foreground: #071426;
+  --sidebar-border: rgba(7, 20, 38, 0.10);
+
+  --header-bg: color-mix(in srgb, #ffffff 76%, transparent);
+  --tech-grid: rgba(23, 125, 242, 0.14);
+}
+
+/* Global atmosphere — dark default */
+html:not([data-theme="light"]), html:not([data-theme="light"]) body {
   background:
-    radial-gradient(circle at 12% -10%, rgba(83, 216, 255, 0.09), transparent 28%),
-    radial-gradient(circle at 90% 8%, rgba(124, 108, 255, 0.07), transparent 26%),
+    radial-gradient(circle at 12% -10%, rgba(83, 216, 255, 0.14), transparent 28%),
+    radial-gradient(circle at 90% 8%, rgba(124, 108, 255, 0.11), transparent 26%),
+    var(--background) !important;
+}
+
+/* Light theme — clean background, subtle blue tint */
+[data-theme="light"] body {
+  background:
+    radial-gradient(circle at 85% 10%, rgba(23, 125, 242, 0.1), transparent 32%),
     var(--background) !important;
 }
 
@@ -163,19 +223,96 @@ body::before {
   mask-image: linear-gradient(to bottom, #000, transparent 88%);
 }
 
-/* ─── Marquee animation ─────────────────────────────────────────── */
-@keyframes marquee {
+@media (prefers-reduced-motion: no-preference) {
+  body::before {
+    animation: vcb-grid-drift 50s linear infinite;
+  }
+}
+@keyframes vcb-grid-drift {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 48px 48px, 48px 48px; }
+}
+
+/* Lenis Scroll Base */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+
+/* Nội dung bài viết (khung soạn, xem trước, và trang chi tiết public sau này) */
+.post-content h2 { font-size: 1.25rem; font-weight: 600; margin: 1.25rem 0 0.5rem; }
+.post-content h3 { font-size: 1.1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+.post-content p { margin: 0.5rem 0; }
+.post-content ul { list-style: disc; padding-left: 1.25rem; margin: 0.5rem 0; }
+.post-content ol { list-style: decimal; padding-left: 1.25rem; margin: 0.5rem 0; }
+.post-content blockquote {
+  border-left: 2px solid var(--border);
+  padding-left: 0.75rem;
+  margin: 0.75rem 0;
+  font-style: italic;
+  color: var(--muted-foreground);
+}
+.post-content a { color: var(--primary); text-decoration: underline; }
+.post-content img { max-width: 100%; height: auto; border-radius: 0.5rem; margin: 0.75rem 0; }
+.post-content img.ProseMirror-selectednode { outline: 2px solid var(--ring); }
+
+/* ─── Block reveal (components/blocks/shared/reveal.tsx) ──────────────────
+   Nội dung luôn hiện khi chưa có JS: JS mới đặt data-reveal="armed" khi cần ẩn,
+   rồi "shown" khi cuộn tới. Tắt hoàn toàn khi prefers-reduced-motion. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal] {
+    transition:
+      opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+      transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  [data-reveal="armed"] {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  [data-reveal="shown"] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ─── Dải chạy dùng chung (block marquee và photo-gallery) ───────────────── */
+@keyframes vcb-marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
-
-.animate-marquee {
-  animation: marquee 30s linear infinite;
-  width: max-content;
+.vcb-marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
-
+.vcb-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: vcb-marquee var(--vcb-marquee-duration, 30s) linear infinite;
+}
+.vcb-marquee:hover .vcb-marquee-track {
+  animation-play-state: paused;
+}
 @media (prefers-reduced-motion: reduce) {
-  .animate-marquee {
+  .vcb-marquee-track {
     animation: none;
+    width: auto;
+    flex-wrap: wrap;
+  }
+  .vcb-marquee-track > [aria-hidden="true"] {
+    display: none;
   }
 }

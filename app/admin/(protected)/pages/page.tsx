@@ -1,5 +1,5 @@
-import { PagesAdminView } from "@/components/admin/pages-admin-view";
+import { PageEditor } from "@/components/admin/page-editor/page-editor";
 
 export default function AdminPagesPage() {
-  return <PagesAdminView />;
+  return <PageEditor />;
 }

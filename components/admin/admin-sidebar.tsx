@@ -9,9 +9,8 @@ const NAV_ITEMS: { href: string; label: string }[] = [
   { href: "/admin/news", label: "Tin tức" },
   { href: "/admin/products", label: "Sản phẩm" },
   { href: "/admin/jobs", label: "Tuyển dụng" },
-  { href: "/admin/photos", label: "Thư viện ảnh" },
   { href: "/admin/network", label: "Bản đồ quốc gia" },
-  { href: "/admin/team", label: "Đội ngũ" },
+  { href: "/admin/settings", label: "Thông tin liên hệ" },
 ];
 
 export function AdminSidebar() {

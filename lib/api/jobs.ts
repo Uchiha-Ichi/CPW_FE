@@ -1,7 +1,10 @@
-import type { paths } from "./schema";
-import { API_BASE, fetchPublicList } from "./client";
+import { apiGet } from "./client";
+import type { ApiResult } from "./result";
+import { CACHE_TAGS } from "./tags";
 
-export type PublicJob = {
+// Hình dạng GET /jobs/public (cpw_be/src/jobs/schemas): chỉ trả việc có status "Đang tuyển".
+// createdAt có mặt vì schema bật timestamps; để optional vì Swagger không mô tả.
+export interface PublicJob {
   slug: string;
   title: string;
   department: string;
@@ -9,27 +12,42 @@ export type PublicJob = {
   type: string;
   status: string;
   description?: string;
-};
-
-export function getPublicJobs(): Promise<PublicJob[]> {
-  return fetchPublicList<PublicJob>("/jobs/public");
+  createdAt?: string;
 }
 
-export async function getPublicJobBySlug(
+function isJob(value: unknown): value is PublicJob {
+  if (typeof value !== "object" || value === null) return false;
+  const v = value as Record<string, unknown>;
+  return (
+    typeof v.slug === "string" &&
+    typeof v.title === "string" &&
+    typeof v.department === "string" &&
+    typeof v.location === "string" &&
+    typeof v.type === "string"
+  );
+}
+
+export async function getJobs(): Promise<ApiResult<PublicJob[]>> {
+  const result = await apiGet<unknown>("/jobs/public", {
+    tags: [CACHE_TAGS.jobs],
+  });
+  if (result.status === "error") return result;
+  if (result.status === "not-found") return { status: "ok", data: [] };
+  if (!Array.isArray(result.data)) return { status: "error" };
+  return { status: "ok", data: result.data.filter(isJob) };
+}
+
+export async function getJobBySlug(
   slug: string
-): Promise<PublicJob | null> {
-  try {
-    const res = await fetch(`${API_BASE}/jobs/public/${slug}`, {
-      next: { revalidate: 60 },
-    });
-    if (res.status === 404) return null;
-    if (!res.ok) {
-      console.error(`getPublicJobBySlug(${slug}): API responded ${res.status}`);
-      return null;
+): Promise<ApiResult<PublicJob>> {
+  const result = await apiGet<unknown>(
+    `/jobs/public/${encodeURIComponent(slug)}`,
+    {
+      tags: [CACHE_TAGS.jobs],
     }
-    return (await res.json()) as PublicJob;
-  } catch (err) {
-    console.error(`getPublicJobBySlug(${slug}): fetch failed`, err);
-    return null;
-  }
+  );
+  if (result.status !== "ok") return result;
+  return isJob(result.data)
+    ? { status: "ok", data: result.data }
+    : { status: "error" };
 }

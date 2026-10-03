@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# sổ tiến độ do công cụ subagent tạo (superpowers), không commit
+/.superpowers/

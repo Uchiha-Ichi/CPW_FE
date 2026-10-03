@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api";
-
-/** Parse giá trị của cookie tên `name` từ một Set-Cookie header string */
-function parseCookieValue(setCookieStr: string, name: string): string | null {
-  for (const part of setCookieStr.split(";")) {
-    const [k, ...v] = part.trim().split("=");
-    if (k.trim() === name) return v.join("=").trim();
-  }
-  return null;
-}
+import { API_BASE } from "@/lib/api/config";
+import {
+  BACKEND_ACCESS_COOKIE,
+  BACKEND_REFRESH_COOKIE,
+  parseSetCookie,
+} from "@/lib/admin/auth-cookies";
+import { applySessionCookies } from "@/lib/admin/session-cookies";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -31,11 +27,7 @@ export async function POST(req: NextRequest) {
   // vcb-api mới set token qua HttpOnly cookie "crmspd_at" thay vì body.accessToken
   // Lấy access token từ Set-Cookie headers để set lại thành "admin_token" (tên FE đang dùng)
   const setCookies = res.headers.getSetCookie?.() ?? [];
-  let accessToken: string | null = null;
-  for (const c of setCookies) {
-    const val = parseCookieValue(c, "crmspd_at");
-    if (val) { accessToken = val; break; }
-  }
+  let accessToken = parseSetCookie(setCookies, BACKEND_ACCESS_COOKIE)?.value ?? null;
 
   // Fallback: API cũ vẫn trả accessToken trong body
   if (!accessToken && data.accessToken) {
@@ -48,16 +40,15 @@ export async function POST(req: NextRequest) {
 
   const response = NextResponse.json({ ok: true, user: data.user });
 
-  // Set admin_token để layout guard và proxy FE đọc được (Bearer strategy)
-  response.cookies.set("admin_token", accessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24,
+  // admin_token cho layout guard và proxy (Bearer); admin_rt (refresh token) để tự gia hạn phiên.
+  const refresh = parseSetCookie(setCookies, BACKEND_REFRESH_COOKIE);
+  applySessionCookies(response.cookies, {
+    accessToken,
+    refreshToken: refresh?.value ?? null,
+    refreshMaxAge: refresh?.maxAge ?? null,
   });
 
-  // Forward các cookies gốc từ API (crmspd_rt, crmspd_csrf) để refresh token hoạt động sau này
+  // Forward các cookies gốc từ API (crmspd_rt, crmspd_csrf) như trước.
   for (const cookie of setCookies) {
     if (!cookie.startsWith("crmspd_at")) {
       response.headers.append("Set-Cookie", cookie);

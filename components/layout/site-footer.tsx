@@ -1,37 +1,71 @@
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import { SocialLinks } from "@/components/contact/social-links";
+import { Link } from "@/i18n/navigation";
+import { getSiteSettings } from "@/lib/api/site-settings";
+import { addressLine, brandName } from "@/lib/site/contact-info";
+import { visibleSocials } from "@/lib/site/socials";
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const [t, nav, meta, settings] = await Promise.all([
+    getTranslations("Footer"),
+    getTranslations("Header"),
+    getTranslations("Meta"),
+    getSiteSettings(),
+  ]);
+  const brand = brandName(settings, meta("siteName"));
+  const address = addressLine(settings?.offices.headquarters);
+  const socials = visibleSocials(settings);
+  const hasContact = Boolean(address || settings?.phone || settings?.email);
+
   return (
-    <footer className="w-full border-t px-4 py-10 text-sm">
+    <footer
+      className="relative w-full px-4 pt-11 pb-6 text-sm"
+      style={{
+        background: "linear-gradient(180deg, transparent, var(--vcb-panel-2))",
+      }}
+    >
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,var(--vcb-gold),var(--tech-cyan),transparent)]"
+      />
       <div className="mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
         <div>
           <div className="font-semibold text-[1.05rem] mb-3">
-            Viễn Chí Bảo
+            {brand}
           </div>
-          <p className="text-muted-foreground text-[0.9rem] max-w-[36ch]">Trang sức được tạo nên từ sự chỉn chu trong thiết kế, chất liệu và chế tác.</p>
+          <p className="text-muted-foreground text-[0.9rem] max-w-[36ch]">{t("tagline")}</p>
         </div>
         <div>
-          <h4 className="font-semibold mb-3">Điều hướng</h4>
+          <h2 className="font-semibold mb-3">{t("navigation")}</h2>
           <ul className="space-y-2 text-muted-foreground">
-            <li><Link href="/">Trang chủ</Link></li>
-            <li><Link href="/about">Về chúng tôi</Link></li>
-            <li><Link href="/careers">Tuyển dụng</Link></li>
-            <li><Link href="/contact">Liên hệ</Link></li>
-            <li><Link href="/news">Tin tức</Link></li>
+            <li><Link href="/">{nav("nav.home")}</Link></li>
+            <li><Link href="/about">{nav("nav.about")}</Link></li>
+            <li><Link href="/careers">{nav("nav.careers")}</Link></li>
+            <li><Link href="/contact">{nav("nav.contact")}</Link></li>
+            <li><Link href="/news">{nav("nav.news")}</Link></li>
           </ul>
         </div>
-        <div>
-          <h4 className="font-semibold mb-3">Liên hệ</h4>
-          <ul className="text-muted-foreground text-[0.92rem] space-y-2">
-            <li>39 Cầu Diễn, Xuân Phương, Hà Nội</li>
-            <li>086.836.6662</li>
-            <li>vienchibao6868@gmail.com</li>
-          </ul>
-        </div>
+        {(hasContact || socials.length > 0) && (
+          <div>
+            <h2 className="font-semibold mb-3">{t("contact")}</h2>
+            {hasContact && (
+              <ul className="text-muted-foreground text-[0.92rem] space-y-2">
+                {address && <li>{address}</li>}
+                {settings?.phone && <li>{settings.phone}</li>}
+                {settings?.email && <li>{settings.email}</li>}
+              </ul>
+            )}
+            {socials.length > 0 && (
+              <div className="mt-4">
+                <SocialLinks items={socials} size={24} />
+              </div>
+            )}
+          </div>
+        )}
       </div>
       <div className="mx-auto max-w-6xl flex flex-col md:flex-row justify-between items-center text-muted-foreground pt-6 border-t">
-        <span>© {new Date().getFullYear()} Viễn Chí Bảo. Mọi quyền được bảo lưu.</span>
-        <span>Mã số doanh nghiệp: 0107994675</span>
+        <span>© {new Date().getFullYear()} {brand}. {t("rights")}</span>
+        {settings?.taxId && <span>{t("taxId")}: {settings.taxId}</span>}
       </div>
     </footer>
   );

@@ -1,0 +1,43 @@
+.grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--tech-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--tech-grid) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, #000, transparent 90%);
+}
+
+.glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  opacity: 0.55;
+}
+.glowOne {
+  width: 420px;
+  height: 420px;
+  left: -120px;
+  top: -140px;
+  background: rgba(83, 216, 255, 0.18);
+}
+.glowTwo {
+  width: 380px;
+  height: 380px;
+  right: -100px;
+  bottom: -160px;
+  background: rgba(124, 108, 255, 0.16);
+}
+
+.in {
+  animation: heroIn 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes heroIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .in { animation: none; }
+}

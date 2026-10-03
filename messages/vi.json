@@ -1,5 +1,242 @@
 {
-  "Index": {
-    "title": "Trang chủ"
+  "Meta": {
+    "siteName": "Viễn Chí Bảo",
+    "siteDescription": "Viễn Chí Bảo xây dựng hệ sinh thái kết nối di sản thủ công, thương hiệu, truyền thông và thương mại số.",
+    "ogTagline": "Đưa giá trị thủ công Việt ra thế giới",
+    "home": {
+      "title": "Viễn Chí Bảo | Đưa giá trị thủ công Việt ra thế giới",
+      "description": "Viễn Chí Bảo xây dựng hệ sinh thái kết nối di sản thủ công, thương hiệu, truyền thông và thương mại số."
+    },
+    "about": {
+      "title": "Về chúng tôi",
+      "description": "Viễn Chí Bảo là công ty công nghệ và truyền thông số, phát triển thương hiệu sản phẩm thủ công cao cấp bằng AI, dữ liệu thị trường và thương mại điện tử xuyên biên giới."
+    },
+    "news": {
+      "title": "Tin tức & Báo cáo",
+      "description": "Cập nhật thông tin về công nghệ bán lẻ, xu hướng thị trường toàn cầu và các sự kiện nổi bật của Viễn Chí Bảo."
+    },
+    "careers": {
+      "title": "Tuyển dụng",
+      "description": "Tìm vị trí phù hợp và cùng Viễn Chí Bảo mở chương mới: kinh doanh, sáng tạo, vận hành, công nghệ."
+    },
+    "contact": {
+      "title": "Liên hệ",
+      "description": "Liên hệ Viễn Chí Bảo: hotline, email, trụ sở và showroom tại Hà Nội, hoặc gửi yêu cầu hợp tác trực tiếp trên website."
+    }
+  },
+  "Header": {
+    "nav": {
+      "home": "Trang chủ",
+      "about": "Về chúng tôi",
+      "careers": "Tuyển dụng",
+      "news": "Tin tức",
+      "contact": "Liên hệ"
+    },
+    "primaryNav": "Điều hướng chính",
+    "language": "Ngôn ngữ",
+    "themeToggle": "Đổi giao diện sáng hoặc tối",
+    "openMenu": "Mở menu",
+    "close": "Đóng menu",
+    "menuTitle": "Menu",
+    "logoAlt": "Viễn Chí Bảo"
+  },
+  "Footer": {
+    "tagline": "Trang sức được tạo nên từ sự chỉn chu trong thiết kế, chất liệu và chế tác.",
+    "navigation": "Điều hướng",
+    "contact": "Liên hệ",
+    "rights": "Mọi quyền được bảo lưu.",
+    "taxId": "Mã số doanh nghiệp"
+  },
+  "Empty": {
+    "title": "Nội dung đang được cập nhật",
+    "text": "Trang này sẽ sớm có nội dung. Vui lòng quay lại sau.",
+    "errorTitle": "Tạm thời không tải được nội dung",
+    "errorText": "Hệ thống đang bận. Vui lòng tải lại trang sau ít phút."
+  },
+  "Carousel": {
+    "region": "Băng trượt",
+    "prev": "Thẻ trước",
+    "next": "Thẻ tiếp"
+  },
+  "Network": {
+    "mapCredit": "Bản đồ: Al MacDonald, CC BY-SA 3.0",
+    "routes": "Tuyến quốc tế"
+  },
+  "NotFound": {
+    "text": "Không tìm thấy trang bạn cần.",
+    "home": "Về trang chủ"
+  },
+  "Common": {
+    "home": "Trang chủ",
+    "skipToContent": "Bỏ qua, tới nội dung chính",
+    "loading": "Đang tải..."
+  },
+  "Errors": {
+    "title": "Đã có lỗi xảy ra",
+    "text": "Không thể hiển thị trang này. Vui lòng thử lại sau ít phút.",
+    "retry": "Thử lại",
+    "home": "Về trang chủ"
+  },
+  "News": {
+    "eyebrow": "Tin tức & Báo cáo",
+    "title": "Tin tức <em>thị trường</em> & Hoạt động",
+    "lead": "Cập nhật thông tin về công nghệ bán lẻ, xu hướng thị trường toàn cầu và các sự kiện nổi bật của Viễn Chí Bảo.",
+    "categoriesLabel": "Lọc theo chuyên mục",
+    "categories": {
+      "all": "Tất cả",
+      "news": "Tin tức",
+      "life-at-company": "Đời sống công ty",
+      "recruitment": "Tuyển dụng"
+    },
+    "empty": "Chưa có bài viết nào.",
+    "error": "Tạm thời không tải được danh sách bài viết. Vui lòng tải lại trang sau ít phút.",
+    "pagination": {
+      "label": "Phân trang",
+      "prev": "Trang trước",
+      "next": "Trang sau",
+      "status": "Trang {page} / {total}"
+    },
+    "backToList": "← Tất cả tin tức"
+  },
+  "Careers": {
+    "eyebrow": "Tuyển dụng",
+    "title": "Cùng mở <em>chương mới.</em>",
+    "lead": "Tìm một vị trí để phát huy thế mạnh, cùng những người luôn quan tâm đến chất lượng trong từng việc nhỏ.",
+    "chips": {
+      "vn": "🇻🇳 Việt Nam",
+      "us": "🇺🇸 Mỹ",
+      "th": "🇹🇭 Thái Lan",
+      "jp": "🇯🇵 Nhật Bản",
+      "team": "Đội ngũ liên phòng ban"
+    },
+    "listEyebrow": "Vị trí đang tuyển",
+    "listTitle": "Tìm vị trí phù hợp.",
+    "filterLabel": "Lọc theo nhóm",
+    "all": "Tất cả",
+    "departments": {
+      "business": "Kinh doanh",
+      "creative": "Sáng tạo",
+      "operations": "Vận hành",
+      "technology": "Công nghệ"
+    },
+    "empty": "Hiện tại chưa có vị trí nào đang tuyển.",
+    "emptyFiltered": "Chưa có vị trí nào trong nhóm này.",
+    "error": "Tạm thời không tải được danh sách vị trí. Vui lòng tải lại trang sau ít phút.",
+    "application": {
+      "eyebrow": "Ứng tuyển",
+      "title": "Gửi hồ sơ cho đội ngũ.",
+      "lead": "Chọn vị trí ở phía trên, sau đó điền thông tin và đính kèm CV ngay tại trang Tuyển dụng.",
+      "name": "Họ và tên",
+      "namePlaceholder": "Nguyễn Văn A",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "phone": "Số điện thoại",
+      "phonePlaceholder": "09xx xxx xxx",
+      "position": "Vị trí ứng tuyển",
+      "positionPlaceholder": "-- Chọn vị trí --",
+      "portfolio": "Portfolio / LinkedIn",
+      "cv": "CV / Hồ sơ",
+      "cvDropzone": "Kéo thả CV vào đây, dán (Ctrl+V) hoặc bấm để chọn — PDF, DOC, DOCX",
+      "cvRemove": "Xóa file đã chọn",
+      "note": "Giới thiệu ngắn",
+      "notePlaceholder": "Giới thiệu về kinh nghiệm, kỹ năng hoặc điều bạn muốn chia sẻ...",
+      "consent": "Tôi đồng ý chia sẻ thông tin cá nhân này với Viễn Chí Bảo để phục vụ việc tuyển dụng.",
+      "submit": "Gửi hồ sơ →",
+      "sending": "Đang gửi...",
+      "errors": {
+        "required": "Vui lòng nhập thông tin này",
+        "email": "Email không hợp lệ",
+        "tooLong": "Nội dung quá dài",
+        "url": "Đường dẫn không hợp lệ",
+        "fileRequired": "Vui lòng đính kèm CV",
+        "fileType": "Chỉ nhận tệp PDF hoặc Word (doc, docx)",
+        "fileTooLarge": "Tệp CV vượt quá 10MB",
+        "consent": "Bạn cần đồng ý chia sẻ thông tin cá nhân để nộp hồ sơ"
+      },
+      "toast": {
+        "success": "Đã gửi hồ sơ. Chúng tôi sẽ liên hệ lại sớm.",
+        "failed": "Chưa gửi được hồ sơ. Vui lòng thử lại hoặc liên hệ qua hotline hoặc email.",
+        "invalid": "Thông tin chưa hợp lệ. Vui lòng kiểm tra lại các ô."
+      }
+    },
+    "cultureEyebrow": "Đời sống tại công ty",
+    "cultureTitle": "Một môi trường để học hỏi, sẻ chia và cùng tiến về phía trước.",
+    "culture": {
+      "one": { "title": "Team Culture", "text": "Cùng chia sẻ ý tưởng, lắng nghe góc nhìn mới và hỗ trợ nhau mỗi ngày." },
+      "two": { "title": "Global mindset", "text": "Kết nối những góc nhìn đa dạng trong công việc và sáng tạo." },
+      "three": { "title": "Growth", "text": "Luôn có không gian để học thêm, thử sức và trưởng thành trong vai trò của mình." }
+    },
+    "ctaTitle": "Cùng tạo nên <em>điều ý nghĩa.</em>",
+    "apply": "Liên hệ ứng tuyển →",
+    "detail": {
+      "back": "← Tất cả vị trí",
+      "department": "Nhóm",
+      "location": "Địa điểm",
+      "type": "Hình thức",
+      "noDescription": "Vui lòng liên hệ để biết thêm chi tiết về vị trí này.",
+      "applyNote": "Hồ sơ được tiếp nhận qua trang liên hệ."
+    }
+  },
+  "Contact": {
+    "eyebrow": "Liên hệ",
+    "title": "Hãy <em>kết nối.</em>",
+    "lead": "Chúng tôi luôn sẵn sàng lắng nghe ý tưởng hợp tác, câu hỏi về sản phẩm và những điều bạn muốn chia sẻ.",
+    "cityTag": "VIỄN CHÍ BẢO / HÀ NỘI",
+    "tagline": "Mỗi cuộc trò chuyện đều bắt đầu từ sự lắng nghe.",
+    "emailCta": "Viết email cho chúng tôi ↗",
+    "methods": {
+      "eyebrow": "Trao đổi với chúng tôi",
+      "title": "Đúng người. <accent>Đúng việc.</accent>",
+      "lead": "Chọn kênh phù hợp để trao đổi trực tiếp với đội ngũ Viễn Chí Bảo.",
+      "start": "01 / BẮT ĐẦU CUỘC TRÒ CHUYỆN ↗",
+      "hotline": "01 · Hotline",
+      "email": "02 · Email",
+      "social": "03 · Mạng xã hội"
+    },
+    "locations": {
+      "eyebrow": "Địa điểm",
+      "title": "Gặp chúng tôi tại Hà Nội.",
+      "lead": "Hai địa chỉ để bạn chọn theo mục đích ghé thăm.",
+      "headquarters": { "tag": "01 / VĂN PHÒNG", "title": "Trụ sở chính" },
+      "showroom": { "tag": "02 / SHOWROOM", "title": "Không gian trưng bày" },
+      "directions": "Xem đường đi ↗"
+    },
+    "form": {
+      "eyebrow": "Gửi yêu cầu",
+      "title": "Chia sẻ điều bạn <accent>quan tâm.</accent>",
+      "lead": "Cho chúng tôi biết nhu cầu của bạn. Chúng tôi sẽ phản hồi qua email hoặc điện thoại.",
+      "note": "Kết nối bắt đầu từ một lời chào.",
+      "panelTag": "THÔNG TIN LIÊN HỆ",
+      "name": "Họ và tên",
+      "namePlaceholder": "Nguyễn Văn A",
+      "email": "Email",
+      "emailPlaceholder": "ban@example.com",
+      "phone": "Số điện thoại (nếu có)",
+      "company": "Công ty / tổ chức (nếu có)",
+      "companyPlaceholder": "Tên doanh nghiệp",
+      "topic": "Chủ đề liên hệ",
+      "topics": {
+        "business": "Hợp tác kinh doanh",
+        "products": "Sản phẩm và showroom",
+        "media": "Truyền thông",
+        "careers": "Tuyển dụng",
+        "other": "Khác"
+      },
+      "job": "Vị trí ứng tuyển",
+      "message": "Nội dung",
+      "messagePlaceholder": "Bạn muốn trao đổi điều gì?",
+      "submit": "Gửi yêu cầu",
+      "sending": "Đang gửi..."
+    },
+    "errors": {
+      "required": "Vui lòng nhập thông tin này",
+      "email": "Email không hợp lệ",
+      "tooLong": "Nội dung quá dài"
+    },
+    "toast": {
+      "success": "Đã gửi yêu cầu. Chúng tôi sẽ liên hệ lại sớm.",
+      "failed": "Chưa gửi được yêu cầu. Vui lòng thử lại hoặc liên hệ qua hotline hoặc email.",
+      "invalid": "Thông tin chưa hợp lệ. Vui lòng kiểm tra lại các ô."
+    }
   }
 }

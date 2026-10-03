@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ImagePlaceholder } from "@/components/content-block/image-placeholder";
 import { MapPositionPicker } from "@/components/admin/map-position-picker";
-import { uploadAdminImage } from "@/lib/admin/upload-image";
+import { CountryCombobox } from "@/components/admin/country-combobox";
 import type { ResourceConfig } from "@/lib/admin/resource-config";
 
 type Item = Record<string, any> & { _id: string };
@@ -17,9 +16,6 @@ export function AdminResourceTable({ config }: { config: ResourceConfig }) {
   const [formOpen, setFormOpen] = useState(false);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
-  const [uploadingKey, setUploadingKey] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const uploadTargetKey = useRef<string | null>(null);
 
   async function load() {
     setLoading(true);
@@ -90,45 +86,12 @@ export function AdminResourceTable({ config }: { config: ResourceConfig }) {
     load();
   }
 
-  function pickImage(key: string) {
-    uploadTargetKey.current = key;
-    fileInputRef.current?.click();
-  }
-
-  async function handleFileChosen(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    const key = uploadTargetKey.current;
-    e.target.value = "";
-    if (!file || !key) return;
-    setUploadingKey(key);
-    setError(null);
-    try {
-      const url = await uploadAdminImage(file);
-      setFormData((d) => ({ ...d, [key]: url }));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Tải ảnh thất bại");
-    } finally {
-      setUploadingKey(null);
-    }
-  }
-
-  function fieldTypeOf(key: string) {
-    return config.fields.find((f) => f.key === key)?.type;
-  }
-
   if (loading) {
     return <p className="p-6 text-sm text-muted-foreground">Đang tải…</p>;
   }
 
   return (
     <div className="p-6">
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        hidden
-        onChange={handleFileChosen}
-      />
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{config.label}</h1>
         <Button onClick={openAdd}>Thêm {config.singular}</Button>
@@ -151,19 +114,7 @@ export function AdminResourceTable({ config }: { config: ResourceConfig }) {
               <tr key={item._id} className="border-b last:border-0">
                 {config.columns.map((c) => (
                   <td key={c.key} className="p-3">
-                    {fieldTypeOf(c.key) === "image" ? (
-                      item[c.key] ? (
-                        <img
-                          src={item[c.key]}
-                          alt=""
-                          className="h-10 w-10 rounded-full object-cover"
-                        />
-                      ) : (
-                        <span className="text-xs text-muted-foreground">Chưa có ảnh</span>
-                      )
-                    ) : (
-                      String(item[c.key] ?? "")
-                    )}
+                    {String(item[c.key] ?? "")}
                   </td>
                 ))}
                 <td className="space-x-2 p-3 text-right">
@@ -202,7 +153,8 @@ export function AdminResourceTable({ config }: { config: ResourceConfig }) {
               {editing ? `Sửa ${config.singular}` : `Thêm ${config.singular}`}
             </h2>
             <form onSubmit={submit} className="mt-4 space-y-3">
-              {config.fields.map((f) => (
+              {config.fields.map((f) =>
+                f.type === "hidden" ? null : (
                 <div key={f.key}>
                   <label className="text-sm font-medium">{f.label}</label>
                   {f.type === "select" ? (
@@ -228,6 +180,19 @@ export function AdminResourceTable({ config }: { config: ResourceConfig }) {
                         setFormData((d) => ({ ...d, [f.key]: e.target.value }))
                       }
                     />
+                  ) : f.type === "country" ? (
+                    <CountryCombobox
+                      code={formData.code ?? ""}
+                      name={formData[f.key] ?? ""}
+                      onSelect={(c) =>
+                        setFormData((d) => ({
+                          ...d,
+                          [f.key]: c.name,
+                          code: c.code,
+                          pos: c.pos,
+                        }))
+                      }
+                    />
                   ) : f.type === "mappos" ? (
                     <MapPositionPicker
                       value={formData[f.key] || "50,50"}
@@ -235,48 +200,6 @@ export function AdminResourceTable({ config }: { config: ResourceConfig }) {
                         setFormData((d) => ({ ...d, [f.key]: next }))
                       }
                     />
-                  ) : f.type === "image" ? (
-                    <div className="mt-1 flex items-center gap-3">
-                      {formData[f.key] ? (
-                        <img
-                          src={formData[f.key]}
-                          alt=""
-                          className="h-16 w-16 rounded-md object-cover"
-                        />
-                      ) : (
-                        <ImagePlaceholder
-                          label={f.label}
-                          className="h-16 w-16 min-h-0 text-[10px]"
-                        />
-                      )}
-                      <div className="space-x-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          disabled={uploadingKey === f.key}
-                          onClick={() => pickImage(f.key)}
-                        >
-                          {uploadingKey === f.key
-                            ? "Đang tải…"
-                            : formData[f.key]
-                              ? "Đổi ảnh"
-                              : "Tải ảnh lên"}
-                        </Button>
-                        {formData[f.key] && (
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              setFormData((d) => ({ ...d, [f.key]: "" }))
-                            }
-                          >
-                            Xóa ảnh
-                          </Button>
-                        )}
-                      </div>
-                    </div>
                   ) : (
                     <input
                       className="mt-1 w-full rounded-md border p-2 text-sm"
@@ -287,7 +210,8 @@ export function AdminResourceTable({ config }: { config: ResourceConfig }) {
                     />
                   )}
                 </div>
-              ))}
+                )
+              )}
               {error && <p className="text-sm text-destructive">{error}</p>}
               <div className="flex justify-end gap-2 pt-2">
                 <Button type="button" variant="ghost" onClick={() => setFormOpen(false)}>

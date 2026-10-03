@@ -149,7 +149,6 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Đăng nhập admin, trả về JWT */
         post: operations["AuthController_login"];
         delete?: never;
         options?: never;
@@ -157,42 +156,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/network/public": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Quốc gia đang hiển thị trên bản đồ */
-        get: operations["NetworkController_findPublic"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/network": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Toàn bộ quốc gia */
-        get: operations["NetworkController_findAll"];
-        put?: never;
-        /** Thêm quốc gia */
-        post: operations["NetworkController_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/network/{id}": {
+    "/api/auth/refresh": {
         parameters: {
             query?: never;
             header?: never;
@@ -201,13 +165,59 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post?: never;
-        /** Xóa quốc gia */
-        delete: operations["NetworkController_remove"];
+        post: operations["AuthController_refresh"];
+        delete?: never;
         options?: never;
         head?: never;
-        /** Cập nhật quốc gia */
-        patch: operations["NetworkController_update"];
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AuthController_logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AuthController_register"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AuthController_getProfile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/products/public": {
@@ -261,112 +271,6 @@ export interface paths {
         head?: never;
         /** Cập nhật sản phẩm */
         patch: operations["ProductsController_update"];
-        trace?: never;
-    };
-    "/api/team/public": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Toàn bộ thành viên (public) */
-        get: operations["TeamController_findPublic"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/team": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Toàn bộ thành viên */
-        get: operations["TeamController_findAll"];
-        put?: never;
-        /** Thêm thành viên */
-        post: operations["TeamController_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/team/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /** Xóa thành viên */
-        delete: operations["TeamController_remove"];
-        options?: never;
-        head?: never;
-        /** Cập nhật thành viên */
-        patch: operations["TeamController_update"];
-        trace?: never;
-    };
-    "/api/photos/public": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Toàn bộ vị trí ảnh (luôn công khai), lọc theo trang */
-        get: operations["PhotosController_findPublic"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/photos": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Toàn bộ vị trí ảnh (admin) */
-        get: operations["PhotosController_findAll"];
-        put?: never;
-        /** Thêm vị trí ảnh */
-        post: operations["PhotosController_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/photos/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /** Xóa vị trí ảnh */
-        delete: operations["PhotosController_remove"];
-        options?: never;
-        head?: never;
-        /** Cập nhật vị trí ảnh */
-        patch: operations["PhotosController_update"];
         trace?: never;
     };
     "/api/jobs/public": {
@@ -530,14 +434,28 @@ export interface components {
             email: string;
             password: string;
         };
-        UpsertNetworkCountryDto: {
+        RegisterDto: {
+            /**
+             * @description Họ và tên người dùng
+             * @example Nguyễn Văn A
+             */
             name: string;
-            code?: string;
-            city?: string;
-            note?: string;
-            /** @enum {string} */
-            status: "Hiển thị" | "Ẩn";
-            pos?: string;
+            /**
+             * @description Email đăng ký
+             * @example user@vcb.vn
+             */
+            email: string;
+            /**
+             * @description Mật khẩu khởi tạo (tối thiểu 6 ký tự)
+             * @example 123456
+             */
+            password: string;
+            /**
+             * @description Vai trò tài khoản (chỉ Admin mới có quyền tạo và gán vai trò)
+             * @default staff
+             * @enum {string}
+             */
+            role: "admin" | "staff";
         };
         UpsertProductDto: {
             name: string;
@@ -546,19 +464,6 @@ export interface components {
             /** @enum {string} */
             status: "Hiển thị" | "Ẩn";
             description?: string;
-        };
-        UpsertTeamMemberDto: {
-            name: string;
-            role?: string;
-            bio?: string;
-            image?: string;
-        };
-        UpsertPhotoSlotDto: {
-            name: string;
-            /** @enum {string} */
-            page: "Trang chủ" | "Về chúng tôi";
-            slot?: string;
-            image?: string;
         };
         UpsertJobDto: {
             title: string;
@@ -783,7 +688,7 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -791,7 +696,7 @@ export interface operations {
             };
         };
     };
-    NetworkController_findPublic: {
+    AuthController_refresh: {
         parameters: {
             query?: never;
             header?: never;
@@ -808,7 +713,7 @@ export interface operations {
             };
         };
     };
-    NetworkController_findAll: {
+    AuthController_logout: {
         parameters: {
             query?: never;
             header?: never;
@@ -825,7 +730,7 @@ export interface operations {
             };
         };
     };
-    NetworkController_create: {
+    AuthController_register: {
         parameters: {
             query?: never;
             header?: never;
@@ -834,7 +739,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpsertNetworkCountryDto"];
+                "application/json": components["schemas"]["RegisterDto"];
             };
         };
         responses: {
@@ -846,39 +751,14 @@ export interface operations {
             };
         };
     };
-    NetworkController_remove: {
+    AuthController_getProfile: {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                id: string;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    NetworkController_update: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpsertNetworkCountryDto"];
-            };
-        };
         responses: {
             200: {
                 headers: {
@@ -974,202 +854,6 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["UpsertProductDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    TeamController_findPublic: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    TeamController_findAll: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    TeamController_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpsertTeamMemberDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    TeamController_remove: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    TeamController_update: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpsertTeamMemberDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    PhotosController_findPublic: {
-        parameters: {
-            query?: {
-                page?: "Trang chủ" | "Về chúng tôi";
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    PhotosController_findAll: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    PhotosController_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpsertPhotoSlotDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    PhotosController_remove: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    PhotosController_update: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpsertPhotoSlotDto"];
             };
         };
         responses: {

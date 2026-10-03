@@ -1,4 +1,5 @@
-export type FieldType = "text" | "select" | "textarea" | "image" | "mappos";
+// "country": chọn quốc gia, tự điền name + code (cờ) + pos. "hidden": giữ giá trị trong form, không hiện ô nhập.
+export type FieldType = "text" | "select" | "textarea" | "mappos" | "country" | "hidden";
 
 export interface ResourceField {
   key: string;
@@ -26,8 +27,8 @@ export const NETWORK_CONFIG: ResourceConfig = {
   label: "Bản đồ quốc gia",
   singular: "quốc gia",
   fields: [
-    { key: "name", label: "Tên quốc gia", type: "text", required: true },
-    { key: "code", label: "Mã cờ", type: "text" },
+    { key: "name", label: "Quốc gia", type: "country", required: true },
+    { key: "code", label: "Mã cờ", type: "hidden" },
     { key: "city", label: "Thành phố", type: "text" },
     { key: "note", label: "Vai trò", type: "text" },
     {
@@ -115,22 +116,5 @@ export const JOBS_CONFIG: ResourceConfig = {
     { key: "title", label: "Vị trí" },
     { key: "department", label: "Nhóm" },
     { key: "status", label: "Trạng thái" },
-  ],
-};
-
-export const TEAM_CONFIG: ResourceConfig = {
-  path: "team",
-  label: "Đội ngũ",
-  singular: "thành viên",
-  fields: [
-    { key: "name", label: "Họ tên", type: "text", required: true },
-    { key: "role", label: "Chức danh", type: "text" },
-    { key: "bio", label: "Giới thiệu ngắn", type: "textarea" },
-    { key: "image", label: "Ảnh chân dung", type: "image" },
-  ],
-  columns: [
-    { key: "image", label: "Ảnh" },
-    { key: "name", label: "Họ tên" },
-    { key: "role", label: "Chức danh" },
   ],
 };

@@ -80,6 +80,7 @@ export function ListFieldEditor({ def, items, idBase, disabled, onChange }: List
               value={item[field.key]}
               idBase={`${idBase}-${index}`}
               disabled={disabled}
+              mediaVariant="loop"
               onChange={(value) => onChange(setIn(items, [index, field.key], value) as ListItem[])}
             />
           ))}

@@ -113,6 +113,7 @@ export function BlockCard({
                     value={block.data[field.key]}
                     idBase={block.id}
                     disabled={disabled}
+                    mediaVariant="player"
                     onChange={(value) => onChange([field.key], value)}
                   />
                 ),

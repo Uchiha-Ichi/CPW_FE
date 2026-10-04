@@ -74,3 +74,26 @@ export async function uploadPageImage(file: File): Promise<UploadedImage> {
     body: form,
   });
 }
+
+export const MAX_VIDEO_UPLOAD_BYTES = { loop: 30 * 1024 * 1024, player: 100 * 1024 * 1024 } as const;
+const ALLOWED_VIDEO_TYPES = ["video/mp4", "video/quicktime", "video/webm"];
+
+// Video của trang BẮT BUỘC đi qua ?folder=pages&variant=..., giống quy tắc của uploadPageImage.
+export async function uploadPageVideo(
+  file: File,
+  variant: "loop" | "player",
+): Promise<UploadedImage> {
+  if (!ALLOWED_VIDEO_TYPES.includes(file.type)) {
+    throw new ApiError(400, ["Chỉ nhận video MP4, MOV hoặc WEBM."]);
+  }
+  const maxBytes = MAX_VIDEO_UPLOAD_BYTES[variant];
+  if (file.size > maxBytes) {
+    throw new ApiError(400, [`Video quá lớn (tối đa ${Math.round(maxBytes / (1024 * 1024))}MB).`]);
+  }
+  const form = new FormData();
+  form.append("file", file);
+  return request<UploadedImage>(`/uploads/video?folder=pages&variant=${variant}`, {
+    method: "POST",
+    body: form,
+  });
+}

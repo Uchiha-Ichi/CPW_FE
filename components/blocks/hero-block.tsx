@@ -2,7 +2,7 @@ import styles from "./hero-block.module.css";
 import { Eyebrow } from "./shared/eyebrow";
 import { RichTitle } from "./shared/rich-title";
 import { BlockLink } from "./shared/block-link";
-import { CloudinaryImage } from "./shared/cloudinary-image";
+import { CloudinaryMedia } from "./shared/cloudinary-media";
 import { list, str } from "@/lib/blocks/read";
 import { stripAccent } from "@/lib/blocks/accent";
 import { cn } from "@/lib/utils";
@@ -85,14 +85,13 @@ export function HeroBlock({ data, lang }: BlockProps) {
             )}
             style={{ animationDelay: "0.12s" }}
           >
-            <CloudinaryImage
+            <CloudinaryMedia
               src={image}
               alt={stripAccent(title)}
-              fill
               sizes="(min-width: 768px) 45vw, 100vw"
-              preload
-              fetchPriority="high"
+              variant="player"
               className="object-cover"
+              imageProps={{ preload: true, fetchPriority: "high" }}
             />
           </div>
         )}

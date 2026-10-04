@@ -1,6 +1,6 @@
 import { RichTitle } from "./shared/rich-title";
 import { Reveal } from "./shared/reveal";
-import { CloudinaryImage } from "./shared/cloudinary-image";
+import { CloudinaryMedia } from "./shared/cloudinary-media";
 import { str } from "@/lib/blocks/read";
 import { stripAccent } from "@/lib/blocks/accent";
 import { cn } from "@/lib/utils";
@@ -22,11 +22,11 @@ export function BannerBlock({ data }: BlockProps) {
     >
       {image && (
         <>
-          <CloudinaryImage
+          <CloudinaryMedia
             src={image}
             alt={stripAccent(title)}
-            fill
             sizes="100vw"
+            variant="player"
             className="object-cover"
           />
           <div aria-hidden className="absolute inset-0 bg-black/55" />

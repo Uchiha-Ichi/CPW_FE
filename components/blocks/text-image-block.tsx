@@ -2,7 +2,7 @@ import { Eyebrow } from "./shared/eyebrow";
 import { RichTitle } from "./shared/rich-title";
 import { Reveal } from "./shared/reveal";
 import { BlockLink } from "./shared/block-link";
-import { CloudinaryImage } from "./shared/cloudinary-image";
+import { CloudinaryMedia } from "./shared/cloudinary-media";
 import { ImagePlaceholder } from "@/components/shared/image-placeholder";
 import { str } from "@/lib/blocks/read";
 import { stripAccent } from "@/lib/blocks/accent";
@@ -27,11 +27,11 @@ export function TextImageBlock({ data, lang }: BlockProps) {
         <Reveal className={cn(imageRight && "md:order-2")}>
           <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-border bg-card">
             {image ? (
-              <CloudinaryImage
+              <CloudinaryMedia
                 src={image}
                 alt={plainTitle}
-                fill
                 sizes="(min-width: 768px) 50vw, 100vw"
+                variant="player"
                 className="object-cover"
               />
             ) : (

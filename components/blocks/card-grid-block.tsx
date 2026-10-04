@@ -1,6 +1,6 @@
 import { SectionHead } from "./shared/section-head";
 import { Reveal } from "./shared/reveal";
-import { CloudinaryImage } from "./shared/cloudinary-image";
+import { CloudinaryMedia } from "./shared/cloudinary-media";
 import { list, str } from "@/lib/blocks/read";
 import type { BlockProps } from "./types";
 
@@ -25,11 +25,11 @@ export function CardGridBlock({ data }: BlockProps) {
               <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-primary/40">
                 {item.image && (
                   <div className="relative aspect-[4/3] w-full overflow-hidden">
-                    <CloudinaryImage
+                    <CloudinaryMedia
                       src={item.image}
                       alt={item.t ?? ""}
-                      fill
                       sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                      variant="loop"
                       className="object-cover transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                     />
                   </div>

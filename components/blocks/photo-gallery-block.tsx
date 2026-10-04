@@ -1,6 +1,6 @@
 import { SectionHead } from "./shared/section-head";
 import { Reveal } from "./shared/reveal";
-import { CloudinaryImage } from "./shared/cloudinary-image";
+import { CloudinaryMedia } from "./shared/cloudinary-media";
 import { ImagePlaceholder } from "@/components/shared/image-placeholder";
 import { list, str } from "@/lib/blocks/read";
 import { repeatToMin } from "@/lib/blocks/marquee";
@@ -14,11 +14,11 @@ function Tile({ item, hidden }: { item: Item; hidden: boolean }) {
     <li className="w-56 shrink-0 pr-4 sm:w-64">
       <div className="relative h-44 w-full overflow-hidden rounded-xl border border-border bg-card sm:h-48">
         {item.image ? (
-          <CloudinaryImage
+          <CloudinaryMedia
             src={item.image}
             alt={alt}
-            fill
             sizes="256px"
+            variant="loop"
             className="object-cover"
           />
         ) : (
@@ -57,11 +57,11 @@ export function PhotoGalleryBlock({ data }: BlockProps) {
             <figure>
               <div className="relative aspect-[21/9] w-full overflow-hidden rounded-3xl border border-border bg-card">
                 {featured ? (
-                  <CloudinaryImage
+                  <CloudinaryMedia
                     src={featured}
                     alt={featuredCaption ?? ""}
-                    fill
                     sizes="(min-width: 1240px) 1240px, 100vw"
+                    variant="player"
                     className="object-cover"
                   />
                 ) : (

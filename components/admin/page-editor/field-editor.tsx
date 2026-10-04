@@ -16,11 +16,12 @@ interface FieldEditorProps {
   value: unknown;
   idBase: string;
   disabled?: boolean;
+  mediaVariant?: "loop" | "player";
   // undefined = xóa giá trị của field.
   onChange: (value: unknown) => void;
 }
 
-export function FieldEditor({ def, value, idBase, disabled, onChange }: FieldEditorProps) {
+export function FieldEditor({ def, value, idBase, disabled, mediaVariant = "player", onChange }: FieldEditorProps) {
   const id = `${idBase}-${def.key}`;
   const label = (
     <label className="text-sm font-medium" htmlFor={id}>
@@ -41,6 +42,7 @@ export function FieldEditor({ def, value, idBase, disabled, onChange }: FieldEdi
           required={def.required}
           value={readText(value)}
           disabled={disabled}
+          mediaVariant={mediaVariant}
           onChange={onChange}
         />
       );

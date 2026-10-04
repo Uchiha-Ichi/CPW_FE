@@ -102,10 +102,10 @@ export function ImageField({
               disabled={locked}
               onClick={() => onChange(undefined)}
             >
-              Bỏ ảnh
+              Bỏ ảnh/video
             </Button>
           )}
-          <span>{uploading ? "Đang tải ảnh…" : "hoặc kéo thả ảnh/video vào đây"}</span>
+          <span>{uploading ? "Đang tải ảnh/video…" : "hoặc kéo thả ảnh/video vào đây"}</span>
         </div>
         <input
           ref={inputRef}

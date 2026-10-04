@@ -26,7 +26,7 @@ export function BannerBlock({ data }: BlockProps) {
             src={image}
             alt={stripAccent(title)}
             sizes="100vw"
-            variant="player"
+            variant="loop"
             className="object-cover"
           />
           <div aria-hidden className="absolute inset-0 bg-black/55" />

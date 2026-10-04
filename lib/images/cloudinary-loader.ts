@@ -31,3 +31,25 @@ export function cloudinaryLoader({
   url.pathname = head + segments.join("/");
   return url.toString();
 }
+
+const VIDEO_MARKER = "/video/upload/";
+
+export function cloudinaryVideoUrl(src: string): string {
+  let url: URL;
+  try {
+    url = new URL(src);
+  } catch {
+    return src;
+  }
+  if (url.protocol !== "https:" || url.hostname !== CLOUDINARY_HOST) return src;
+
+  const at = url.pathname.indexOf(VIDEO_MARKER);
+  if (at === -1) return src;
+
+  const head = url.pathname.slice(0, at + VIDEO_MARKER.length);
+  const segments = url.pathname.slice(at + VIDEO_MARKER.length).split("/");
+  const versionAt = segments.findIndex((segment) => /^v\d+$/.test(segment));
+  segments.splice(versionAt === -1 ? 0 : versionAt, 0, "f_auto,q_auto");
+  url.pathname = head + segments.join("/");
+  return url.toString();
+}

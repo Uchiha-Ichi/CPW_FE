@@ -6,7 +6,7 @@ import type { PublicBlock, PublicPage } from "../blocks/types";
 
 export type PageKey = "home" | "about";
 
-function toBlock(value: unknown): PublicBlock | null {
+export function toBlock(value: unknown): PublicBlock | null {
   if (typeof value !== "object" || value === null) return null;
   const v = value as Record<string, unknown>;
   if (typeof v.id !== "string" || typeof v.type !== "string") return null;

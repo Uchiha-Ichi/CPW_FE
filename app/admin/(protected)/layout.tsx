@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
-import { AdminSidebar } from "@/components/admin/admin-sidebar";
+import { AdminShell } from "@/components/admin/admin-shell";
+import { AdminNotice } from "@/components/admin/ui/admin-notice";
 import { ADMIN_REFRESHED_COOKIE, ADMIN_TOKEN_COOKIE } from "@/lib/admin/auth-cookies";
 import { getAdminAccess } from "@/lib/admin/session";
 
@@ -31,19 +32,13 @@ export default async function AdminProtectedLayout({
   // Không xác nhận được quyền (backend tắt/lỗi): không cho vào, nói rõ lý do.
   if (access.status === "unavailable") {
     return (
-      <div
-        role="alert"
-        className="flex min-h-screen items-center justify-center px-4 text-center"
-      >
-        <p>Không kiểm tra được quyền truy cập quản trị. Vui lòng tải lại trang sau ít phút.</p>
+      <div className="flex min-h-dvh items-center justify-center bg-background px-4">
+        <AdminNotice tone="danger" className="max-w-md text-center">
+          Không kiểm tra được quyền truy cập quản trị. Vui lòng tải lại trang sau ít phút.
+        </AdminNotice>
       </div>
     );
   }
 
-  return (
-    <div data-theme="light" className="flex min-h-screen bg-background text-foreground">
-      <AdminSidebar />
-      <main className="flex-1">{children}</main>
-    </div>
-  );
+  return <AdminShell>{children}</AdminShell>;
 }

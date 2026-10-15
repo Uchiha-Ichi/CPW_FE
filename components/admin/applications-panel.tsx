@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { ChevronDown } from "lucide-react";
+import { AdminButton } from "@/components/admin/ui/admin-button";
+import { AdminPage } from "@/components/admin/ui/admin-page";
+import { AdminPanel } from "@/components/admin/ui/admin-panel";
+import { AdminSelect } from "@/components/admin/ui/admin-select";
+import { AdminTable } from "@/components/admin/ui/admin-table";
+import { cn } from "@/lib/utils";
 
 type Application = {
   _id: string;
@@ -23,6 +29,8 @@ const STATUS_OPTIONS: { value: string; label: string }[] = [
   { value: "rejected", label: "Từ chối" },
   { value: "hired", label: "Đã nhận" },
 ];
+
+const LINK = "text-[color:var(--admin-brand-ink)] underline underline-offset-2";
 
 function groupByPosition(items: Application[]): [string, Application[]][] {
   const map = new Map<string, Application[]>();
@@ -66,15 +74,20 @@ export function ApplicationsPanel() {
     load();
   }
 
+  // Nằm dưới bảng vị trí trên cùng một trang: dùng cùng AdminPage (bỏ padding trên) để hai khối thẳng cột.
   if (loading) {
-    return <p className="p-6 text-sm text-muted-foreground">Đang tải…</p>;
+    return (
+      <AdminPage className="pt-0">
+        <p className="text-sm text-muted-foreground">Đang tải…</p>
+      </AdminPage>
+    );
   }
 
   const groups = groupByPosition(items);
 
   return (
-    <div className="mt-10">
-      <h2 className="text-2xl font-semibold">Hồ sơ ứng tuyển</h2>
+    <AdminPage className="pt-0">
+      <h2 className="text-xl">Hồ sơ ứng tuyển</h2>
 
       {groups.length === 0 ? (
         <p className="mt-4 text-sm text-muted-foreground">Chưa có hồ sơ ứng tuyển nào.</p>
@@ -83,39 +96,47 @@ export function ApplicationsPanel() {
           {groups.map(([position, apps]) => {
             const isOpen = openPosition === position;
             return (
-              <div key={position} className="overflow-hidden rounded-md border">
+              <AdminPanel key={position}>
                 <button
                   type="button"
-                  className="flex w-full items-center justify-between p-3 text-left hover:bg-muted/50"
+                  aria-expanded={isOpen}
+                  className="flex min-h-11 w-full items-center justify-between gap-3 p-3 text-left transition-colors hover:bg-[color:var(--admin-brand-soft)] motion-reduce:transition-none"
                   onClick={() => setOpenPosition(isOpen ? null : position)}
                 >
                   <span className="font-medium">{position}</span>
-                  <span className="text-sm text-muted-foreground">
-                    {apps.length} ứng viên {isOpen ? "▲" : "▼"}
+                  <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                    {apps.length} ứng viên
+                    <ChevronDown
+                      aria-hidden
+                      className={cn(
+                        "size-4 transition-transform motion-reduce:transition-none",
+                        isOpen && "rotate-180",
+                      )}
+                    />
                   </span>
                 </button>
 
                 {isOpen && (
-                  <div className="overflow-x-auto border-t">
-                    <table className="w-full text-sm">
+                  <div className="border-t border-[color:var(--admin-line)]">
+                    <AdminTable bare>
                       <thead>
-                        <tr className="border-b bg-muted/50">
-                          <th className="p-3 text-left font-medium">Ứng viên</th>
-                          <th className="p-3 text-left font-medium">Liên hệ</th>
-                          <th className="p-3 text-left font-medium">Giới thiệu</th>
-                          <th className="p-3 text-left font-medium">CV</th>
-                          <th className="p-3 text-left font-medium">Ngày nộp</th>
-                          <th className="p-3 text-left font-medium">Trạng thái</th>
-                          <th className="p-3 text-right font-medium">Thao tác</th>
+                        <tr>
+                          <th>Ứng viên</th>
+                          <th>Liên hệ</th>
+                          <th>Giới thiệu</th>
+                          <th>CV</th>
+                          <th>Ngày nộp</th>
+                          <th>Trạng thái</th>
+                          <th className="admin-act">Thao tác</th>
                         </tr>
                       </thead>
                       <tbody>
                         {apps.map((app) => (
-                          <tr key={app._id} className="border-b align-top last:border-0">
-                            <td className="p-3">
+                          <tr key={app._id} className="align-top">
+                            <td>
                               <div className="font-medium">{app.name}</div>
                             </td>
-                            <td className="p-3">
+                            <td data-label="Liên hệ">
                               <div>{app.email}</div>
                               {app.phone && (
                                 <div className="text-muted-foreground">{app.phone}</div>
@@ -125,31 +146,32 @@ export function ApplicationsPanel() {
                                   href={app.portfolio}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-primary underline"
+                                  className={LINK}
                                 >
                                   Portfolio
                                 </a>
                               )}
                             </td>
-                            <td className="max-w-[260px] p-3 text-muted-foreground">
+                            <td data-label="Giới thiệu" className="max-w-[260px] text-muted-foreground">
                               {app.note}
                             </td>
-                            <td className="p-3">
+                            <td data-label="CV" className="whitespace-nowrap">
                               <a
                                 href={app.cvUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-primary underline"
+                                className={LINK}
                               >
                                 Xem CV
                               </a>
                             </td>
-                            <td className="p-3 text-muted-foreground">
+                            <td data-label="Ngày nộp" className="text-muted-foreground">
                               {new Date(app.createdAt).toLocaleDateString("vi-VN")}
                             </td>
-                            <td className="p-3">
-                              <select
-                                className="rounded-md border p-1.5 text-sm"
+                            <td data-label="Trạng thái">
+                              <AdminSelect
+                                className="h-9 w-auto min-w-36"
+                                aria-label={`Trạng thái hồ sơ của ${app.name}`}
                                 value={app.status}
                                 onChange={(e) => updateStatus(app._id, e.target.value)}
                               >
@@ -158,29 +180,29 @@ export function ApplicationsPanel() {
                                     {s.label}
                                   </option>
                                 ))}
-                              </select>
+                              </AdminSelect>
                             </td>
-                            <td className="p-3 text-right">
-                              <Button
+                            <td className="admin-act">
+                              <AdminButton
                                 variant="ghost"
                                 size="sm"
-                                className="text-destructive"
+                                danger
                                 onClick={() => remove(app)}
                               >
                                 Xóa
-                              </Button>
+                              </AdminButton>
                             </td>
                           </tr>
                         ))}
                       </tbody>
-                    </table>
+                    </AdminTable>
                   </div>
                 )}
-              </div>
+              </AdminPanel>
             );
           })}
         </div>
       )}
-    </div>
+    </AdminPage>
   );
 }

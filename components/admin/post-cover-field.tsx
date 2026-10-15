@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { AdminButton } from "@/components/admin/ui/admin-button";
 import { ImagePlaceholder } from "@/components/shared/image-placeholder";
 
 interface CoverFieldProps {
@@ -13,9 +13,9 @@ interface CoverFieldProps {
 export function CoverField({ previewUrl, disabled, onPick, onRemove }: CoverFieldProps) {
   return (
     <div>
-      <label className="text-sm font-medium">Ảnh bìa</label>
+      <p className="text-sm font-medium">Ảnh bìa</p>
       <div
-        className="mt-1 flex cursor-pointer items-center gap-3 rounded-md border border-dashed p-3 transition-colors hover:bg-muted/50"
+        className="mt-1.5 flex cursor-pointer items-center gap-3 rounded-lg border border-dashed border-[color:var(--admin-field-border)] bg-card p-3 transition-colors hover:bg-[color:var(--admin-brand-soft)] motion-reduce:transition-none"
         onDragOver={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -32,7 +32,7 @@ export function CoverField({ previewUrl, disabled, onPick, onRemove }: CoverFiel
           // eslint-disable-next-line @next/next/no-img-element
           <img src={previewUrl} alt="" className="h-16 w-24 rounded-md object-cover" />
         ) : (
-          <ImagePlaceholder label="ảnh bìa" className="h-16 w-24 min-h-0 text-[10px]" />
+          <ImagePlaceholder label="ảnh bìa" className="h-16 w-24 min-h-0! text-[10px]" />
         )}
         <div className="flex-1 space-y-1 text-sm text-muted-foreground">
           <p>
@@ -54,18 +54,19 @@ export function CoverField({ previewUrl, disabled, onPick, onRemove }: CoverFiel
         />
       </div>
       {previewUrl && (
-        <Button
+        <AdminButton
           type="button"
           variant="ghost"
           size="sm"
-          className="mt-2 text-destructive"
+          danger
+          className="mt-2"
           onClick={(e) => {
             e.stopPropagation();
             onRemove();
           }}
         >
           Bỏ ảnh
-        </Button>
+        </AdminButton>
       )}
     </div>
   );

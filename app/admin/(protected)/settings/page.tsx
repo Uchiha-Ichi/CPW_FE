@@ -1,10 +1,12 @@
 import { SiteSettingsForm } from "@/components/admin/site-settings-form";
+import { AdminPage } from "@/components/admin/ui/admin-page";
+import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 
 export default function AdminSettingsPage() {
   return (
-    <div className="mx-auto max-w-2xl p-6">
-      <h1 className="mb-6 text-2xl font-bold leading-[1.2]">Thông tin liên hệ</h1>
+    <AdminPage width="narrow">
+      <AdminPageHeader title="Thông tin liên hệ" />
       <SiteSettingsForm />
-    </div>
+    </AdminPage>
   );
 }

@@ -1,0 +1,138 @@
+/* Token và luật riêng của khu quản trị. Thiết kế: DOCS/superpowers/specs/2026-10-08-vcb-web-admin-redesign-design.md.
+   Chỉ nạp ở app/admin/layout.tsx và chỉ có hiệu lực dưới <html data-admin>, nên site public không thấy.
+   Mọi màu suy ra từ token trong globals.css, trừ 4 giá trị ok/warn (globals.css không có xanh lá/hổ phách). */
+
+/* Khai lại thứ tự layer để các luật `@layer base` bên dưới luôn nằm đúng chỗ so với utilities. */
+@layer theme, base, components, utilities;
+
+[data-admin] {
+  --admin-brand-strong: color-mix(in srgb, var(--primary) 85%, black);
+  --admin-brand-ink: color-mix(in srgb, var(--primary) 75%, black);
+  --admin-brand-soft: var(--vcb-gold-soft);
+  --admin-danger: color-mix(in srgb, var(--destructive) 70%, black);
+  --admin-danger-soft: color-mix(in srgb, var(--destructive) 12%, white);
+  --admin-field-border: color-mix(in srgb, var(--foreground) 45%, white);
+  --admin-ok: #127a4b;
+  --admin-ok-soft: #e5f5ec;
+  --admin-warn: #8f5b00;
+  --admin-warn-soft: #fdf2dc;
+  --admin-panel: var(--card);
+  --admin-line: var(--vcb-line);
+  --admin-brand-panel: var(--tech-ink);
+}
+
+@layer base {
+  /* Phông tiêu đề chỉ cho h1 và số lớn; tiêu đề nhỏ dùng phông thân để tiếng Việt nhiều dấu dễ đọc. */
+  [data-admin] :is(h2, h3, h4, h5, h6) {
+    font-family: var(--font-body), sans-serif;
+    font-weight: 600;
+  }
+  [data-admin] h1 {
+    line-height: 1.2;
+  }
+  [data-admin] h1,
+  [data-admin] .admin-stat {
+    font-family: var(--font-display), sans-serif;
+  }
+
+  /* Vòng focus cho phần tử không tự có: specificity 0 nên `outline-none` của component shadcn
+     (và vòng ring của chúng) vẫn thắng. */
+  :where([data-admin]) :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--admin-brand-strong);
+    outline-offset: 2px;
+  }
+}
+
+.admin-stat {
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+/* Panel thương hiệu của trang đăng nhập: navy + hai quầng sáng suy ra từ --primary. */
+[data-admin] .admin-brand-panel {
+  background:
+    radial-gradient(60% 50% at 12% 8%, color-mix(in srgb, var(--primary) 38%, transparent), transparent 70%),
+    radial-gradient(55% 45% at 92% 96%, var(--tech-glow-2), transparent 70%),
+    var(--admin-brand-panel);
+}
+
+/* Bảng dùng chung (components/admin/ui/admin-table.tsx). ≤760px mỗi hàng thành một thẻ; ô nào có
+   data-label thì hiện nhãn cột phía trước, ô đầu (tiêu đề hàng) không cần nhãn. */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+.admin-table th {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--admin-line);
+  color: var(--muted-foreground);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+.admin-table td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--admin-line);
+  vertical-align: middle;
+}
+.admin-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.admin-table tbody tr:hover {
+  background: color-mix(in srgb, var(--admin-brand-soft) 45%, transparent);
+}
+.admin-table th.admin-act,
+.admin-table td.admin-act {
+  width: 1%;
+  text-align: right;
+  white-space: nowrap;
+}
+.admin-table td.admin-empty {
+  padding: 1.5rem 1rem;
+  color: var(--muted-foreground);
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  /* Ẩn tiêu đề cột nhưng vẫn cho trình đọc màn hình thấy (không dùng display:none). */
+  .admin-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .admin-table,
+  .admin-table tbody,
+  .admin-table tr,
+  .admin-table td {
+    display: block;
+  }
+  .admin-table tr {
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid var(--admin-line);
+  }
+  .admin-table tbody tr:last-child {
+    border-bottom: 0;
+  }
+  .admin-table td {
+    padding: 0.2rem 0;
+    border: 0;
+  }
+  .admin-table td[data-label]::before {
+    content: attr(data-label);
+    display: inline-block;
+    min-width: 6rem;
+    color: var(--muted-foreground);
+    font-size: 0.8rem;
+  }
+  .admin-table td.admin-act {
+    width: auto;
+    padding-top: 0.6rem;
+    text-align: left;
+    white-space: normal;
+  }
+}

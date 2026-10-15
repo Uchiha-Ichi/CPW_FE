@@ -4,7 +4,11 @@ import { useEffect, useMemo, useReducer, useState } from "react";
 import { BlockList } from "@/components/admin/page-editor/block-list";
 import { BlockPicker } from "@/components/admin/page-editor/block-picker";
 import { ErrorList } from "@/components/admin/page-editor/error-list";
-import { Button } from "@/components/ui/button";
+import { AdminButton } from "@/components/admin/ui/admin-button";
+import { AdminNotice } from "@/components/admin/ui/admin-notice";
+import { AdminPage } from "@/components/admin/ui/admin-page";
+import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
+import { cn } from "@/lib/utils";
 import {
   discardDraft,
   getAdminPage,
@@ -175,6 +179,35 @@ export function PageEditor() {
     });
   }
 
+  function preview() {
+    if (!editor) return;
+    // Mở tab ngay trong cú click: mở sau await sẽ bị chặn popup.
+    const tab = window.open("about:blank", "_blank");
+    if (!tab) {
+      setErrors([
+        "Trình duyệt đã chặn cửa sổ mới. Hãy cho phép cửa sổ bật lên cho trang này rồi bấm lại.",
+      ]);
+      return;
+    }
+    tab.opener = null;
+    void run(async () => {
+      try {
+        if (isDirty(editor)) {
+          const view = await saveDraft(editor.pageKey, editor.version, cleanBlocks(editor.blocks));
+          dispatch({ type: "load", view });
+          setNotice("Đã lưu bản nháp.");
+        } else {
+          // Chỉ để proxy gia hạn token hết hạn (D12); kết quả bỏ đi, không đụng reducer.
+          await getAdminPage(editor.pageKey);
+        }
+        tab.location.href = `/vi/preview/${encodeURIComponent(editor.pageKey)}`;
+      } catch (err) {
+        tab.close();
+        throw err;
+      }
+    });
+  }
+
   // Spec D8: 409 thì nạp lại từ server, không tự gộp.
   function reloadPage() {
     clearMessages();
@@ -207,27 +240,31 @@ export function PageEditor() {
 
   if (metaError) {
     return (
-      <div className="p-6">
-        <h1 className="text-2xl font-semibold">Nội dung trang</h1>
-        <div className="mt-4 space-y-3">
+      <AdminPage>
+        <AdminPageHeader title="Nội dung trang" />
+        <div className="space-y-3">
           <ErrorList messages={metaError} />
-          <Button variant="outline" onClick={() => window.location.reload()}>
+          <AdminButton variant="outline" onClick={() => window.location.reload()}>
             Tải lại
-          </Button>
+          </AdminButton>
         </div>
-      </div>
+      </AdminPage>
     );
   }
 
   if (!meta) {
-    return <p className="p-6 text-sm text-muted-foreground">Đang tải…</p>;
+    return (
+      <AdminPage>
+        <p className="text-sm text-muted-foreground">Đang tải…</p>
+      </AdminPage>
+    );
   }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-semibold">Nội dung trang</h1>
+    <AdminPage>
+      <AdminPageHeader title="Nội dung trang" />
 
-      <div role="tablist" className="mt-4 flex gap-1 border-b">
+      <div role="tablist" className="flex flex-wrap gap-1 border-b border-[color:var(--admin-line)]">
         {meta.pages.map((page) => (
           <button
             key={page.key}
@@ -236,11 +273,12 @@ export function PageEditor() {
             aria-selected={activePage === page.key}
             disabled={busy}
             onClick={() => selectPage(page.key)}
-            className={`-mb-px border-b-2 px-3 py-2 text-sm ${
+            className={cn(
+              "-mb-px min-h-11 border-b-2 px-3 py-2 text-sm transition-colors motion-reduce:transition-none",
               activePage === page.key
-                ? "border-primary font-medium"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
+                ? "border-[color:var(--admin-brand-strong)] font-semibold text-[color:var(--admin-brand-ink)]"
+                : "border-transparent text-muted-foreground hover:text-foreground",
+            )}
           >
             {page.label}
           </button>
@@ -251,15 +289,16 @@ export function PageEditor() {
         <div className="mt-4 space-y-3">
           <ErrorList messages={loadError.messages} />
           {loadError.expired && <LoginAgainLink />}
-          <Button variant="outline" onClick={() => setLoadError(null)}>
+          <AdminButton variant="outline" onClick={() => setLoadError(null)}>
             Thử lại
-          </Button>
+          </AdminButton>
         </div>
       ) : !ready || !editor ? (
         <p className="mt-4 text-sm text-muted-foreground">Đang tải trang…</p>
       ) : (
         <>
-          <div className="sticky top-0 z-20 -mx-6 mt-2 flex flex-wrap items-center justify-between gap-2 border-b bg-background px-6 py-3">
+          {/* Chỉ dính từ 761px: trên điện thoại các nút xuống ~3 dòng (cao ~170px) và che quá nhiều màn hình. */}
+          <div className="sticky top-0 z-10 -mx-[var(--admin-gutter)] mt-2 flex flex-wrap items-center justify-between gap-2 border-b border-[color:var(--admin-line)] bg-background px-[var(--admin-gutter)] py-3 max-[760px]:static">
             <span className="text-sm text-muted-foreground">
               Trạng thái:{" "}
               <span className="font-medium text-foreground">
@@ -267,39 +306,42 @@ export function PageEditor() {
               </span>
             </span>
             <div className="flex flex-wrap items-center gap-2">
-              <Button variant="ghost" disabled={busy || !editor.hasDraft} onClick={discard}>
+              <AdminButton
+                variant="outline"
+                disabled={busy || editor.blocks.length === 0}
+                onClick={preview}
+              >
+                Xem trước
+              </AdminButton>
+              <AdminButton variant="ghost" disabled={busy || !editor.hasDraft} onClick={discard}>
                 Bỏ nháp
-              </Button>
-              <Button variant="outline" disabled={busy || !dirty} onClick={save}>
+              </AdminButton>
+              <AdminButton variant="outline" disabled={busy || !dirty} onClick={save}>
                 Lưu nháp
-              </Button>
-              <Button disabled={busy || !(dirty || editor.hasDraft)} onClick={publish}>
+              </AdminButton>
+              <AdminButton disabled={busy || !(dirty || editor.hasDraft)} onClick={publish}>
                 Đăng
-              </Button>
+              </AdminButton>
             </div>
           </div>
 
           <div className="mt-4 space-y-3">
-            {notice && (
-              <p role="status" className="rounded-md border p-3 text-sm">
-                {notice}
-              </p>
-            )}
+            {notice && <AdminNotice tone="ok">{notice}</AdminNotice>}
             <ErrorList messages={errors} />
             {conflict && (
-              <Button variant="outline" onClick={reloadPage}>
+              <AdminButton variant="outline" onClick={reloadPage}>
                 Tải lại trang này (bỏ thay đổi chưa lưu)
-              </Button>
+              </AdminButton>
             )}
             {sessionExpired && (
-              <p className="text-sm text-destructive">
+              <AdminNotice tone="danger">
                 Nội dung của bạn vẫn còn trên trang này. <LoginAgainLink /> rồi quay lại đây bấm lưu
                 lại.
-              </p>
+              </AdminNotice>
             )}
 
             {editor.blocks.length === 0 ? (
-              <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
+              <p className="rounded-xl border border-dashed border-[color:var(--admin-field-border)] p-6 text-center text-sm text-muted-foreground">
                 Trang này chưa có khối nào. Chọn loại khối bên dưới để bắt đầu.
               </p>
             ) : (
@@ -325,7 +367,7 @@ export function PageEditor() {
           </div>
         </>
       )}
-    </div>
+    </AdminPage>
   );
 }
 

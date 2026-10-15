@@ -1,6 +1,10 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { ImageField } from "@/components/admin/page-editor/image-field";
+import { AdminInput } from "@/components/admin/ui/admin-input";
+import { AdminSelect } from "@/components/admin/ui/admin-select";
+import { AdminTextarea } from "@/components/admin/ui/admin-textarea";
 import {
   countChars,
   readCount,
@@ -9,7 +13,16 @@ import {
 } from "@/lib/admin/page-editor/state";
 import type { ItemFieldDef, LocalizedFieldDef } from "@/lib/admin/page-editor/types";
 
-const CONTROL = "mt-1 w-full rounded-md border p-2 text-sm";
+// Lưới ô nhập của một khối hoặc một thẻ: hai cột khi đủ rộng. Đo theo bề rộng của chính nó (container
+// query), không theo màn hình, vì thanh bên và các lớp thẻ lồng nhau làm bề rộng thật khác xa màn hình.
+// Ô chữ song ngữ và danh sách tự chiếm cả hàng (col-span-full); link, số, lựa chọn xếp chung hàng.
+export function FieldGrid({ children }: { children: ReactNode }) {
+  return (
+    <div className="@container">
+      <div className="grid gap-x-4 gap-y-5 @lg:grid-cols-2">{children}</div>
+    </div>
+  );
+}
 
 interface FieldEditorProps {
   def: ItemFieldDef;
@@ -17,16 +30,18 @@ interface FieldEditorProps {
   idBase: string;
   disabled?: boolean;
   mediaVariant?: "loop" | "player";
+  // Gợi ý quy cách ảnh, chỉ dùng cho field ảnh.
+  imageHint?: string;
   // undefined = xóa giá trị của field.
   onChange: (value: unknown) => void;
 }
 
-export function FieldEditor({ def, value, idBase, disabled, mediaVariant = "player", onChange }: FieldEditorProps) {
+export function FieldEditor({ def, value, idBase, disabled, mediaVariant = "player", imageHint, onChange }: FieldEditorProps) {
   const id = `${idBase}-${def.key}`;
   const label = (
     <label className="text-sm font-medium" htmlFor={id}>
       {def.label}
-      {def.required && <span className="text-destructive"> *</span>}
+      {def.required && <span className="text-[color:var(--admin-danger)]"> *</span>}
     </label>
   );
 
@@ -43,17 +58,17 @@ export function FieldEditor({ def, value, idBase, disabled, mediaVariant = "play
           value={readText(value)}
           disabled={disabled}
           mediaVariant={mediaVariant}
+          hint={imageHint}
           onChange={onChange}
         />
       );
     case "link":
       return (
-        <div>
+        <div className="space-y-1.5">
           {label}
-          <input
+          <AdminInput
             id={id}
             type="text"
-            className={CONTROL}
             placeholder="/duong-dan hoặc https://…"
             disabled={disabled}
             value={readText(value)}
@@ -63,15 +78,14 @@ export function FieldEditor({ def, value, idBase, disabled, mediaVariant = "play
       );
     case "count":
       return (
-        <div>
+        <div className="space-y-1.5">
           {label}
-          <input
+          <AdminInput
             id={id}
             type="number"
             min={0}
             step={1}
             inputMode="numeric"
-            className={CONTROL}
             disabled={disabled}
             value={readCount(value)}
             onChange={(e) => onChange(e.target.value === "" ? undefined : Number(e.target.value))}
@@ -81,11 +95,10 @@ export function FieldEditor({ def, value, idBase, disabled, mediaVariant = "play
     case "enum": {
       const current = readText(value);
       return (
-        <div>
+        <div className="space-y-1.5">
           {label}
-          <select
+          <AdminSelect
             id={id}
-            className={CONTROL}
             disabled={disabled}
             value={current}
             onChange={(e) => onChange(e.target.value === "" ? undefined : e.target.value)}
@@ -98,7 +111,7 @@ export function FieldEditor({ def, value, idBase, disabled, mediaVariant = "play
                 {option}
               </option>
             ))}
-          </select>
+          </AdminSelect>
         </div>
       );
     }
@@ -117,32 +130,37 @@ function LocalizedField({ def, value, idBase, disabled, onChange }: LocalizedFie
   const { vi, en } = readLocalized(value);
 
   return (
-    <fieldset className="space-y-2">
-      <legend className="text-sm font-medium">
+    <fieldset className="col-span-full min-w-0">
+      <legend className="mb-2 text-sm font-medium">
         {def.label}
-        {def.required && <span className="text-destructive"> *</span>}
+        {def.required && <span className="text-[color:var(--admin-danger)]"> *</span>}
       </legend>
       {def.kind === "title" && (
-        <p className="text-xs text-muted-foreground">
+        <p className="mb-2 text-xs text-muted-foreground">
           Dùng *chữ* để nhấn mạnh. Không nhập HTML.
         </p>
       )}
-      <LangControl
-        def={def}
-        id={`${idBase}-vi`}
-        label="Tiếng Việt"
-        value={vi}
-        disabled={disabled}
-        onChange={(next) => onChange({ vi: next, en })}
-      />
-      <LangControl
-        def={def}
-        id={`${idBase}-en`}
-        label="Tiếng Anh (tùy chọn)"
-        value={en}
-        disabled={disabled}
-        onChange={(next) => onChange({ vi, en: next })}
-      />
+      {/* Tiếng Việt và tiếng Anh đặt cạnh nhau khi đủ rộng: gần một nửa chiều cao cho mỗi ô chữ. */}
+      <div className="@container">
+        <div className="grid gap-3 @lg:grid-cols-2">
+          <LangControl
+            def={def}
+            id={`${idBase}-vi`}
+            label="Tiếng Việt"
+            value={vi}
+            disabled={disabled}
+            onChange={(next) => onChange({ vi: next, en })}
+          />
+          <LangControl
+            def={def}
+            id={`${idBase}-en`}
+            label="Tiếng Anh (tùy chọn)"
+            value={en}
+            disabled={disabled}
+            onChange={(next) => onChange({ vi, en: next })}
+          />
+        </div>
+      </div>
     </fieldset>
   );
 }
@@ -161,30 +179,28 @@ function LangControl({ def, id, label, value, disabled, onChange }: LangControlP
   const length = countChars(value.normalize("NFC"));
   const over = length > def.max;
   return (
-    <div>
+    <div className="space-y-1.5">
       <div className="flex items-center justify-between">
         <label className="text-xs text-muted-foreground" htmlFor={id}>
           {label}
         </label>
-        <span className={`text-xs ${over ? "text-destructive" : "text-muted-foreground"}`}>
+        <span className={`text-xs ${over ? "text-[color:var(--admin-danger)]" : "text-muted-foreground"}`}>
           {length}/{def.max}
         </span>
       </div>
       {def.kind === "textarea" ? (
-        <textarea
+        <AdminTextarea
           id={id}
           rows={3}
-          className={CONTROL}
           disabled={disabled}
           aria-invalid={over}
           value={value}
           onChange={(e) => onChange(e.target.value)}
         />
       ) : (
-        <input
+        <AdminInput
           id={id}
           type="text"
-          className={CONTROL}
           disabled={disabled}
           aria-invalid={over}
           value={value}

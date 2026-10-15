@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { AdminButton } from "@/components/admin/ui/admin-button";
+import { AdminSelect } from "@/components/admin/ui/admin-select";
 import type { BlockDef } from "@/lib/admin/page-editor/types";
 
 interface BlockPickerProps {
@@ -17,13 +18,13 @@ export function BlockPicker({ blockTypes, count, max, disabled, onAdd }: BlockPi
   const full = count >= max;
 
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-lg border border-dashed p-3">
+    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-dashed border-[color:var(--admin-field-border)] p-3">
       <label className="text-sm font-medium" htmlFor="block-picker-type">
         Thêm khối
       </label>
-      <select
+      <AdminSelect
         id="block-picker-type"
-        className="rounded-md border p-2 text-sm"
+        className="w-auto min-w-44"
         value={type}
         disabled={disabled || full}
         onChange={(e) => setType(e.target.value)}
@@ -33,10 +34,10 @@ export function BlockPicker({ blockTypes, count, max, disabled, onAdd }: BlockPi
             {def.label}
           </option>
         ))}
-      </select>
-      <Button type="button" disabled={disabled || full || type === ""} onClick={() => onAdd(type)}>
+      </AdminSelect>
+      <AdminButton type="button" disabled={disabled || full || type === ""} onClick={() => onAdd(type)}>
         Thêm
-      </Button>
+      </AdminButton>
       <span className="text-xs text-muted-foreground">
         {count}/{max} khối{full ? " — đã đủ, không thêm được nữa" : ""}
       </span>

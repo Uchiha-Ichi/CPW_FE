@@ -2,11 +2,12 @@
 
 import type { ReactNode } from "react";
 import { ChevronDown, ChevronRight, ChevronUp, Trash2 } from "lucide-react";
-import { FieldEditor } from "@/components/admin/page-editor/field-editor";
+import { FieldEditor, FieldGrid } from "@/components/admin/page-editor/field-editor";
 import { ListFieldEditor } from "@/components/admin/page-editor/list-field-editor";
-import { Button } from "@/components/ui/button";
+import { AdminButton } from "@/components/admin/ui/admin-button";
 import { blockSummary, type Path } from "@/lib/admin/page-editor/state";
 import type { BlockDef, EditorBlock } from "@/lib/admin/page-editor/types";
+import { imageHintFor } from "@/lib/blocks/image-specs";
 
 interface BlockCardProps {
   block: EditorBlock;
@@ -40,25 +41,25 @@ export function BlockCard({
   const bodyId = `block-body-${block.id}`;
 
   return (
-    <div className="rounded-lg border bg-card text-card-foreground">
+    <div className="rounded-xl border border-[color:var(--admin-line)] bg-card text-card-foreground">
       <div className="flex items-center gap-2 p-2">
         {handle}
         <button
           type="button"
-          className="flex min-w-0 flex-1 items-center gap-2 rounded-md px-1 py-1 text-left hover:bg-muted/50"
+          className="flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-md px-1 py-1 text-left transition-colors hover:bg-[color:var(--admin-brand-soft)] motion-reduce:transition-none"
           aria-expanded={open}
           aria-controls={bodyId}
           onClick={onToggle}
         >
           {open ? <ChevronDown className="size-4 shrink-0" /> : <ChevronRight className="size-4 shrink-0" />}
           <span className="shrink-0 text-xs text-muted-foreground">{index + 1}.</span>
-          <span className="shrink-0 text-sm font-medium">{label}</span>
+          <span className="min-w-0 truncate text-sm font-medium">{label}</span>
           {summary && (
-            <span className="truncate text-sm text-muted-foreground">— {summary}</span>
+            <span className="truncate text-sm text-muted-foreground max-[760px]:hidden">— {summary}</span>
           )}
         </button>
         <div className="flex shrink-0 items-center gap-1">
-          <Button
+          <AdminButton
             type="button"
             variant="ghost"
             size="icon-sm"
@@ -67,8 +68,8 @@ export function BlockCard({
             onClick={() => onMove(-1)}
           >
             <ChevronUp />
-          </Button>
-          <Button
+          </AdminButton>
+          <AdminButton
             type="button"
             variant="ghost"
             size="icon-sm"
@@ -77,29 +78,30 @@ export function BlockCard({
             onClick={() => onMove(1)}
           >
             <ChevronDown />
-          </Button>
-          <Button
+          </AdminButton>
+          <AdminButton
             type="button"
             variant="ghost"
             size="icon-sm"
-            className="text-destructive"
+            danger
             aria-label={`Xóa khối ${index + 1}`}
             disabled={disabled}
             onClick={onRemove}
           >
             <Trash2 />
-          </Button>
+          </AdminButton>
         </div>
       </div>
 
       {open && (
-        <div id={bodyId} className="space-y-4 border-t p-4">
+        <div id={bodyId} className="border-t border-[color:var(--admin-line)] p-4">
           {def ? (
-            <>
+            <FieldGrid>
               {def.fields.map((field) =>
                 field.kind === "list" ? (
                   <ListFieldEditor
                     key={field.key}
+                    blockType={block.type}
                     def={field}
                     items={asItems(block.data[field.key])}
                     idBase={`${block.id}-${field.key}`}
@@ -114,18 +116,19 @@ export function BlockCard({
                     idBase={block.id}
                     disabled={disabled}
                     mediaVariant={block.type === "banner" ? "loop" : "player"}
+                    imageHint={field.kind === "image" ? imageHintFor(block.type, null, field.key) : undefined}
                     onChange={(value) => onChange([field.key], value)}
                   />
                 ),
               )}
               {def.together?.map((group) => (
-                <p key={group.join("+")} className="text-xs text-muted-foreground">
+                <p key={group.join("+")} className="col-span-full text-xs text-muted-foreground">
                   Cần nhập cùng lúc: {group.map((key) => labelOf(def, key)).join(" và ")}.
                 </p>
               ))}
-            </>
+            </FieldGrid>
           ) : (
-            <p className="text-sm text-destructive">
+            <p className="text-sm text-[color:var(--admin-danger)]">
               Loại khối &quot;{block.type}&quot; không còn trong hệ thống. Hãy xóa khối này.
             </p>
           )}

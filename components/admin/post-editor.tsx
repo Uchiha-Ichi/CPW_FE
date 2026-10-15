@@ -5,7 +5,7 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import type { Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
-import { Button } from "@/components/ui/button";
+import { AdminButton } from "@/components/admin/ui/admin-button";
 import { uploadPostImage } from "@/lib/admin/post-api";
 import { errorMessages } from "@/lib/admin/post-errors";
 import {
@@ -70,7 +70,7 @@ export function PostEditor({
     editorProps: {
       attributes: {
         class:
-          "post-content min-h-[280px] rounded-md border p-3 text-sm focus:outline-none",
+          "post-content min-h-[280px] rounded-lg border border-[color:var(--admin-field-border)] bg-card p-3 text-sm focus:outline-none focus-visible:border-[color:var(--admin-brand-strong)] focus-visible:ring-2 focus-visible:ring-[color:var(--admin-brand-strong)]/30",
         "aria-label": ariaLabel,
         role: "textbox",
         "aria-multiline": "true",
@@ -107,7 +107,10 @@ export function PostEditor({
     editor?.setEditable(!disabled);
   }, [editor, disabled]);
 
-  if (!editor) return <div className="min-h-[280px] rounded-md border" />;
+  if (!editor)
+    return (
+      <div className="min-h-[280px] rounded-lg border border-[color:var(--admin-field-border)] bg-card" />
+    );
 
   function toggleLink() {
     if (!editor) return;
@@ -131,7 +134,7 @@ export function PostEditor({
   }
 
   const tool = (label: string, active: boolean, onClick: () => void) => (
-    <Button
+    <AdminButton
       key={label}
       type="button"
       size="sm"
@@ -140,7 +143,7 @@ export function PostEditor({
       onClick={onClick}
     >
       {label}
-    </Button>
+    </AdminButton>
   );
 
   return (
@@ -171,7 +174,7 @@ export function PostEditor({
           editor.chain().focus().toggleBlockquote().run()
         )}
         {tool("Liên kết", editor.isActive("link"), toggleLink)}
-        <Button
+        <AdminButton
           type="button"
           size="sm"
           variant="outline"
@@ -179,7 +182,7 @@ export function PostEditor({
           onClick={() => fileInput.current?.click()}
         >
           Chèn ảnh
-        </Button>
+        </AdminButton>
       </div>
       <EditorContent editor={editor} />
       <input

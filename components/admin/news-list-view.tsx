@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { AdminButton } from "@/components/admin/ui/admin-button";
+import { AdminNotice } from "@/components/admin/ui/admin-notice";
+import { AdminPage } from "@/components/admin/ui/admin-page";
+import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
+import { AdminTable } from "@/components/admin/ui/admin-table";
+import { StatusChip } from "@/components/admin/ui/status-chip";
 import {
   deletePost,
   getAdminPost,
@@ -102,14 +107,16 @@ export function NewsListView() {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Tin tức</h1>
-        <Button onClick={() => router.push("/admin/news/new")}>Viết bài mới</Button>
-      </div>
+    <AdminPage>
+      <AdminPageHeader
+        title="Tin tức"
+        actions={
+          <AdminButton onClick={() => router.push("/admin/news/new")}>Viết bài mới</AdminButton>
+        }
+      />
 
       {sessionExpired && (
-        <div className="mt-3 rounded-md border border-destructive p-3 text-sm text-destructive">
+        <AdminNotice tone="danger" className="mb-4">
           Phiên đăng nhập đã hết hạn.{" "}
           <a
             href="/admin/login"
@@ -120,100 +127,104 @@ export function NewsListView() {
             Đăng nhập lại ở tab mới
           </a>{" "}
           rồi tải lại trang này.
-        </div>
+        </AdminNotice>
       )}
 
       {errors.length > 0 && (
-        <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-destructive">
-          {errors.map((m, i) => (
-            <li key={i}>{m}</li>
-          ))}
-        </ul>
+        <AdminNotice tone="danger" className="mb-4">
+          <ul className="list-disc space-y-1 pl-5">
+            {errors.map((m, i) => (
+              <li key={i}>{m}</li>
+            ))}
+          </ul>
+        </AdminNotice>
       )}
 
-      <div className="mt-6 overflow-x-auto rounded-md border">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b bg-muted/50">
-              <th className="p-3 text-left font-medium">Bài viết</th>
-              <th className="p-3 text-left font-medium">Chuyên mục</th>
-              <th className="p-3 text-left font-medium">Ngày đăng</th>
-              <th className="p-3 text-left font-medium">Trạng thái</th>
-              <th className="p-3 text-right font-medium">Thao tác</th>
+      <AdminTable>
+        <thead>
+          <tr>
+            <th>Bài viết</th>
+            <th>Chuyên mục</th>
+            <th>Ngày đăng</th>
+            <th>Trạng thái</th>
+            <th className="admin-act">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          {loading && (
+            <tr>
+              <td colSpan={5} className="admin-empty">
+                Đang tải…
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {loading && (
-              <tr>
-                <td colSpan={5} className="p-6 text-center text-muted-foreground">
-                  Đang tải…
+          )}
+          {!loading &&
+            posts.map((p) => (
+              <tr key={p._id}>
+                <td>
+                  <div className="font-medium">{p.vi.title}</div>
+                  {p.vi.excerpt && (
+                    <div className="text-xs text-muted-foreground">{p.vi.excerpt}</div>
+                  )}
                 </td>
-              </tr>
-            )}
-            {!loading &&
-              posts.map((p) => (
-                <tr key={p._id} className="border-b last:border-0">
-                  <td className="p-3">
-                    <div className="font-medium">{p.vi.title}</div>
-                    {p.vi.excerpt && (
-                      <div className="text-xs text-muted-foreground">{p.vi.excerpt}</div>
-                    )}
-                  </td>
-                  <td className="p-3">{POST_CATEGORY_LABELS[p.category]}</td>
-                  <td className="p-3">
-                    {p.status === "published" ? formatDate(p.publishedAt) : "—"}
-                  </td>
-                  <td className="p-3">
+                <td data-label="Chuyên mục">{POST_CATEGORY_LABELS[p.category]}</td>
+                <td data-label="Ngày đăng">
+                  {p.status === "published" ? formatDate(p.publishedAt) : "—"}
+                </td>
+                <td data-label="Trạng thái">
+                  <StatusChip tone={p.status === "published" ? "ok" : "warn"}>
                     {POST_STATUS_LABELS[p.status]}
-                    {p.en?.title && (
-                      <span className="ml-2 rounded border px-1 text-xs text-muted-foreground">
-                        EN
-                      </span>
-                    )}
-                  </td>
-                  <td className="space-x-2 p-3 text-right">
-                    <Button
+                  </StatusChip>
+                  {p.en?.title && (
+                    <span className="ml-2 rounded border border-[color:var(--admin-line)] px-1.5 text-xs font-medium text-muted-foreground">
+                      EN
+                    </span>
+                  )}
+                </td>
+                <td className="admin-act">
+                  <div className="inline-flex justify-end gap-1 max-[760px]:flex-wrap">
+                    <AdminButton
                       variant="ghost"
                       size="sm"
                       disabled={busyId === p._id}
                       onClick={() => router.push(`/admin/news/${p._id}`)}
                     >
                       Sửa
-                    </Button>
-                    <Button
+                    </AdminButton>
+                    <AdminButton
                       variant="ghost"
                       size="sm"
                       disabled={busyId === p._id}
                       onClick={() => toggleStatus(p)}
                     >
                       {p.status === "published" ? "Gỡ đăng" : "Đăng"}
-                    </Button>
-                    <Button
+                    </AdminButton>
+                    <AdminButton
                       variant="ghost"
                       size="sm"
-                      className="text-destructive"
+                      danger
                       disabled={busyId === p._id}
                       onClick={() => remove(p)}
                     >
                       Xóa
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            {!loading && posts.length === 0 && (
-              <tr>
-                <td colSpan={5} className="p-6 text-center text-muted-foreground">
-                  Chưa có bài viết nào.
+                    </AdminButton>
+                  </div>
                 </td>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            ))}
+          {!loading && posts.length === 0 && (
+            <tr>
+              <td colSpan={5} className="admin-empty">
+                Chưa có bài viết nào.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </AdminTable>
 
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-end gap-3 text-sm">
-          <Button
+          <AdminButton
             variant="outline"
             size="sm"
             disabled={page <= 1 || loading}
@@ -223,11 +234,11 @@ export function NewsListView() {
             }}
           >
             Trước
-          </Button>
+          </AdminButton>
           <span>
             Trang {page} / {totalPages}
           </span>
-          <Button
+          <AdminButton
             variant="outline"
             size="sm"
             disabled={page >= totalPages || loading}
@@ -237,9 +248,9 @@ export function NewsListView() {
             }}
           >
             Sau
-          </Button>
+          </AdminButton>
         </div>
       )}
-    </div>
+    </AdminPage>
   );
 }

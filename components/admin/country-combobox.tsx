@@ -68,7 +68,7 @@ export function CountryCombobox({
         <ComboboxInput
           placeholder="Chọn quốc gia…"
           aria-label="Quốc gia"
-          className="w-full"
+          className="h-10 w-full border-[color:var(--admin-field-border)] bg-card has-[[data-slot=input-group-control]:focus-visible]:border-[color:var(--admin-brand-strong)] has-[[data-slot=input-group-control]:focus-visible]:ring-2 has-[[data-slot=input-group-control]:focus-visible]:ring-[color:var(--admin-brand-strong)]/30 max-[760px]:h-11"
         >
           {selected && (
             <InputGroupAddon align="inline-start">

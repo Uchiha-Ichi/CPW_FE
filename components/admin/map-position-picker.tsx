@@ -86,7 +86,7 @@ export function MapPositionPicker({
     <div>
       <div
         ref={containerRef}
-        className="relative mt-1 aspect-[950/620] w-full overflow-hidden rounded-md border border-input bg-slate-900/5 dark:bg-slate-50/5"
+        className="relative mt-1 aspect-[950/620] w-full overflow-hidden rounded-lg border border-[color:var(--admin-field-border)] bg-foreground/5"
       >
         <div
           role="slider"
@@ -126,7 +126,7 @@ export function MapPositionPicker({
               setZoom(1);
               setPan({ x: 0, y: 0 });
             }}
-            className="font-medium text-primary hover:underline shrink-0"
+            className="font-medium text-[color:var(--admin-brand-ink)] hover:underline shrink-0"
           >
             Đặt lại góc nhìn
           </button>

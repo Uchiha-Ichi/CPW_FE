@@ -1,3 +1,5 @@
+import { AdminNotice } from "@/components/admin/ui/admin-notice";
+
 interface ErrorListProps {
   messages: string[];
 }
@@ -5,7 +7,7 @@ interface ErrorListProps {
 export function ErrorList({ messages }: ErrorListProps) {
   if (messages.length === 0) return null;
   return (
-    <div role="alert" className="rounded-md border border-destructive p-3 text-sm text-destructive">
+    <AdminNotice tone="danger">
       {messages.length === 1 ? (
         <p>{messages[0]}</p>
       ) : (
@@ -18,6 +20,6 @@ export function ErrorList({ messages }: ErrorListProps) {
           </ul>
         </>
       )}
-    </div>
+    </AdminNotice>
   );
 }

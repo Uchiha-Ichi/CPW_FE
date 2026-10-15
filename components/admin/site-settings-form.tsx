@@ -4,8 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { cloneElement, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { AdminButton } from "@/components/admin/ui/admin-button";
+import { AdminInput } from "@/components/admin/ui/admin-input";
+import { AdminNotice } from "@/components/admin/ui/admin-notice";
 import { Label } from "@/components/ui/label";
 import { errorMessages, isSessionExpired } from "@/lib/admin/post-errors";
 import { getAdminSiteSettings, saveAdminSiteSettings } from "@/lib/admin/site-settings-api";
@@ -54,7 +55,7 @@ function Field({
         </p>
       )}
       {error && (
-        <p id={errorId} role="alert" className="text-sm text-destructive">
+        <p id={errorId} role="alert" className="text-sm text-[color:var(--admin-danger)]">
           {error}
         </p>
       )}
@@ -131,19 +132,21 @@ export function SiteSettingsForm() {
   if (loadFailed) {
     return (
       <div className="space-y-4">
-        <ul role="alert" className="list-disc space-y-1 pl-5 text-sm text-destructive">
-          {errors.map((message, index) => (
-            <li key={`${index}-${message}`}>{message}</li>
-          ))}
-        </ul>
+        <AdminNotice tone="danger">
+          <ul className="list-disc space-y-1 pl-5">
+            {errors.map((message, index) => (
+              <li key={`${index}-${message}`}>{message}</li>
+            ))}
+          </ul>
+        </AdminNotice>
         {sessionExpired && (
           <p className="text-sm">
             <Link className="underline" href="/admin/login">Đăng nhập lại</Link>
           </p>
         )}
-        <Button type="button" onClick={retryLoad}>
+        <AdminButton type="button" onClick={retryLoad}>
           Tải lại
-        </Button>
+        </AdminButton>
       </div>
     );
   }
@@ -153,18 +156,18 @@ export function SiteSettingsForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-8">
       {sessionExpired && (
-        <p role="alert" className="rounded-md border border-destructive/40 p-3 text-sm">
+        <AdminNotice tone="danger">
           Phiên đăng nhập đã hết hạn. <Link className="underline" href="/admin/login">Đăng nhập lại</Link>
-        </p>
+        </AdminNotice>
       )}
 
       <fieldset className="space-y-4">
         <legend className={legend}>Công ty</legend>
         <Field id="name" label="Tên công ty" error={fieldErrors.name?.message}>
-          <Input id="name" {...register("name")} />
+          <AdminInput id="name" {...register("name")} />
         </Field>
         <Field id="taxId" label="Mã số thuế" error={fieldErrors.taxId?.message}>
-          <Input id="taxId" {...register("taxId")} />
+          <AdminInput id="taxId" {...register("taxId")} />
         </Field>
       </fieldset>
 
@@ -176,10 +179,10 @@ export function SiteSettingsForm() {
           hint="Nhập đúng kiểu muốn hiển thị, ví dụ 086.836.6662. Liên kết gọi điện được tự tạo."
           error={fieldErrors.phone?.message}
         >
-          <Input id="phone" type="tel" {...register("phone")} />
+          <AdminInput id="phone" type="tel" {...register("phone")} />
         </Field>
         <Field id="email" label="Email" error={fieldErrors.email?.message}>
-          <Input id="email" type="email" {...register("email")} />
+          <AdminInput id="email" type="email" {...register("email")} />
         </Field>
       </fieldset>
 
@@ -190,7 +193,7 @@ export function SiteSettingsForm() {
         </p>
         {SOCIAL_KEYS.map((key) => (
           <Field key={key} id={`social-${key}`} label={SOCIAL_LABELS[key]} error={fieldErrors.socials?.[key]?.message}>
-            <Input
+            <AdminInput
               id={`social-${key}`}
               inputMode="url"
               placeholder="https://"
@@ -208,30 +211,32 @@ export function SiteSettingsForm() {
             label="Số nhà, đường, phường"
             error={fieldErrors.offices?.[key]?.street?.message}
           >
-            <Input id={`${key}-street`} {...register(`offices.${key}.street`)} />
+            <AdminInput id={`${key}-street`} {...register(`offices.${key}.street`)} />
           </Field>
           <Field id={`${key}-city`} label="Thành phố" error={fieldErrors.offices?.[key]?.city?.message}>
-            <Input id={`${key}-city`} {...register(`offices.${key}.city`)} />
+            <AdminInput id={`${key}-city`} {...register(`offices.${key}.city`)} />
           </Field>
         </fieldset>
       ))}
 
       {errors.length > 0 && (
-        <ul role="alert" className="list-disc space-y-1 pl-5 text-sm text-destructive">
-          {errors.map((message, index) => (
-            <li key={`${index}-${message}`}>{message}</li>
-          ))}
-        </ul>
+        <AdminNotice tone="danger">
+          <ul className="list-disc space-y-1 pl-5">
+            {errors.map((message, index) => (
+              <li key={`${index}-${message}`}>{message}</li>
+            ))}
+          </ul>
+        </AdminNotice>
       )}
       {saved && (
-        <p role="status" className="text-sm">
+        <AdminNotice tone="ok">
           Đã lưu. Trang công khai cập nhật trong vòng 1 phút.
-        </p>
+        </AdminNotice>
       )}
 
-      <Button type="submit" disabled={saving}>
+      <AdminButton type="submit" disabled={saving}>
         {saving ? "Đang lưu…" : "Lưu"}
-      </Button>
+      </AdminButton>
     </form>
   );
 }

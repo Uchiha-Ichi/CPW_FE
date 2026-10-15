@@ -2,9 +2,18 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { ArrowLeft } from "lucide-react";
+import { AdminButton } from "@/components/admin/ui/admin-button";
+import { AdminInput } from "@/components/admin/ui/admin-input";
+import { AdminNotice } from "@/components/admin/ui/admin-notice";
+import { AdminPage } from "@/components/admin/ui/admin-page";
+import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
+import { AdminPanel } from "@/components/admin/ui/admin-panel";
+import { AdminSelect } from "@/components/admin/ui/admin-select";
+import { AdminTextarea } from "@/components/admin/ui/admin-textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import { ImagePlaceholder } from "@/components/shared/image-placeholder";
 import { CoverField } from "@/components/admin/post-cover-field";
 import { PostEditor } from "@/components/admin/post-editor";
@@ -244,22 +253,28 @@ export function NewsComposerView({ articleId }: { articleId: string | null }) {
   }
 
   if (loading) {
-    return <p className="p-6 text-sm text-muted-foreground">Đang tải…</p>;
+    return (
+      <AdminPage width="wide">
+        <p className="text-sm text-muted-foreground">Đang tải…</p>
+      </AdminPage>
+    );
   }
 
   if (loadError) {
     return (
-      <div className="p-6">
-        <p className="text-sm text-destructive">{loadError.join(" ")}</p>
-        {sessionExpired && <LoginAgainLink />}
-        <Button
+      <AdminPage width="wide">
+        <AdminNotice tone="danger">
+          {loadError.join(" ")}
+          {sessionExpired && <LoginAgainLink />}
+        </AdminNotice>
+        <AdminButton
           className="mt-4"
           variant="outline"
           onClick={() => router.push("/admin/news")}
         >
           Danh sách bài viết
-        </Button>
-      </div>
+        </AdminButton>
+      </AdminPage>
     );
   }
 
@@ -273,94 +288,93 @@ export function NewsComposerView({ articleId }: { articleId: string | null }) {
   const publishedDate = wasLive ? formatDate(serverPost?.publishedAt) : "";
 
   return (
-    <div className="p-6">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.push("/admin/news")}
-          >
-            Danh sách bài viết
-          </Button>
-          <h1 className="text-xl font-semibold">
-            {articleId ? "Sửa bài viết" : "Thêm bài viết"}
-          </h1>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {uploadingImages && (
-            <span className="text-sm text-muted-foreground">Đang tải ảnh…</span>
-          )}
-          {wasLive ? (
-            <>
-              <Button
-                variant="outline"
-                disabled={busy}
-                onClick={() => save("draft")}
-              >
-                Gỡ về bản nháp
-              </Button>
-              <Button disabled={busy} onClick={() => save("published")}>
-                Lưu thay đổi
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                variant="outline"
-                disabled={busy}
-                onClick={() => save("draft")}
-              >
-                Lưu bản nháp
-              </Button>
-              <Button disabled={busy} onClick={() => save("published")}>
-                Đăng bài
-              </Button>
-            </>
-          )}
-        </div>
-      </div>
+    <AdminPage width="wide">
+      <AdminButton
+        variant="ghost"
+        size="sm"
+        className="-ml-2 mb-2"
+        onClick={() => router.push("/admin/news")}
+      >
+        <ArrowLeft aria-hidden />
+        Danh sách bài viết
+      </AdminButton>
+      <AdminPageHeader
+        title={articleId ? "Sửa bài viết" : "Thêm bài viết"}
+        actions={
+          <>
+            {uploadingImages && (
+              <span className="text-sm text-muted-foreground">Đang tải ảnh…</span>
+            )}
+            {wasLive ? (
+              <>
+                <AdminButton
+                  variant="outline"
+                  disabled={busy}
+                  onClick={() => save("draft")}
+                >
+                  Gỡ về bản nháp
+                </AdminButton>
+                <AdminButton disabled={busy} onClick={() => save("published")}>
+                  Lưu thay đổi
+                </AdminButton>
+              </>
+            ) : (
+              <>
+                <AdminButton
+                  variant="outline"
+                  disabled={busy}
+                  onClick={() => save("draft")}
+                >
+                  Lưu bản nháp
+                </AdminButton>
+                <AdminButton disabled={busy} onClick={() => save("published")}>
+                  Đăng bài
+                </AdminButton>
+              </>
+            )}
+          </>
+        }
+      />
 
       {pendingDraft && (
-        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-md border p-3 text-sm">
+        <AdminNotice tone="info" className="mb-4 flex flex-wrap items-center gap-2">
           <span>
             Tìm thấy bản chưa lưu lúc{" "}
             {new Date(pendingDraft.savedAt).toLocaleString("vi-VN")}.
           </span>
-          <Button size="sm" onClick={restoreDraft}>
+          <AdminButton size="sm" onClick={restoreDraft}>
             Khôi phục
-          </Button>
-          <Button size="sm" variant="ghost" onClick={discardDraft}>
+          </AdminButton>
+          <AdminButton size="sm" variant="ghost" onClick={discardDraft}>
             Bỏ
-          </Button>
-        </div>
+          </AdminButton>
+        </AdminNotice>
       )}
 
       {sessionExpired && (
-        <div className="mt-3 rounded-md border border-destructive p-3 text-sm text-destructive">
+        <AdminNotice tone="danger" className="mb-4">
           Phiên đăng nhập đã hết hạn. Nội dung của bạn vẫn còn trên trang này.
           <LoginAgainLink /> rồi quay lại đây bấm lưu lại.
-        </div>
+        </AdminNotice>
       )}
 
       {(errors.length > 0 || issues.length > 0) && (
-        <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-destructive">
-          {[...issues.map((i) => i.message), ...errors].map((m, i) => (
-            <li key={i}>{m}</li>
-          ))}
-        </ul>
+        <AdminNotice tone="danger" className="mb-4">
+          <ul className="list-disc space-y-1 pl-5">
+            {[...issues.map((i) => i.message), ...errors].map((m, i) => (
+              <li key={i}>{m}</li>
+            ))}
+          </ul>
+        </AdminNotice>
       )}
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <Card className="space-y-3 p-4">
+      <div className="grid gap-6 xl:grid-cols-2">
+        <AdminPanel className="flex flex-col gap-4 p-5">
           <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-sm font-medium" htmlFor="post-category">
-                Chuyên mục
-              </label>
-              <select
+            <div className="space-y-1.5">
+              <Label htmlFor="post-category">Chuyên mục</Label>
+              <AdminSelect
                 id="post-category"
-                className="mt-1 w-full rounded-md border p-2 text-sm"
                 value={form.category}
                 onChange={(e) => updateCategory(e.target.value as PostCategory)}
               >
@@ -369,11 +383,11 @@ export function NewsComposerView({ articleId }: { articleId: string | null }) {
                     {POST_CATEGORY_LABELS[c]}
                   </option>
                 ))}
-              </select>
+              </AdminSelect>
             </div>
-            <div>
-              <p className="text-sm font-medium">Ngày đăng</p>
-              <p className="mt-1 p-2 text-sm text-muted-foreground">
+            <div className="space-y-1.5">
+              <p className="text-sm leading-none font-medium">Ngày đăng</p>
+              <p className="flex min-h-10 items-center text-sm text-muted-foreground">
                 {publishedDate || "Chưa đăng"}
               </p>
             </div>
@@ -421,7 +435,7 @@ export function NewsComposerView({ articleId }: { articleId: string | null }) {
             )}
           </p>
 
-          <div role="tablist" className="flex gap-1 border-b">
+          <div role="tablist" className="flex gap-1 border-b border-[color:var(--admin-line)]">
             {(["vi", "en"] as const).map((l) => (
               <button
                 key={l}
@@ -429,16 +443,17 @@ export function NewsComposerView({ articleId }: { articleId: string | null }) {
                 role="tab"
                 aria-selected={lang === l}
                 onClick={() => setLang(l)}
-                className={`-mb-px border-b-2 px-3 py-2 text-sm ${
+                className={cn(
+                  "-mb-px min-h-11 border-b-2 px-3 py-2 text-sm transition-colors motion-reduce:transition-none",
                   lang === l
-                    ? "border-primary font-medium"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}
+                    ? "border-[color:var(--admin-brand-strong)] font-semibold text-[color:var(--admin-brand-ink)]"
+                    : "border-transparent text-muted-foreground hover:text-foreground",
+                )}
               >
                 {LANG_LABELS[l]}
                 {l === "en" && !isEnglishBlank(form.en) && (
                   <span
-                    className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-primary align-middle"
+                    className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--admin-brand-strong)] align-middle"
                     aria-label="đã nhập"
                   />
                 )}
@@ -446,26 +461,20 @@ export function NewsComposerView({ articleId }: { articleId: string | null }) {
             ))}
           </div>
 
-          <div>
-            <label className="text-sm font-medium" htmlFor="post-title">
-              Tiêu đề ({LANG_LABELS[lang]})
-            </label>
-            <input
+          <div className="space-y-1.5">
+            <Label htmlFor="post-title">Tiêu đề ({LANG_LABELS[lang]})</Label>
+            <AdminInput
               id="post-title"
-              className="mt-1 w-full rounded-md border p-2 text-sm aria-invalid:border-destructive"
               aria-invalid={titleInvalid}
               value={current.title}
               onChange={(e) => updateLocale(lang, "title", e.target.value)}
             />
           </div>
 
-          <div>
-            <label className="text-sm font-medium" htmlFor="post-excerpt">
-              Mô tả ngắn ({LANG_LABELS[lang]})
-            </label>
-            <textarea
+          <div className="space-y-1.5">
+            <Label htmlFor="post-excerpt">Mô tả ngắn ({LANG_LABELS[lang]})</Label>
+            <AdminTextarea
               id="post-excerpt"
-              className="mt-1 w-full rounded-md border p-2 text-sm"
               style={{ minHeight: 80 }}
               placeholder="Để trống thì hệ thống tự lấy từ phần đầu nội dung."
               value={current.excerpt}
@@ -473,28 +482,26 @@ export function NewsComposerView({ articleId }: { articleId: string | null }) {
             />
           </div>
 
-          <div>
-            <label className="text-sm font-medium">
+          <div className="space-y-1.5">
+            <p className="text-sm leading-none font-medium">
               Nội dung ({LANG_LABELS[lang]})
-            </label>
-            <div className="mt-1">
-              <PostEditor
-                key={`${lang}-${editorKey}`}
-                value={current.content}
-                onChange={(html) => updateLocale(lang, "content", html)}
-                onError={setErrors}
-                onBusyChange={setUploadingImages}
-                disabled={saving}
-                ariaLabel={`Nội dung bài viết (${LANG_LABELS[lang]})`}
-              />
-            </div>
+            </p>
+            <PostEditor
+              key={`${lang}-${editorKey}`}
+              value={current.content}
+              onChange={(html) => updateLocale(lang, "content", html)}
+              onError={setErrors}
+              onBusyChange={setUploadingImages}
+              disabled={saving}
+              ariaLabel={`Nội dung bài viết (${LANG_LABELS[lang]})`}
+            />
             {warning && lang === "en" && (
-              <p className="mt-2 text-xs text-muted-foreground">{warning}</p>
+              <p className="pt-1 text-xs text-muted-foreground">{warning}</p>
             )}
           </div>
-        </Card>
+        </AdminPanel>
 
-        <Card className="p-4">
+        <AdminPanel className="p-5">
           <p className="text-sm font-medium">Xem trước ({LANG_LABELS[lang]})</p>
           <article className="mt-3">
             {coverPreview ? (
@@ -514,9 +521,10 @@ export function NewsComposerView({ articleId }: { articleId: string | null }) {
               <span>·</span>
               <span>{readingMinutes(previewHtml)} phút đọc</span>
             </div>
-            <h1 className="mt-2 text-2xl font-semibold">
+            {/* h2, không phải h1: trang đã có h1 (tên trang) và đây chỉ là bản xem trước của bài. */}
+            <h2 className="mt-2 text-2xl">
               {current.title || "Tiêu đề bài viết"}
-            </h1>
+            </h2>
             {current.excerpt && (
               <p className="mt-2 text-muted-foreground">{current.excerpt}</p>
             )}
@@ -533,9 +541,9 @@ export function NewsComposerView({ articleId }: { articleId: string | null }) {
               </p>
             )}
           </article>
-        </Card>
+        </AdminPanel>
       </div>
-    </div>
+    </AdminPage>
   );
 }
 

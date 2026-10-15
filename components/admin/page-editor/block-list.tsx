@@ -126,7 +126,7 @@ function SortableBlock({ block, ...cardProps }: SortableBlockProps) {
       ref={setActivatorNodeRef}
       aria-label={`Kéo để đổi vị trí khối ${cardProps.index + 1}`}
       disabled={cardProps.disabled}
-      className="flex size-8 shrink-0 cursor-grab touch-none items-center justify-center rounded-md text-muted-foreground hover:bg-muted active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-50"
+      className="flex size-9 shrink-0 cursor-grab touch-none items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-[color:var(--admin-brand-soft)] active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-50 max-[760px]:size-11 motion-reduce:transition-none"
       {...attributes}
       {...listeners}
     >

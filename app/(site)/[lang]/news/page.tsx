@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { Reveal } from "@/components/blocks/shared/reveal";
+import { PageHero } from "@/components/layout/page-hero";
+import { PageSection } from "@/components/layout/page-section";
 import { CategoryFilter } from "@/components/news/category-filter";
 import { Pagination } from "@/components/news/pagination";
 import { PostCard } from "@/components/news/post-card";
@@ -62,7 +65,7 @@ export default async function NewsPage({ params, searchParams }: Props) {
   const [featured, ...rest] = items;
 
   return (
-    <div className="pb-20 pt-24">
+    <>
       <JsonLd
         data={breadcrumbJsonLd([
           { name: common("home"), url: `${SITE_URL}/${lang}` },
@@ -70,34 +73,35 @@ export default async function NewsPage({ params, searchParams }: Props) {
         ])}
       />
 
-      <section className="mx-auto max-w-6xl px-4 py-16 text-center">
-        <div className="mb-6 inline-flex items-center gap-2 text-[0.7rem] font-medium uppercase tracking-[0.22em] text-primary">
-          <span className="h-px w-10 bg-primary" />
-          {t("eyebrow")}
-        </div>
-        <h1 className="font-display text-5xl font-bold leading-[1.1] tracking-[-0.01em] md:text-6xl">
-          {t.rich("title", { em: (chunks) => <em className="not-italic text-primary">{chunks}</em> })}
-        </h1>
-        <p className="mx-auto mt-8 max-w-[55ch] text-lg leading-relaxed text-muted-foreground">{t("lead")}</p>
-      </section>
+      <PageHero
+        eyebrow={t("eyebrow")}
+        title={t.rich("title", { em: (chunks) => <em className="not-italic text-primary">{chunks}</em> })}
+        lead={t("lead")}
+      />
 
-      <CategoryFilter active={category} label={t("categoriesLabel")} labels={labels} />
+      <PageSection>
+        <CategoryFilter active={category} label={t("categoriesLabel")} labels={labels} />
 
-      <section className="mx-auto mt-12 max-w-[1240px] px-4">
-        {result.status === "error" ? (
-          <p role="status" className="py-12 text-center text-muted-foreground">{t("error")}</p>
-        ) : !featured ? (
-          <p className="py-12 text-center text-muted-foreground">{t("empty")}</p>
-        ) : (
-          <div className="grid gap-10 lg:grid-cols-2">
-            <PostCard post={featured} lang={lang} variant="featured" categoryLabel={labels[featured.category]} />
-            <div className="flex flex-col gap-6">
-              {rest.map((post) => (
-                <PostCard key={post._id} post={post} lang={lang} variant="row" categoryLabel={labels[post.category]} />
-              ))}
+        <div className="mt-8">
+          {result.status === "error" ? (
+            <p role="status" className="py-12 text-muted-foreground">{t("error")}</p>
+          ) : !featured ? (
+            <p className="py-12 text-muted-foreground">{t("empty")}</p>
+          ) : (
+            <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
+              <Reveal>
+                <PostCard post={featured} lang={lang} variant="featured" categoryLabel={labels[featured.category]} />
+              </Reveal>
+              <div className="flex flex-col gap-6">
+                {rest.map((post) => (
+                  <Reveal key={post._id}>
+                    <PostCard post={post} lang={lang} variant="row" categoryLabel={labels[post.category]} />
+                  </Reveal>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {result.status === "ok" && (
           <Pagination
@@ -112,7 +116,7 @@ export default async function NewsPage({ params, searchParams }: Props) {
             }}
           />
         )}
-      </section>
-    </div>
+      </PageSection>
+    </>
   );
 }

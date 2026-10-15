@@ -1,0 +1,199 @@
+/* Hệ thống kênh. Từ 1024px: số liệu một cột, bảng logo nền tảng một cột. Dưới 1024px: xếp dọc, bảng logo ở dưới.
+   Màu nền tảng lấy từ logo chính thức; màu còn lại dùng token site nên đổi theo giao diện sáng/tối. */
+
+.section {
+  background-image: radial-gradient(
+    55% 60% at 50% 0%,
+    color-mix(in srgb, var(--primary) 8%, transparent),
+    transparent 72%
+  );
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 3.5rem;
+  align-items: center;
+}
+@media (min-width: 1024px) {
+  .layout[data-wall] {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 5rem;
+  }
+}
+
+/* ── Các con số ── */
+.numbers {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2.25rem 1.5rem;
+  margin: 2.75rem 0 0;
+}
+@media (min-width: 1024px) {
+  .layout:not([data-wall]) .numbers {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.number {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.6rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+/* Font thân, không dùng Prata: Prata không phân biệt được chữ số 1 với chữ l. */
+.value {
+  font-size: clamp(2.4rem, 4.4vw, 3.6rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.unit {
+  margin-left: 0.3em;
+  font-size: 0.5em;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--primary);
+}
+.label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+/* ── Bảng logo nền tảng ──
+   Lưới 12 cột để hàng 3 ô và hàng 2 ô cùng lấp đầy bề ngang. --span (số cột của ô) và --brand (màu nền tảng)
+   do component đặt trên từng ô. */
+.wall {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+.cell {
+  grid-column: span var(--span);
+  min-width: 0;
+  border-radius: 1rem;
+}
+.tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.5rem;
+  height: 100%;
+  min-height: 12rem;
+  padding: 1.25rem 1.35rem 1.3rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--brand) 22%, var(--border));
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--brand) 7%, var(--card));
+  color: var(--card-foreground);
+}
+.mark {
+  position: relative;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+.monogram {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.6rem;
+  background: color-mix(in srgb, var(--foreground) 9%, transparent);
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.name {
+  position: relative;
+  font-size: clamp(1rem, 1.7vw, 1.2rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+}
+/* Họa tiết nền: logo cùng nền tảng, cắt ở góc dưới phải, rất mờ. */
+.ghost {
+  position: absolute;
+  right: -1.6rem;
+  bottom: -2rem;
+  width: 8.5rem;
+  height: 8.5rem;
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+/* Bảng 4 ô một hàng: ô hẹp hơn nên logo, chữ và họa tiết nhỏ lại. */
+.cell[data-per="4"] .tile {
+  min-height: 8.5rem;
+  padding: 1rem;
+}
+.cell[data-per="4"] .mark,
+.cell[data-per="4"] .monogram {
+  width: 2rem;
+  height: 2rem;
+}
+.cell[data-per="4"] .name {
+  font-size: 0.95rem;
+}
+.cell[data-per="4"] .ghost {
+  width: 6.5rem;
+  height: 6.5rem;
+}
+
+/* Màn hình hẹp: hai ô một hàng; ô cuối lẻ thì chiếm cả hàng. */
+@media (max-width: 519px) {
+  .cell {
+    grid-column: span 6;
+  }
+  .cell:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+  .tile {
+    min-height: 8rem;
+    gap: 1rem;
+    padding: 1rem 1.1rem;
+  }
+  .ghost {
+    right: -1.3rem;
+    bottom: -1.6rem;
+    width: 6.5rem;
+    height: 6.5rem;
+  }
+  .cell[data-per="4"] .tile {
+    min-height: 7.5rem;
+  }
+  /* .number xếp ngược (column-reverse) nên flex-end là đầu ô: các số cùng hàng thẳng với nhau dù nhãn 1 hay 2 dòng. */
+  .number {
+    justify-content: flex-end;
+  }
+}
+
+/* ── Chuyển động (chỉ khi người dùng không bật reduced-motion, và chỉ với con trỏ thật: không có hover dính trên cảm ứng) ── */
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+  .cell {
+    transition:
+      translate 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+  .cell:hover {
+    translate: 0 -4px;
+    box-shadow: 0 16px 30px -16px color-mix(in srgb, var(--brand) 60%, transparent);
+  }
+  .ghost {
+    transition: opacity 0.25s ease;
+  }
+  .cell:hover .ghost {
+    opacity: 0.18;
+  }
+}

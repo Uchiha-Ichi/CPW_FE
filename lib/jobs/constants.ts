@@ -20,6 +20,9 @@ const EMPLOYMENT_TYPES = {
   "Thực tập": "INTERN",
 } as const;
 
+// id của khối form ứng tuyển: nút "Ứng tuyển" trong danh sách cuộn tới đây.
+export const APPLY_ANCHOR_ID = "apply";
+
 const own = (obj: object, key: string) => Object.prototype.hasOwnProperty.call(obj, key);
 
 export function departmentKeyOf(department: string): DepartmentKey | undefined {

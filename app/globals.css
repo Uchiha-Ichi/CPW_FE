@@ -63,12 +63,18 @@
   h1, h2, h3, h4, h5, h6 {
     line-height: 1.12;
     letter-spacing: -0.015em;
-    font-family: var(--font-display), serif;
+    font-family: var(--font-display), sans-serif;
+    /* Độ đậm mặc định của mọi tiêu đề: preflight đặt `inherit` nên tiêu đề không ghi độ đậm sẽ mảnh (400)
+       trong khi tiêu đề `font-bold` là 700. 700 là độ đậm phần lớn tiêu đề của site đã dùng. */
+    font-weight: 700;
   }
   body {
     background: var(--background);
     color: var(--foreground);
     font-family: var(--font-body), sans-serif;
+    /* Tạo stacking context riêng: nếu không, nền của chính body (bên dưới) lại vẽ đè lên
+       body::before/::after (fixed, z-index âm) vì chúng thoát ra context gốc của html. */
+    isolation: isolate;
     @apply bg-background text-foreground;
   }
   * {
@@ -94,7 +100,8 @@
   --tech-border: rgba(7, 20, 38, 0.10);
   --tech-glass: rgba(255, 255, 255, 0.72);
   --tech-shadow: 0 24px 80px -42px rgba(7, 24, 48, 0.32);
-  --tech-grid: rgba(83, 216, 255, 0.1);
+  --tech-glow-1: rgba(83, 216, 255, 0.09);
+  --tech-glow-2: rgba(124, 108, 255, 0.11);
 
   /* shadcn tokens — Dark theme (website.slim.html:2748-2761) */
   --background: #050A14;
@@ -178,7 +185,7 @@
   --vcb-silver-soft: rgba(104, 128, 157, 0.10);
   --vcb-line: rgba(7, 20, 38, 0.10);
   --vcb-line-strong: rgba(23, 125, 242, 0.22);
-  --vcb-panel: #ffffff;
+  --vcb-panel: #FBFAF7;
   --vcb-panel-2: #EEF3F9;
   --vcb-ink: #F4F7FB;
 
@@ -191,7 +198,8 @@
   --sidebar-border: rgba(7, 20, 38, 0.10);
 
   --header-bg: color-mix(in srgb, #ffffff 76%, transparent);
-  --tech-grid: rgba(23, 125, 242, 0.14);
+  --tech-glow-1: rgba(23, 125, 242, 0.14);
+  --tech-glow-2: rgba(124, 108, 255, 0.12);
 }
 
 /* Global atmosphere — dark default */
@@ -215,22 +223,35 @@ body::before {
   inset: 0;
   pointer-events: none;
   z-index: -1;
-  opacity: 0.55;
   background-image:
-    linear-gradient(var(--tech-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--tech-grid) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: linear-gradient(to bottom, #000, transparent 88%);
+    radial-gradient(44% 34% at 8% 100%, var(--tech-glow-1), transparent 75%),
+    radial-gradient(48% 36% at 96% 100%, var(--tech-glow-2), transparent 75%);
+  background-repeat: no-repeat;
 }
 
 @media (prefers-reduced-motion: no-preference) {
   body::before {
-    animation: vcb-grid-drift 50s linear infinite;
+    animation: vcb-glow-breathe 16s ease-in-out infinite;
   }
 }
-@keyframes vcb-grid-drift {
-  from { background-position: 0 0, 0 0; }
-  to { background-position: 48px 48px, 48px 48px; }
+@keyframes vcb-glow-breathe {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* Logo (hoa 4 cánh — public/logo.png) phóng to, chìm mờ phía dưới nền làm hoạ tiết nhận diện
+   thương hiệu thay vì mô-típ kỹ thuật trung tính. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background-image: url("/logo.png");
+  background-repeat: no-repeat;
+  background-position: 50% 112%;
+  background-size: 760px;
+  opacity: 0.06;
 }
 
 /* Lenis Scroll Base */

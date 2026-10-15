@@ -2,8 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
+import { Reveal } from "@/components/blocks/shared/reveal";
+import { SectionHead } from "@/components/blocks/shared/section-head";
 import { ContactForm } from "@/components/contact/contact-form";
 import { SocialLinks } from "@/components/contact/social-links";
+import { PageHero } from "@/components/layout/page-hero";
+import { PageSection } from "@/components/layout/page-section";
 import { JsonLd } from "@/components/seo/json-ld";
 import { parseJobParam, parseTopicParam } from "@/lib/contact/schema";
 import { hasLocale } from "@/lib/i18n/config";
@@ -34,10 +38,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
-const eyebrow =
-  "flex items-center gap-3 text-[0.8rem] font-semibold uppercase tracking-widest text-muted-foreground";
-const dot = "h-2 w-2 rounded-full bg-primary/60";
-
 export default async function ContactPage({ params, searchParams }: Props) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
@@ -67,51 +67,42 @@ export default async function ContactPage({ params, searchParams }: Props) {
       />
       <JsonLd data={contactJsonLd({ siteUrl: SITE_URL, url, brand, settings })} />
 
-      <section className="border-b border-border bg-gradient-to-br from-background to-muted/30 pb-16 pt-24 md:pb-24 md:pt-32">
-        <div className="mx-auto max-w-[1240px] px-4">
-          <div className="grid grid-cols-1 items-end gap-10 md:grid-cols-[1.4fr_0.6fr] md:gap-24">
-            <div>
-              <div className={`${eyebrow} mb-6`}>
-                <span className={dot} />
-                {t("eyebrow")}
-              </div>
-              <h1 className="mb-5 text-5xl font-bold leading-[1.1] tracking-[-0.01em] md:text-7xl">
-                {t.rich("title", emphasis)}
-              </h1>
-              <p className="max-w-[53ch] text-lg text-muted-foreground">{t("lead")}</p>
-            </div>
-            <div className="flex flex-col border-l-2 border-primary/20 py-2 pl-6">
-              <span className="mb-2 text-xs font-semibold tracking-widest text-muted-foreground">{t("cityTag")}</span>
-              <strong className="mb-4 text-lg leading-snug">{t("tagline")}</strong>
-              {settings?.email && (
-                <a href={`mailto:${settings.email}`} className="flex items-center gap-1 font-medium text-primary hover:underline">
-                  {t("emailCta")}
-                </a>
-              )}
-            </div>
+      <PageHero
+        eyebrow={t("eyebrow")}
+        title={t.rich("title", emphasis)}
+        lead={t("lead")}
+        aside={
+          <div className="flex flex-col border-l-2 border-primary/20 py-2 pl-6">
+            <span className="mb-2 text-xs font-semibold tracking-widest text-muted-foreground">{t("cityTag")}</span>
+            <strong className="mb-4 text-lg leading-snug">{t("tagline")}</strong>
+            {settings?.email && (
+              <a href={`mailto:${settings.email}`} className="flex items-center gap-1 font-medium text-primary hover:underline">
+                {t("emailCta")}
+              </a>
+            )}
           </div>
-        </div>
-      </section>
+        }
+      />
 
-      <section className="border-b border-border py-16 md:py-24">
-        <div className="mx-auto max-w-[1240px] px-4">
-          <div className="grid grid-cols-1 gap-16 md:grid-cols-2">
-            <div>
-              <div className={`${eyebrow} mb-6`}>
-                <span className={dot} />
-                {t("methods.eyebrow")}
-              </div>
-              <h2 className="mb-6 text-4xl font-bold leading-[1.15] md:text-5xl">{t.rich("methods.title", accent)}</h2>
-              <p className="mb-8 max-w-[40ch] text-lg text-muted-foreground">{t("methods.lead")}</p>
-              <div className="flex items-center gap-2 border-t border-border pt-6 text-sm font-semibold tracking-widest text-primary">
-                {t("methods.start")}
-              </div>
+      <PageSection>
+        <div className="grid gap-12 md:grid-cols-2 md:items-start">
+          <Reveal>
+            <SectionHead
+              flush
+              eyebrow={t("methods.eyebrow")}
+              title={t.rich("methods.title", accent)}
+              text={t("methods.lead")}
+            />
+            <div className="mt-8 flex items-center gap-2 border-t border-border pt-6 text-sm font-semibold tracking-widest text-primary">
+              {t("methods.start")}
             </div>
+          </Reveal>
+          <Reveal>
             <div className="flex flex-col gap-4">
               {settings?.phone && (
                 <a
                   href={`tel:${phoneToTel(settings.phone)}`}
-                  className="group flex items-center justify-between rounded-xl border border-border bg-card p-6 transition-colors hover:border-primary/50"
+                  className="group flex items-center justify-between rounded-3xl border border-border bg-card p-6 transition-colors hover:border-primary/50"
                 >
                   <div className="flex flex-col">
                     <span className="mb-1 text-xs font-semibold tracking-widest text-muted-foreground">{t("methods.hotline")}</span>
@@ -123,7 +114,7 @@ export default async function ContactPage({ params, searchParams }: Props) {
               {settings?.email && (
                 <a
                   href={`mailto:${settings.email}`}
-                  className="group flex items-center justify-between rounded-xl border border-border bg-card p-6 transition-colors hover:border-primary/50"
+                  className="group flex items-center justify-between rounded-3xl border border-border bg-card p-6 transition-colors hover:border-primary/50"
                 >
                   <div className="flex flex-col">
                     <span className="mb-1 text-xs font-semibold tracking-widest text-muted-foreground">{t("methods.email")}</span>
@@ -133,35 +124,31 @@ export default async function ContactPage({ params, searchParams }: Props) {
                 </a>
               )}
               {socials.length > 0 && (
-                <div className="flex flex-col rounded-xl border border-border bg-card p-6">
+                <div className="flex flex-col rounded-3xl border border-border bg-card p-6">
                   <span className="mb-3 text-xs font-semibold tracking-widest text-muted-foreground">{t("methods.social")}</span>
                   <SocialLinks items={socials} />
                 </div>
               )}
             </div>
-          </div>
+          </Reveal>
         </div>
-      </section>
+      </PageSection>
 
       {offices.length > 0 && (
-        <section className="border-b border-border bg-muted/20 py-16 md:py-24">
-          <div className="mx-auto max-w-[1240px] px-4">
-            <div className="mb-12">
-              <div className={`${eyebrow} mb-4`}>
-                <span className={dot} />
-                {t("locations.eyebrow")}
-              </div>
-              <h2 className="mb-4 text-4xl font-bold leading-[1.15]">{t("locations.title")}</h2>
-              <p className="text-lg text-muted-foreground">{t("locations.lead")}</p>
-            </div>
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-              {offices.map((key) => (
-                <article
-                  key={key}
-                  className="flex flex-col items-start rounded-2xl border border-border bg-card p-8 transition-colors hover:border-primary/40"
-                >
+        <PageSection tone="muted">
+          <Reveal>
+            <SectionHead
+              eyebrow={t("locations.eyebrow")}
+              title={t("locations.title")}
+              text={t("locations.lead")}
+            />
+          </Reveal>
+          <div className="grid gap-8 md:grid-cols-2">
+            {offices.map((key) => (
+              <Reveal key={key} className="h-full">
+                <article className="flex h-full flex-col items-start rounded-3xl border border-border bg-card p-8 transition-colors hover:border-primary/40">
                   <div className="mb-4 text-xs font-semibold tracking-widest text-muted-foreground">{t(`locations.${key}.tag`)}</div>
-                  <h3 className="mb-2 text-2xl font-bold leading-[1.2]">{t(`locations.${key}.title`)}</h3>
+                  <h3 className="mb-2 text-xl font-bold leading-[1.2] md:text-2xl">{t(`locations.${key}.title`)}</h3>
                   <p className="mb-8 text-muted-foreground">{addressLine(settings?.offices[key])}</p>
                   <a
                     href={mapsUrl(settings?.offices[key])}
@@ -172,25 +159,25 @@ export default async function ContactPage({ params, searchParams }: Props) {
                     {t("locations.directions")}
                   </a>
                 </article>
-              ))}
-            </div>
+              </Reveal>
+            ))}
           </div>
-        </section>
+        </PageSection>
       )}
 
-      <section className="py-16 md:py-24">
-        <div className="mx-auto max-w-[1240px] px-4">
-          <div className="grid grid-cols-1 gap-16 lg:grid-cols-2">
-            <div>
-              <div className={`${eyebrow} mb-6`}>
-                <span className={dot} />
-                {t("form.eyebrow")}
-              </div>
-              <h2 className="mb-6 text-4xl font-bold leading-[1.15] md:text-5xl">{t.rich("form.title", accent)}</h2>
-              <p className="mb-8 max-w-[45ch] text-lg text-muted-foreground">{t("form.lead")}</p>
-              <div className="inline-block rounded-lg bg-muted p-4 text-sm font-medium text-foreground">{t("form.note")}</div>
-            </div>
-            <div className="rounded-2xl border border-border bg-card p-8 shadow-sm">
+      <PageSection>
+        <div className="grid gap-12 lg:grid-cols-2 lg:items-start">
+          <Reveal>
+            <SectionHead
+              flush
+              eyebrow={t("form.eyebrow")}
+              title={t.rich("form.title", accent)}
+              text={t("form.lead")}
+            />
+            <div className="mt-8 inline-block rounded-3xl bg-muted p-4 text-sm font-medium text-foreground">{t("form.note")}</div>
+          </Reveal>
+          <Reveal>
+            <div className="rounded-3xl border border-border bg-card p-8 shadow-sm">
               <div className="mb-6 text-xs font-bold tracking-widest text-primary">{t("form.panelTag")}</div>
               {/* Chỉ gửi xuống client nhóm chữ mà form dùng. */}
               <NextIntlClientProvider
@@ -208,9 +195,9 @@ export default async function ContactPage({ params, searchParams }: Props) {
                 />
               </NextIntlClientProvider>
             </div>
-          </div>
+          </Reveal>
         </div>
-      </section>
+      </PageSection>
     </>
   );
 }

@@ -2,12 +2,13 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { X } from "lucide-react";
+import { Upload, X } from "lucide-react";
 import { cn } from "cn";
 import { createApplication } from "@/lib/api/applications";
+import { useApply } from "@/components/careers/apply-context";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -26,6 +27,8 @@ const selectClass =
 const errorTextClass = "mt-1 text-sm text-destructive";
 const CV_ACCEPT =
   ".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+// Dòng phụ trong ô tải CV trên điện thoại (khớp với CV_ACCEPT); tên định dạng không đổi theo ngôn ngữ.
+const CV_FORMATS_LABEL = "PDF, DOC, DOCX";
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
@@ -40,6 +43,7 @@ function CvDropzone({
   name,
   invalid,
   placeholder,
+  touchPlaceholder,
   removeLabel,
 }: {
   value: File | undefined;
@@ -48,6 +52,8 @@ function CvDropzone({
   name: string;
   invalid: boolean;
   placeholder: string;
+  /** Câu ngắn cho điện thoại (< 520px), nơi kéo thả và Ctrl+V không dùng được. */
+  touchPlaceholder: string;
   removeLabel: string;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -89,7 +95,7 @@ function CvDropzone({
       }}
       onBlur={onBlur}
       className={cn(
-        "flex h-12 cursor-pointer items-center rounded-md border border-dashed bg-muted/20 px-3 text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "flex h-12 cursor-pointer items-center rounded-md border border-dashed bg-muted/20 px-3 text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring max-[519px]:h-14",
         isDragging ? "border-primary bg-primary/5" : invalid ? "border-destructive" : "border-border",
       )}
     >
@@ -120,7 +126,16 @@ function CvDropzone({
           </button>
         </div>
       ) : (
-        <span className="text-muted-foreground">{placeholder}</span>
+        <span className="text-muted-foreground">
+          <span className="max-[519px]:hidden">{placeholder}</span>
+          <span className="hidden items-center gap-3 max-[519px]:inline-flex">
+            <Upload aria-hidden className="size-5 shrink-0" />
+            <span className="flex flex-col leading-tight">
+              <span className="text-foreground">{touchPlaceholder}</span>
+              <span className="text-xs">{CV_FORMATS_LABEL}</span>
+            </span>
+          </span>
+        </span>
       )}
     </div>
   );
@@ -138,6 +153,7 @@ const emptyValues: Partial<ApplicationFormValues> = {
 
 export function ApplicationFormFields({ jobTitles }: { jobTitles: string[] }) {
   const t = useTranslations("Careers.application");
+  const { request } = useApply();
   const [pending, startTransition] = useTransition();
   // Input file không thể "reset" bằng cách gán value: tăng key để buộc remount sau khi gửi thành công.
   const [cvInputKey, setCvInputKey] = useState(0);
@@ -146,11 +162,20 @@ export function ApplicationFormFields({ jobTitles }: { jobTitles: string[] }) {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<ApplicationFormValues>({
     resolver: zodResolver(applicationSchema),
     defaultValues: emptyValues,
   });
+
+  // Bấm "Ứng tuyển" ở danh sách: chọn sẵn vị trí, đưa con trỏ vào ô tên.
+  // preventScroll để không giật ngang cú cuộn mượt đang chạy tới form.
+  useEffect(() => {
+    if (!request) return;
+    setValue("position", request.title, { shouldValidate: true });
+    document.getElementById("career-name")?.focus({ preventScroll: true });
+  }, [request, setValue]);
 
   const errorText = (code: string | undefined) =>
     code === "required" ||
@@ -276,6 +301,7 @@ export function ApplicationFormFields({ jobTitles }: { jobTitles: string[] }) {
               name={name}
               invalid={!!errors.cv}
               placeholder={t("cvDropzone")}
+              touchPlaceholder={t("cvDropzoneTouch")}
               removeLabel={t("cvRemove")}
             />
           )}

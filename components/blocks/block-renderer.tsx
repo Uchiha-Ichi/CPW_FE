@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import type { Locale } from "@/lib/i18n/config";
 import type { PublicBlock } from "@/lib/blocks/types";
 import { partitionBlocks } from "@/lib/blocks/select";
@@ -17,7 +18,16 @@ export function BlockRenderer({
   return (
     <>
       {items.map(({ block, component: Component }) => (
-        <Component key={block.id} data={block.data} lang={lang} />
+        <Fragment key={block.id}>
+          {/* Mốc để liên kết "/trang#<id của block>" (ví dụ nút ở hero) cuộn tới đây. Không bọc block trong thẻ
+              nào nên bố cục các block giữ nguyên; scroll-mt bằng chiều cao header cố định (khớp padding của <main>). */}
+          <span
+            id={block.id}
+            aria-hidden
+            className="block scroll-mt-[72px] min-[880px]:scroll-mt-[88px]"
+          />
+          <Component data={block.data} lang={lang} />
+        </Fragment>
       ))}
     </>
   );

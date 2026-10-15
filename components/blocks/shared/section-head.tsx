@@ -11,16 +11,16 @@ export function SectionHead({
   className,
 }: {
   eyebrow?: string;
-  title: string;
+  title: React.ReactNode;
   text?: string;
   flush?: boolean;
   className?: string;
 }) {
   return (
-    <div className={cn("max-w-3xl", flush ? "" : "mb-12", className)}>
+    <div className={cn("max-w-3xl", flush ? "" : "mb-8", className)}>
       {eyebrow && <Eyebrow className="mb-4">{eyebrow}</Eyebrow>}
       <h2 className="text-3xl font-bold leading-[1.12] md:text-5xl">
-        <RichTitle text={title} />
+        {typeof title === "string" ? <RichTitle text={title} /> : title}
       </h2>
       {text && (
         <p className="mt-5 text-lg leading-relaxed text-muted-foreground">{text}</p>

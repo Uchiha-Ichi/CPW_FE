@@ -27,7 +27,7 @@ const NAV_ITEMS = [
 ] as const;
 
 const toolButton =
-  "flex h-9 w-9 items-center justify-center rounded-[9px] border border-[color:var(--vcb-line-strong)] bg-[var(--vcb-panel)] text-foreground transition-colors";
+  "flex h-11 w-11 items-center justify-center rounded-[11px] border border-[color:var(--vcb-line-strong)] bg-[var(--vcb-panel)] text-foreground transition-colors";
 
 function isActive(pathname: string, href: string) {
   return href === "/"
@@ -53,7 +53,7 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "fixed left-0 right-0 top-0 z-50 w-full border-b border-[color:var(--vcb-line-strong)] bg-[color-mix(in_srgb,var(--vcb-panel)_76%,transparent)] shadow-[0_20px_70px_-44px_rgba(0,0,0,.55),inset_0_1px_0_rgba(255,255,255,.12)] backdrop-blur-[22px] backdrop-saturate-[1.45] transition-shadow duration-300",
+        "fixed left-0 right-0 top-0 z-50 w-full border-b border-[color:var(--vcb-line-strong)] bg-[var(--vcb-panel)] shadow-[0_20px_70px_-44px_rgba(0,0,0,.55),inset_0_1px_0_rgba(255,255,255,.12)] transition-shadow duration-300",
         isScrolled && "shadow-md"
       )}
     >
@@ -64,27 +64,29 @@ export function SiteHeader() {
 
       <div
         className={cn(
-          "mx-auto flex max-w-[1240px] items-center justify-between gap-4 px-4 py-2 transition-[min-height] duration-300",
-          isScrolled ? "min-h-[70px]" : "min-h-[78px]"
+          "mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-4 py-2 transition-[min-height] duration-300 min-[880px]:px-6",
+          isScrolled
+            ? "min-h-[64px] min-[880px]:min-h-[76px]"
+            : "min-h-[72px] min-[880px]:min-h-[88px]"
         )}
       >
         <Link href="/" className="flex items-center">
           <Image
             src={LOGO_URL}
             alt={t("logoAlt")}
-            width={120}
-            height={44}
+            width={64}
+            height={64}
             preload
             className={cn(
-              "w-auto transition-[height] duration-300 [html:not([data-theme=light])_&]:[filter:invert(1)_brightness(2)]",
-              isScrolled ? "h-[40px]" : "h-[44px]"
+              "h-12 w-auto transition-[height] duration-300",
+              isScrolled ? "min-[880px]:h-14" : "min-[880px]:h-16"
             )}
           />
         </Link>
 
         <nav
           aria-label={t("primaryNav")}
-          className="hidden items-center gap-[3px] rounded-[11px] border border-[color:var(--vcb-line)] bg-[color-mix(in_srgb,var(--vcb-panel-2)_55%,transparent)] p-1 min-[880px]:flex"
+          className="hidden items-center gap-1 min-[880px]:flex min-[1100px]:gap-2"
         >
           {NAV_ITEMS.map((item) => {
             const active = isActive(pathname, item.href);
@@ -94,10 +96,10 @@ export function SiteHeader() {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "rounded-[8px] px-3 py-2 text-sm tracking-[0.02em] transition-colors",
+                  "relative px-3 py-2 text-[0.9375rem] font-medium tracking-[0.01em] transition-colors min-[1100px]:px-4 min-[1100px]:text-[1.0625rem]",
                   active
-                    ? "bg-[var(--vcb-gold-soft)] text-[color:var(--vcb-gold)]"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "text-[color:var(--vcb-gold)] after:absolute after:inset-x-3 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-[var(--vcb-gold)] min-[1100px]:after:inset-x-4"
+                    : "text-foreground hover:text-[color:var(--vcb-gold)]"
                 )}
               >
                 {t(`nav.${item.key}`)}
@@ -106,10 +108,10 @@ export function SiteHeader() {
           })}
         </nav>
 
-        <div className="flex items-center gap-[6px]">
+        <div className="flex items-center gap-2">
           <nav
             aria-label={t("language")}
-            className="flex items-center overflow-hidden rounded-[9px] border border-[color:var(--vcb-line-strong)] bg-[var(--vcb-panel)] text-[0.78rem]"
+            className="flex h-11 items-center overflow-hidden rounded-[11px] border border-[color:var(--vcb-line-strong)] bg-[var(--vcb-panel)] text-[0.9375rem] font-medium"
           >
             {locales.map((code) => (
               <Link
@@ -120,7 +122,7 @@ export function SiteHeader() {
                 lang={code}
                 aria-current={code === lang ? "true" : undefined}
                 className={cn(
-                  "px-2.5 py-1.5 uppercase transition-colors",
+                  "flex h-full items-center px-3 uppercase transition-colors",
                   code === lang
                     ? "bg-[var(--vcb-gold-soft)] text-[color:var(--vcb-gold)]"
                     : "text-muted-foreground hover:text-foreground"
@@ -141,9 +143,9 @@ export function SiteHeader() {
             className={toolButton}
           >
             {/* Đổi icon bằng CSS theo data-theme để không lệch giữa server và client. */}
-            <Sun size={15} className="[html[data-theme=light]_&]:hidden" />
+            <Sun size={20} className="[html[data-theme=light]_&]:hidden" />
             <Moon
-              size={15}
+              size={20}
               className="hidden [html[data-theme=light]_&]:block"
             />
           </button>
@@ -154,7 +156,7 @@ export function SiteHeader() {
               aria-label={t("openMenu")}
               className={cn(toolButton, "min-[880px]:hidden")}
             >
-              <Menu size={16} />
+              <Menu size={20} />
             </SheetTrigger>
             {/* Tắt nút đóng mặc định (chữ "Close" gõ cứng) và tắt trượt khi người dùng bật reduced-motion. */}
             <SheetContent
@@ -184,7 +186,7 @@ export function SiteHeader() {
                       onClick={() => setMenuOpen(false)}
                       aria-current={active ? "page" : undefined}
                       className={cn(
-                        "rounded-[8px] px-3 py-2 text-[0.9rem]",
+                        "rounded-[8px] px-3 py-3 text-[1.0625rem] font-medium",
                         active
                           ? "bg-[var(--vcb-gold-soft)] text-[color:var(--vcb-gold)]"
                           : "text-foreground"

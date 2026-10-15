@@ -7,29 +7,22 @@ export function StatementBlock({ data }: BlockProps) {
   const title = str(data.title);
   if (!title) return null;
 
-  const kicker = str(data.kicker);
   const meta = list(data.meta)
     .map((m) => str(m.t))
     .filter((t): t is string => Boolean(t));
 
   return (
-    <section className="border-b border-[#111D2F] bg-[#050A14] py-24 text-[#EEF6FF] md:py-32">
+    // Dải luôn tối, không đổi theo giao diện sáng/tối: nền xanh đậm pha từ token --tech-* (hằng số ở :root),
+    // không dùng token --background vì nó đảo màu khi đổi giao diện.
+    <section className="border-b border-primary-foreground/10 bg-[color-mix(in_srgb,var(--tech-blue)_35%,var(--tech-ink))] py-16 text-primary-foreground md:py-24">
       <div className="mx-auto max-w-[1240px] px-4">
         <Reveal>
-          {kicker && (
-            <div className="mb-6 flex items-center gap-3 text-[0.8rem] font-semibold uppercase tracking-widest text-[#55a6ff]">
-              <span
-                aria-hidden
-                className="h-2 w-2 rounded-full bg-[#2f8cff] shadow-[0_0_0_5px_rgba(47,140,255,0.1)]"
-              />
-              {kicker}
-            </div>
-          )}
-          <h2 className="max-w-4xl text-3xl font-bold leading-[1.12] md:text-5xl lg:text-6xl">
+          {/* Chữ nhấn mặc định là text-primary (xanh #177DF2) chỉ đạt 2,88:1 trên nền xanh đậm: đổi sang cyan (6,9:1). */}
+          <h2 className="max-w-4xl text-3xl font-bold leading-[1.12] md:text-5xl lg:text-6xl [&_em]:text-[color:var(--tech-cyan)]">
             <RichTitle text={title} />
           </h2>
           {meta.length > 0 && (
-            <div className="mt-10 flex flex-wrap gap-x-10 gap-y-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-[#75859c]">
+            <div className="mt-10 flex flex-wrap gap-x-10 gap-y-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-primary-foreground/70">
               {meta.map((m, i) => (
                 <span key={i}>{m}</span>
               ))}

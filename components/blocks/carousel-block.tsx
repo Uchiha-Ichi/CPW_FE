@@ -1,98 +1,88 @@
 "use client";
 
-import { useEffect } from "react";
-import useEmblaCarousel from "embla-carousel-react";
-import { useTranslations } from "next-intl";
 import { SectionHead } from "./shared/section-head";
 import { Reveal } from "./shared/reveal";
+import { CloudinaryMedia } from "./shared/cloudinary-media";
+import { ImageSlot } from "./shared/image-slot";
+import { cn } from "@/lib/utils";
 import { list, str } from "@/lib/blocks/read";
 import type { BlockProps } from "./types";
+import styles from "./carousel-block.module.css";
 
+// Số cột (trên lưới 12 cột) của từng ô: hàng đầu 7 + 5, các hàng sau 4 + 4 + 4; dư 2 ô thì 6 + 6, dư 1 ô thì 12.
+function spans(n: number): number[] {
+  if (n === 1) return [12];
+  const out = [7, 5];
+  let rest = n - 2;
+  while (rest >= 3) {
+    out.push(4, 4, 4);
+    rest -= 3;
+  }
+  if (rest === 2) out.push(6, 6);
+  if (rest === 1) out.push(12);
+  return out;
+}
+
+// Ánh sáng chạy theo con trỏ trong ô: chỉ ghi hai biến CSS, không dùng state.
+function spotlight(e: React.PointerEvent<HTMLLIElement>) {
+  const rect = e.currentTarget.getBoundingClientRect();
+  e.currentTarget.style.setProperty("--x", `${e.clientX - rect.left}px`);
+  e.currentTarget.style.setProperty("--y", `${e.clientY - rect.top}px`);
+}
+
+// Block loại "carousel": lưới ô bất đối xứng (bento). Đẹp khi chỉ có chữ; ô nào có ảnh/video thì ảnh phủ kín ô.
 export function CarouselBlock({ data }: BlockProps) {
-  const [viewportRef, api] = useEmblaCarousel({ align: "start", containScroll: "trimSnaps" });
-  const t = useTranslations("Carousel");
-
-  // Người dùng bật reduced-motion thì cuộn tức thì (không hoạt ảnh).
-  useEffect(() => {
-    if (api && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      api.reInit({ duration: 0 });
-    }
-  }, [api]);
-
   const title = str(data.title);
   const items = list(data.items)
-    .map((i) => ({ t: str(i.t), d: str(i.d) }))
+    .map((i) => ({ t: str(i.t), d: str(i.d), image: str(i.image) }))
     .filter((i) => i.t);
   if (!title || items.length === 0) return null;
 
-  const buttonClass =
-    "flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-lg transition-colors hover:border-primary hover:text-primary";
+  const cols = spans(items.length);
 
   return (
-    <section className="border-b border-border bg-muted/10 py-20 md:py-28">
+    <section className={cn(styles.section, "relative overflow-x-clip border-b border-border py-12 md:py-16")}>
       <div className="mx-auto max-w-[1240px] px-4">
-        <div className="flex items-end justify-between gap-6">
-          <SectionHead eyebrow={str(data.eyebrow)} title={title} flush />
-          <div className="flex shrink-0 gap-2">
-            <button
-              type="button"
-              aria-label={t("prev")}
-              className={buttonClass}
-              onClick={() => api?.scrollPrev()}
-            >
-              ←
-            </button>
-            <button
-              type="button"
-              aria-label={t("next")}
-              className={buttonClass}
-              onClick={() => api?.scrollNext()}
-            >
-              →
-            </button>
-          </div>
-        </div>
-
-        <div
-          ref={viewportRef}
-          className="mt-12 overflow-hidden"
-          role="region"
-          aria-roledescription="carousel"
-          aria-label={t("region")}
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === "ArrowLeft") api?.scrollPrev();
-            if (e.key === "ArrowRight") api?.scrollNext();
-          }}
-        >
-          <div className="-ml-4 flex touch-pan-y">
+        <Reveal>
+          <SectionHead title={title} flush />
+        </Reveal>
+        <Reveal className="mt-8 md:mt-10">
+          <ol className={styles.grid}>
             {items.map((item, i) => (
-              <div
+              <li
                 key={i}
-                role="group"
-                aria-roledescription="slide"
-                aria-label={`${i + 1} / ${items.length}`}
-                className="min-w-0 flex-[0_0_85%] pl-4 sm:flex-[0_0_45%] lg:flex-[0_0_30%]"
+                className={styles.tile}
+                data-feature={i < 2 ? "" : undefined}
+                data-media={item.image ? "" : undefined}
+                style={{ "--span": cols[i] } as React.CSSProperties}
+                onPointerMove={spotlight}
               >
-                <Reveal delay={i * 80} className="h-full">
-                  <article className="flex h-full min-h-[220px] flex-col justify-between rounded-2xl border border-border bg-card p-8">
-                    <span className="font-display text-4xl font-light text-muted-foreground/50">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <div className="mt-8">
-                      <h3 className="text-xl font-bold">{item.t}</h3>
-                      {item.d && (
-                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                          {item.d}
-                        </p>
-                      )}
+                {item.image && (
+                  <>
+                    <div aria-hidden className={styles.media}>
+                      <CloudinaryMedia
+                        src={item.image}
+                        alt=""
+                        sizes="(min-width: 768px) 50vw, 100vw"
+                        variant="loop"
+                        className={styles.photo}
+                      />
                     </div>
-                  </article>
-                </Reveal>
-              </div>
+                    <span aria-hidden className={styles.scrim} />
+                  </>
+                )}
+                <span aria-hidden className={styles.num}>
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                {!item.image && <ImageSlot variant="chip" slot="carousel.items.image" className={styles.slot} />}
+                <div className={styles.body}>
+                  <h3 className={styles.title}>{item.t}</h3>
+                  {item.d && <p className={styles.desc}>{item.d}</p>}
+                </div>
+              </li>
             ))}
-          </div>
-        </div>
+          </ol>
+        </Reveal>
       </div>
     </section>
   );

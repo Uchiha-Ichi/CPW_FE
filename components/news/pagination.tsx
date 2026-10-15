@@ -21,7 +21,7 @@ export function Pagination({
   if (totalPages <= 1) return null;
   const href = (p: number) => `/news${buildNewsQuery({ page: p, category })}`;
   return (
-    <nav aria-label={labels.nav} className="mt-12 flex items-center justify-center gap-4">
+    <nav aria-label={labels.nav} className="mt-12 flex items-center gap-4">
       {page > 1 ? (
         <Link href={href(page - 1)} rel="prev" className={linkClass}>
           {labels.prev}

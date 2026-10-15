@@ -20,7 +20,7 @@ export function CategoryFilter({
         : "border-border bg-background hover:bg-muted",
     );
   return (
-    <nav aria-label={label} className="mx-auto flex max-w-[1240px] flex-wrap justify-center gap-2 px-4">
+    <nav aria-label={label} className="flex flex-wrap gap-2">
       <Link href="/news" aria-current={!active ? "page" : undefined} className={chip(!active)}>
         {labels.all}
       </Link>

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { PageHero } from "@/components/layout/page-hero";
+import { PageSection } from "@/components/layout/page-section";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Link } from "@/i18n/navigation";
 import { getJobBySlug } from "@/lib/api/jobs";
@@ -69,7 +71,7 @@ export default async function JobDetailPage({ params }: Props) {
       : null;
 
   return (
-    <article className="mx-auto max-w-3xl px-4 pb-24 pt-28">
+    <article>
       <JsonLd
         data={breadcrumbJsonLd([
           { name: common("home"), url: `${SITE_URL}/${lang}` },
@@ -79,48 +81,56 @@ export default async function JobDetailPage({ params }: Props) {
       />
       {posting && <JsonLd data={posting} />}
 
-      <Link href="/careers" className="text-sm text-muted-foreground hover:text-primary">
-        {t("detail.back")}
-      </Link>
+      <PageHero
+        narrow
+        before={
+          <Link href="/careers" className="mb-6 inline-block text-sm text-muted-foreground hover:text-primary">
+            {t("detail.back")}
+          </Link>
+        }
+        title={job.title}
+      />
 
-      <h1 className="mt-6 text-4xl font-bold leading-[1.15] tracking-[-0.01em] md:text-5xl">{job.title}</h1>
+      <PageSection>
+        <div className="max-w-3xl">
+          <dl className="grid grid-cols-1 gap-4 rounded-3xl border border-border bg-card p-6 text-sm sm:grid-cols-3">
+            {(
+              [
+                ["department", job.department],
+                ["location", job.location],
+                ["type", job.type],
+              ] as const
+            ).map(([key, value]) => (
+              <div key={key}>
+                <dt className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  {t(`detail.${key}`)}
+                </dt>
+                <dd className="mt-1 text-base font-medium">{value}</dd>
+              </div>
+            ))}
+          </dl>
 
-      <dl className="mt-8 grid grid-cols-1 gap-4 rounded-2xl border border-border bg-card p-6 text-sm sm:grid-cols-3">
-        {(
-          [
-            ["department", job.department],
-            ["location", job.location],
-            ["type", job.type],
-          ] as const
-        ).map(([key, value]) => (
-          <div key={key}>
-            <dt className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              {t(`detail.${key}`)}
-            </dt>
-            <dd className="mt-1 text-base font-medium">{value}</dd>
+          <div className="mt-8 space-y-5 text-[1.05rem] leading-8 text-foreground/90">
+            {paragraphs.length > 0 ? (
+              paragraphs.map((text, i) => (
+                <p key={i} className="whitespace-pre-line">{text}</p>
+              ))
+            ) : (
+              <p className="text-muted-foreground">{t("detail.noDescription")}</p>
+            )}
           </div>
-        ))}
-      </dl>
 
-      <div className="mt-10 space-y-5 text-[1.05rem] leading-8 text-foreground/90">
-        {paragraphs.length > 0 ? (
-          paragraphs.map((text, i) => (
-            <p key={i} className="whitespace-pre-line">{text}</p>
-          ))
-        ) : (
-          <p className="text-muted-foreground">{t("detail.noDescription")}</p>
-        )}
-      </div>
-
-      <div className="mt-12 rounded-2xl border border-border bg-muted/20 p-6">
-        <p className="mb-4 text-sm text-muted-foreground">{t("detail.applyNote")}</p>
-        <Link
-          href={`/contact?topic=careers&job=${encodeURIComponent(job.title)}`}
-          className="inline-block rounded-full bg-foreground px-8 py-4 font-semibold text-background transition-colors hover:bg-primary hover:text-white"
-        >
-          {t("apply")}
-        </Link>
-      </div>
+          <div className="mt-8 rounded-3xl border border-border bg-muted/20 p-6">
+            <p className="mb-4 text-sm text-muted-foreground">{t("detail.applyNote")}</p>
+            <Link
+              href={`/contact?topic=careers&job=${encodeURIComponent(job.title)}`}
+              className="inline-block rounded-full bg-foreground px-8 py-4 font-semibold text-background transition-colors hover:bg-primary hover:text-white"
+            >
+              {t("apply")}
+            </Link>
+          </div>
+        </div>
+      </PageSection>
     </article>
   );
 }

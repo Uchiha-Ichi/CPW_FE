@@ -85,6 +85,71 @@ export async function getFeaturedPosts(
   if (result.status !== "ok") return result;
   return { status: "ok", data: result.data.items };
 }
+
+export const RELATED_POST_LIMIT = 5;
+
+export interface PostContext {
+  related: PostSummary[];
+  prev?: PostSummary; // bài cũ hơn cùng chuyên mục
+  next?: PostSummary; // bài mới hơn cùng chuyên mục
+}
+
+// Backend không có endpoint "bài liên quan": lấy bài cùng chuyên mục (mới nhất trước), thiếu thì bù bài
+// chuyên mục khác. Cùng danh sách đó cho Bài trước/Bài sau. Không ném lỗi: lỗi API thì bỏ phần thiếu (tối đa 2 lần gọi).
+export async function getPostContext(
+  post: Pick<PostSummary, "slug" | "category">,
+  lang: Locale
+): Promise<PostContext> {
+  const sameResult = await getPosts({
+    lang,
+    category: post.category,
+    limit: MAX_PAGE_SIZE,
+  });
+
+  if (sameResult.status !== "ok") {
+    // Không có danh sách cùng chuyên mục: chỉ lấy tin liên quan toàn site, bỏ Bài trước/Bài sau.
+    // Lấy dư 1 bài để sau khi bỏ bài hiện tại vẫn đủ RELATED_POST_LIMIT.
+    const siteResult = await getPosts({ lang, limit: RELATED_POST_LIMIT + 1 });
+    if (siteResult.status !== "ok") return { related: [] };
+    return {
+      related: siteResult.data.items
+        .filter((item) => item.slug !== post.slug)
+        .slice(0, RELATED_POST_LIMIT),
+    };
+  }
+
+  const sameCategory = sameResult.data.items;
+  const related = sameCategory
+    .filter((item) => item.slug !== post.slug)
+    .slice(0, RELATED_POST_LIMIT);
+
+  if (related.length < RELATED_POST_LIMIT) {
+    // Bù từ mọi chuyên mục. Lấy RELATED_POST_LIMIT + sameCategory.length bài vì trong đó tối đa
+    // sameCategory.length bài là cùng chuyên mục (kể cả bài hiện tại), nên còn ít nhất RELATED_POST_LIMIT
+    // bài khác nếu hệ thống có đủ; lần này lỗi thì giữ phần đã có.
+    const siteResult = await getPosts({
+      lang,
+      limit: RELATED_POST_LIMIT + sameCategory.length,
+    });
+    if (siteResult.status === "ok") {
+      const seen = new Set(related.map((item) => item.slug));
+      for (const item of siteResult.data.items) {
+        if (related.length >= RELATED_POST_LIMIT) break;
+        if (item.slug === post.slug || seen.has(item.slug)) continue;
+        related.push(item);
+      }
+    }
+  }
+
+  // Danh sách mới nhất trước: phần tử đứng trước là bài mới hơn. So bằng slug từ API, không dùng tham số route.
+  const index = sameCategory.findIndex((item) => item.slug === post.slug);
+  return {
+    related,
+    prev: index >= 0 ? sameCategory[index + 1] : undefined,
+    next: index > 0 ? sameCategory[index - 1] : undefined,
+  };
+}
+
 export async function getPostBySlug(
   slug: string,
   lang: Locale

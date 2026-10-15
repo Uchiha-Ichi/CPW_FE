@@ -1,7 +1,7 @@
 .globalNetwork {
   position: relative;
   overflow: hidden;
-  padding: 86px 0 72px;
+  padding-block: 56px 48px;
 }
 
 /* Base Stage */
@@ -247,7 +247,7 @@
 }
 .networkCountry b {
   grid-column: 2;
-  font-family: var(--font-display), serif;
+  font-family: var(--font-display), sans-serif;
   font-size: 1.1rem;
   font-weight: 500;
   color: var(--foreground);
@@ -257,6 +257,36 @@
   color: var(--muted-foreground);
   font-size: 0.72rem;
   letter-spacing: 0.06em;
+}
+
+/* Điện thoại (< 520px). Bản đồ chỉ rộng khoảng 360px nên thu cờ, chấm và chú giải để cờ các nước Đông Nam Á bớt chồng
+   lên nhau. Hàng quốc gia gọn lại; align-content căn cụm tên + ghi chú giữa hàng, nên hàng không có ghi chú thì tên
+   nằm ngang cờ thay vì dính lên trên. */
+@media (max-width: 519px) {
+  .networkPin {
+    width: 11px;
+    height: 11px;
+  }
+  .networkPin:after {
+    inset: 2px;
+  }
+  .flagIcon {
+    left: 12px;
+    top: -11px;
+    width: 22px;
+    height: 22px;
+    box-shadow: 0 3px 10px rgba(10, 25, 47, 0.18), 0 0 0 3px rgba(255, 255, 255, 0.58);
+  }
+  .networkLegend {
+    right: 10px;
+    bottom: 10px;
+    padding: 6px 9px;
+  }
+  .networkCountry {
+    min-height: 64px;
+    padding: 12px 16px;
+    align-content: center;
+  }
 }
 
 .mapCredit {

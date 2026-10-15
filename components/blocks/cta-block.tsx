@@ -13,7 +13,7 @@ export function CtaBlock({ data, lang }: BlockProps) {
   const href = str(data.buttonHref);
 
   return (
-    <section className="bg-muted/20 px-4 py-24 text-center md:py-32">
+    <section className="bg-muted/20 px-4 py-16 text-center md:py-24">
       <Reveal className="mx-auto max-w-3xl">
         <h2 className="text-3xl font-bold leading-[1.12] md:text-5xl">
           <RichTitle text={title} />

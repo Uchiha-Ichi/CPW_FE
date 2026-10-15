@@ -1,13 +1,14 @@
-import { Inter, Fraunces } from "next/font/google";
+import { Be_Vietnam_Pro, Plus_Jakarta_Sans } from "next/font/google";
 import { cn } from "@/lib/utils";
 
-const bodyFont = Inter({
+const bodyFont = Be_Vietnam_Pro({
   subsets: ["vietnamese", "latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-body",
 });
 
-const displayFont = Fraunces({
+// Variable font (200–800): không khai báo weight thì next/font tải cả dải độ đậm.
+const displayFont = Plus_Jakarta_Sans({
   subsets: ["vietnamese", "latin"],
   variable: "--font-display",
 });

@@ -5,6 +5,8 @@ import { getSiteSettings } from "@/lib/api/site-settings";
 import { addressLine, brandName } from "@/lib/site/contact-info";
 import { visibleSocials } from "@/lib/site/socials";
 
+const navLinkClass = "max-[519px]:block max-[519px]:py-[11px]";
+
 export async function SiteFooter() {
   const [t, nav, meta, settings] = await Promise.all([
     getTranslations("Footer"),
@@ -37,12 +39,13 @@ export async function SiteFooter() {
         </div>
         <div>
           <h2 className="font-semibold mb-3">{t("navigation")}</h2>
-          <ul className="space-y-2 text-muted-foreground">
-            <li><Link href="/">{nav("nav.home")}</Link></li>
-            <li><Link href="/about">{nav("nav.about")}</Link></li>
-            <li><Link href="/careers">{nav("nav.careers")}</Link></li>
-            <li><Link href="/contact">{nav("nav.contact")}</Link></li>
-            <li><Link href="/news">{nav("nav.news")}</Link></li>
+          {/* Điện thoại (< 520px): mỗi liên kết cao ~40px để dễ chạm; khoảng cách giữa các dòng nằm trong vùng chạm nên bỏ space-y. */}
+          <ul className="space-y-2 text-muted-foreground max-[519px]:space-y-0">
+            <li><Link href="/" className={navLinkClass}>{nav("nav.home")}</Link></li>
+            <li><Link href="/about" className={navLinkClass}>{nav("nav.about")}</Link></li>
+            <li><Link href="/careers" className={navLinkClass}>{nav("nav.careers")}</Link></li>
+            <li><Link href="/contact" className={navLinkClass}>{nav("nav.contact")}</Link></li>
+            <li><Link href="/news" className={navLinkClass}>{nav("nav.news")}</Link></li>
           </ul>
         </div>
         {(hasContact || socials.length > 0) && (

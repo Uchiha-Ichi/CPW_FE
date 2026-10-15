@@ -45,12 +45,12 @@ export function PostCard({
     return (
       <article className="group">
         <Link href={href} className="block">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-card">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-border bg-card">
             {cover}
           </div>
           <div className="mt-6 space-y-3">
             {meta}
-            <h2 className="font-display text-3xl font-medium leading-[1.2] transition-colors group-hover:text-primary">
+            <h2 className="text-2xl font-bold leading-[1.2] transition-colors group-hover:text-primary md:text-3xl">
               {title}
             </h2>
             {post.excerpt && (
@@ -66,14 +66,14 @@ export function PostCard({
     <article className="group">
       <Link
         href={href}
-        className="flex flex-col gap-6 rounded-2xl border border-border bg-card p-5 transition-all duration-300 hover:border-primary/40 hover:shadow-[0_24px_65px_-40px_rgba(23,125,242,0.34)] sm:flex-row"
+        className="flex flex-col gap-6 rounded-3xl border border-border bg-card p-5 transition-all duration-300 hover:border-primary/40 hover:shadow-[0_24px_65px_-40px_rgba(23,125,242,0.34)] sm:flex-row"
       >
-        <div className="relative aspect-[4/3] shrink-0 overflow-hidden rounded-xl bg-card sm:aspect-square sm:w-1/3">
+        <div className="relative aspect-[4/3] shrink-0 overflow-hidden rounded-2xl bg-card sm:aspect-square sm:w-1/3">
           {cover}
         </div>
         <div className="flex flex-col justify-center space-y-2">
           {meta}
-          <h3 className="line-clamp-3 text-xl font-medium leading-snug transition-colors group-hover:text-primary">
+          <h3 className="-mt-1 line-clamp-3 pt-1 text-xl font-bold leading-[1.2] transition-colors group-hover:text-primary md:text-2xl">
             {title}
           </h3>
         </div>

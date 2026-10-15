@@ -1,22 +1,94 @@
 import styles from "./hero-block.module.css";
-import { Eyebrow } from "./shared/eyebrow";
+import { HeroSlider } from "./hero-slider";
 import { RichTitle } from "./shared/rich-title";
 import { BlockLink } from "./shared/block-link";
-import { CloudinaryMedia } from "./shared/cloudinary-media";
 import { list, str } from "@/lib/blocks/read";
-import { stripAccent } from "@/lib/blocks/accent";
 import { cn } from "@/lib/utils";
 import type { BlockProps } from "./types";
 
 type Button = { label: string; href: string; outline: boolean };
+type Proof = { t?: string; d?: string };
+
+interface HeroCopyProps {
+  title: string;
+  text?: string;
+  buttons: Button[];
+  proof: Proof[];
+  lang: BlockProps["lang"];
+  /** Chữ nằm trên ảnh nền tối (hero có slide): đổi sang tông trắng. */
+  onDark?: boolean;
+}
+
+function HeroCopy({ title, text, buttons, proof, lang, onDark }: HeroCopyProps) {
+  return (
+    <>
+      <h1 className="text-4xl font-bold leading-[1.12] md:text-5xl lg:text-6xl">
+        <RichTitle text={title} />
+      </h1>
+      {text && (
+        <p
+          className={cn(
+            "mt-6 max-w-[56ch] text-lg leading-relaxed",
+            onDark ? "text-white/85" : "text-muted-foreground",
+          )}
+        >
+          {text}
+        </p>
+      )}
+      {buttons.length > 0 && (
+        <div className="mt-8 flex flex-wrap gap-4 max-[519px]:flex-col max-[519px]:gap-3 max-[519px]:text-center">
+          {buttons.map((b) => (
+            <BlockLink
+              key={`${b.href}-${b.label}`}
+              href={b.href}
+              lang={lang}
+              className={cn(
+                "inline-block rounded-full px-8 py-4 font-medium transition-colors",
+                b.outline
+                  ? onDark
+                    ? "border border-white/50 text-white hover:border-white hover:bg-white/10"
+                    : "border border-border text-foreground hover:border-primary hover:text-primary"
+                  : onDark
+                    ? "bg-white text-black hover:bg-primary hover:text-primary-foreground"
+                    : "bg-foreground text-background hover:bg-primary hover:text-primary-foreground",
+              )}
+            >
+              {b.label}
+            </BlockLink>
+          ))}
+        </div>
+      )}
+      {proof.length > 0 && (
+        <dl
+          className={cn(
+            "mt-12 grid max-w-xl grid-cols-1 gap-6 border-t pt-6 sm:grid-cols-3",
+            onDark ? "border-white/25" : "border-border",
+          )}
+        >
+          {proof.map((p, i) => (
+            <div key={i}>
+              {p.t && <dt className="text-sm font-bold tracking-widest">{p.t}</dt>}
+              {p.d && (
+                <dd className={cn("mt-1 text-sm", onDark ? "text-white/75" : "text-muted-foreground")}>
+                  {p.d}
+                </dd>
+              )}
+            </div>
+          ))}
+        </dl>
+      )}
+    </>
+  );
+}
 
 export function HeroBlock({ data, lang }: BlockProps) {
   const title = str(data.title);
   if (!title) return null;
 
-  const eyebrow = str(data.eyebrow);
   const text = str(data.text);
-  const image = str(data.image);
+  const slides = list(data.slides)
+    .map((s) => str(s.image))
+    .filter((src): src is string => Boolean(src));
   const buttons = list(data.buttons)
     .map((b) => ({ label: str(b.label), href: str(b.href), outline: b.style === "outline" }))
     .filter((b): b is Button => Boolean(b.label && b.href));
@@ -24,77 +96,40 @@ export function HeroBlock({ data, lang }: BlockProps) {
     .map((p) => ({ t: str(p.t), d: str(p.d) }))
     .filter((p) => p.t || p.d);
 
+  // Có ảnh nền thì dùng bố cục tràn màn hình (từ 2 ảnh tự xoay). Chưa có ảnh thì hero chỉ có chữ trên nền glow mờ.
+  if (slides.length > 0) {
+    return (
+      <HeroSlider slides={slides}>
+        <div className={cn(styles.in, "max-w-2xl")}>
+          <HeroCopy
+            title={title}
+            text={text}
+            buttons={buttons}
+            proof={proof}
+            lang={lang}
+            onDark
+          />
+        </div>
+      </HeroSlider>
+    );
+  }
+
   return (
     <section className="relative overflow-hidden border-b border-border">
-      <div aria-hidden className={styles.grid} />
+      <div aria-hidden className={styles.ambient} />
       <div aria-hidden className={cn(styles.glow, styles.glowOne)} />
       <div aria-hidden className={cn(styles.glow, styles.glowTwo)} />
 
-      <div
-        className={cn(
-          "relative mx-auto grid max-w-[1240px] items-center gap-12 px-4 py-24 md:py-32",
-          image && "md:grid-cols-[1.1fr_0.9fr]",
-        )}
-      >
-        <div className={cn(styles.in, !image && "max-w-3xl")}>
-          {eyebrow && <Eyebrow className="mb-6">{eyebrow}</Eyebrow>}
-          <h1 className="text-4xl font-bold leading-[1.12] md:text-5xl lg:text-6xl">
-            <RichTitle text={title} />
-          </h1>
-          {text && (
-            <p className="mt-6 max-w-[56ch] text-lg leading-relaxed text-muted-foreground">
-              {text}
-            </p>
-          )}
-          {buttons.length > 0 && (
-            <div className="mt-8 flex flex-wrap gap-4">
-              {buttons.map((b) => (
-                <BlockLink
-                  key={`${b.href}-${b.label}`}
-                  href={b.href}
-                  lang={lang}
-                  className={cn(
-                    "inline-block rounded-full px-8 py-4 font-medium transition-colors",
-                    b.outline
-                      ? "border border-border text-foreground hover:border-primary hover:text-primary"
-                      : "bg-foreground text-background hover:bg-primary hover:text-primary-foreground",
-                  )}
-                >
-                  {b.label}
-                </BlockLink>
-              ))}
-            </div>
-          )}
-          {proof.length > 0 && (
-            <dl className="mt-12 grid max-w-xl grid-cols-1 gap-6 border-t border-border pt-6 sm:grid-cols-3">
-              {proof.map((p, i) => (
-                <div key={i}>
-                  {p.t && <dt className="text-sm font-bold tracking-widest">{p.t}</dt>}
-                  {p.d && <dd className="mt-1 text-sm text-muted-foreground">{p.d}</dd>}
-                </div>
-              ))}
-            </dl>
-          )}
+      <div className="relative mx-auto max-w-[1240px] px-4 py-16 md:py-24">
+        <div className={cn(styles.in, "max-w-3xl")}>
+          <HeroCopy
+            title={title}
+            text={text}
+            buttons={buttons}
+            proof={proof}
+            lang={lang}
+          />
         </div>
-
-        {image && (
-          <div
-            className={cn(
-              styles.in,
-              "relative aspect-[4/3] overflow-hidden rounded-3xl border border-border bg-card",
-            )}
-            style={{ animationDelay: "0.12s" }}
-          >
-            <CloudinaryMedia
-              src={image}
-              alt={stripAccent(title)}
-              sizes="(min-width: 768px) 45vw, 100vw"
-              variant="player"
-              className="object-cover"
-              imageProps={{ preload: true, fetchPriority: "high" }}
-            />
-          </div>
-        )}
       </div>
     </section>
   );

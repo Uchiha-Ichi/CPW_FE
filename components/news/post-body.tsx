@@ -46,12 +46,12 @@ const DROP_WITH_CONTENT = new Set([
 ]);
 
 const BODY_CLASS =
-  "text-[1.05rem] leading-8 text-foreground/90 " +
-  "[&_p]:mt-5 [&_h2]:mt-12 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:leading-[1.2] " +
-  "[&_h3]:mt-8 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:leading-[1.25] " +
+  "md:text-justify text-[1.05rem] leading-8 text-foreground/90 " +
+  "[&_p]:mt-5 [&_h2]:mt-12 [&_h2]:text-left [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:leading-[1.2] " +
+  "[&_h3]:mt-8 [&_h3]:text-left [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:leading-[1.25] " +
   "[&_ul]:mt-5 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:mt-5 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mt-2 " +
   "[&_blockquote]:mt-6 [&_blockquote]:border-l-2 [&_blockquote]:border-primary [&_blockquote]:pl-5 [&_blockquote]:italic " +
-  "[&_figure]:mt-8 [&_figcaption]:mt-2 [&_figcaption]:text-sm [&_figcaption]:text-muted-foreground [&_img]:mt-6";
+  "[&_figure]:mt-8 [&_figcaption]:mt-2 [&_figcaption]:text-left [&_figcaption]:text-sm [&_figcaption]:text-muted-foreground [&_img]:mt-6";
 
 export type PostImageComponent = ElementType<{ src: string; alt: string }>;
 

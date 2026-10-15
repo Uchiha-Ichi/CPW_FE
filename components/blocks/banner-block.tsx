@@ -16,7 +16,7 @@ export function BannerBlock({ data }: BlockProps) {
   return (
     <section
       className={cn(
-        "relative flex min-h-[360px] items-center justify-center overflow-hidden border-b border-border bg-muted px-4 py-24 text-center",
+        "relative flex min-h-[360px] items-center justify-center overflow-hidden border-b border-border bg-muted px-4 py-16 text-center",
         image ? "text-white" : "text-foreground",
       )}
     >

@@ -56,7 +56,8 @@
   "Carousel": {
     "region": "Carousel",
     "prev": "Previous card",
-    "next": "Next card"
+    "next": "Next card",
+    "hint": "Swipe sideways"
   },
   "FeaturedNews": {
     "viewAll": "View all news",
@@ -102,7 +103,21 @@
       "next": "Next page",
       "status": "Page {page} of {total}"
     },
-    "backToList": "← All news"
+    "backToList": "← All news",
+    "related": "Related news",
+    "share": {
+      "heading": "Share this article",
+      "copy": "Copy link",
+      "copied": "Link copied",
+      "copyFailed": "Could not copy the link",
+      "native": "Share",
+      "failed": "Could not share"
+    },
+    "nav": {
+      "label": "Neighbouring articles",
+      "prev": "Previous article",
+      "next": "Next article"
+    }
   },
   "Careers": {
     "eyebrow": "Careers",
@@ -143,6 +158,7 @@
       "portfolio": "Portfolio / LinkedIn",
       "cv": "CV / Resume",
       "cvDropzone": "Drag and drop your CV here, paste (Ctrl+V), or click to choose — PDF, DOC, DOCX",
+      "cvDropzoneTouch": "Tap to choose your CV",
       "cvRemove": "Remove selected file",
       "note": "Short introduction",
       "notePlaceholder": "Tell us about your experience, skills or anything you would like to share...",
@@ -174,6 +190,10 @@
     },
     "ctaTitle": "Let's build <em>something meaningful.</em>",
     "apply": "Contact us to apply →",
+    "row": {
+      "apply": "Apply for this role →",
+      "viewPage": "Open full page"
+    },
     "detail": {
       "back": "← All positions",
       "department": "Team",

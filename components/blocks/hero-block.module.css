@@ -1,12 +1,8 @@
-.grid {
+.ambient {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image:
-    linear-gradient(var(--tech-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--tech-grid) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: linear-gradient(to bottom, #000, transparent 90%);
+  background-image: radial-gradient(60% 55% at 50% 30%, var(--tech-glow-2), transparent 72%);
 }
 
 .glow {

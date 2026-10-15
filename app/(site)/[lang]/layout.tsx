@@ -11,6 +11,7 @@ import { SITE_URL } from "@/lib/seo/site-url";
 import { getSiteSettings } from "@/lib/api/site-settings";
 import { brandName } from "@/lib/site/contact-info";
 import { JsonLd } from "@/components/seo/json-ld";
+import { SilkFlow } from "@/components/shared/silk-flow";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { LenisProvider } from "@/components/layout/lenis-provider";
@@ -47,6 +48,7 @@ export default async function SiteLayout({ children, params }: Props) {
   return (
     <html lang={lang} className={htmlClassName} suppressHydrationWarning>
       <body className="flex flex-col font-body">
+        <SilkFlow className="pointer-events-none fixed inset-0 -z-10 h-full w-full text-[#C9A063]" />
         <JsonLd data={organizationJsonLd(SITE_URL, brand, settings)} />
         <JsonLd data={webSiteJsonLd(SITE_URL, brand)} />
         {/* Chỉ gửi xuống client các nhóm chữ mà client component dùng. */}
@@ -66,8 +68,8 @@ export default async function SiteLayout({ children, params }: Props) {
                 {common("skipToContent")}
               </a>
               <SiteHeader />
-              {/* padding-top = chiều cao header (78px) */}
-              <main id="main" tabIndex={-1} className="flex-1 pt-[78px]">{children}</main>
+              {/* padding-top = chiều cao header lúc chưa cuộn (72px mobile, 88px từ 880px) */}
+              <main id="main" tabIndex={-1} className="flex-1 pt-[72px] min-[880px]:pt-[88px]">{children}</main>
               <SiteFooter />
               <Toaster />
             </LenisProvider>

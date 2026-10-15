@@ -1,6 +1,5 @@
 import styles from "./network.module.css";
 import { NetworkMap } from "./network-map";
-import { Eyebrow } from "../shared/eyebrow";
 import { RichTitle } from "../shared/rich-title";
 import { getNetwork } from "@/lib/api/network";
 import { routesFrom, toPins } from "@/lib/blocks/network-geometry";
@@ -15,7 +14,6 @@ export async function NetworkBlock({ data }: BlockProps) {
   const pins = network.status === "ok" ? toPins(network.data) : [];
   if (pins.length === 0) return null;
 
-  const kicker = str(data.kicker);
   const title = str(data.title);
   const t = await getTranslations("Network");
 
@@ -24,11 +22,10 @@ export async function NetworkBlock({ data }: BlockProps) {
       className={cn(styles.globalNetwork, "mx-auto w-full max-w-[1240px] px-4")}
       aria-label={title ? undefined : t("routes")}
     >
-      {(kicker || title) && (
+      {title && (
         <div className="mb-8">
-          {kicker && <Eyebrow className="mb-3">{kicker}</Eyebrow>}
           {title && (
-            <h2 className="max-w-[16ch] text-4xl font-medium leading-[1.12] md:text-5xl lg:text-6xl">
+            <h2 className="max-w-[16ch] text-4xl leading-[1.12] md:text-5xl lg:text-6xl">
               <RichTitle text={title} />
             </h2>
           )}

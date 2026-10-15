@@ -1,0 +1,175 @@
+/* Lưới ô bất đối xứng (bento). Từ 768px: lưới 12 cột, số cột của từng ô do carousel-block.tsx đặt qua --span.
+   Dưới 768px: một cột. Bản timeline cũ lưu ở DOCS/_backup/carousel-block.timeline.*.bak. */
+
+.section {
+  background-image: radial-gradient(
+    55% 60% at 50% 0%,
+    color-mix(in srgb, var(--primary) 9%, transparent),
+    transparent 72%
+  );
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+  .tile {
+    grid-column: span var(--span, 4);
+  }
+}
+
+/* ── Ô: nền xanh đậm cùng tông dải Tuyên ngôn (token --tech-* là hằng số ở :root nên không đổi theo giao diện sáng/tối),
+   chữ trắng đậm, số lớn đặc màu cyan; hoa văn chấm mờ dần về phía dưới phải; ánh sáng theo con trỏ.
+   Các lớp trang trí nằm ở z-index âm trong ô (isolation) nên luôn dưới chữ. ── */
+.tile {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  min-height: 12.5rem;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--tech-cyan) 20%, transparent);
+  border-radius: 1.75rem;
+  color: var(--primary-foreground);
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--tech-blue) 40%, var(--tech-ink)),
+    var(--tech-ink)
+  );
+  box-shadow: 0 26px 50px -36px rgb(3 10 24 / 0.85);
+}
+@media (min-width: 768px) {
+  .tile {
+    min-height: 15rem;
+    padding: 1.75rem;
+  }
+  .tile[data-feature] {
+    min-height: 20rem;
+  }
+}
+.tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image: radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.16) 1px, transparent 0);
+  background-size: 22px 22px;
+  mask-image: linear-gradient(to bottom right, black, transparent 72%);
+}
+.tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    380px circle at var(--x, 50%) var(--y, 0%),
+    color-mix(in srgb, var(--tech-cyan) 22%, transparent),
+    transparent 65%
+  );
+}
+.tile:hover::after {
+  opacity: 1;
+}
+.tile:hover {
+  border-color: color-mix(in srgb, var(--tech-cyan) 60%, transparent);
+}
+
+/* Số thứ tự lớn, ĐẶC (không viền rỗng mảnh): font thân (Prata không phân biệt được chữ số 1 với chữ l). */
+.num {
+  align-self: flex-start;
+  font-size: clamp(2.75rem, 5vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--tech-cyan);
+}
+
+/* Tiêu đề: font thân đậm (Prata chỉ có nét mảnh, trên ô nhỏ bị nhạt). */
+.title {
+  font-family: var(--font-body), sans-serif;
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.tile[data-feature] .title {
+  font-size: clamp(1.6rem, 2.5vw, 2.3rem);
+}
+.desc {
+  margin-top: 0.6rem;
+  max-width: 30rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgb(255 255 255 / 0.85);
+}
+
+/* Nhãn quy cách ảnh ở ô chưa có ảnh (góc trên phải). */
+.slot {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  color: rgb(255 255 255 / 0.85);
+}
+
+/* ── Ô có ảnh/video: ảnh phủ kín, lớp tối ở đáy, chữ trắng ── */
+.media {
+  position: absolute;
+  inset: 0;
+  z-index: -4;
+}
+.photo {
+  object-fit: cover;
+}
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  pointer-events: none;
+  background: linear-gradient(to top, rgb(3 10 24 / 0.85), rgb(3 10 24 / 0.1) 62%);
+}
+.tile[data-media] {
+  border-color: transparent;
+}
+.tile[data-media]::before {
+  display: none;
+}
+.tile[data-media] .num {
+  color: var(--primary-foreground);
+}
+.tile[data-media] .slot {
+  display: none;
+}
+
+/* ── Chuyển động (tắt khi người dùng bật reduced-motion) ── */
+@media (prefers-reduced-motion: no-preference) {
+  .tile {
+    transition:
+      border-color 0.4s ease,
+      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .tile:hover {
+    transform: translateY(-4px);
+  }
+  .tile::after {
+    transition: opacity 0.4s ease;
+  }
+  .photo {
+    transition: scale 1.2s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .tile:hover .photo {
+    scale: 1.05;
+  }
+}

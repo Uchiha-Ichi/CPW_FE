@@ -56,7 +56,8 @@
   "Carousel": {
     "region": "Băng trượt",
     "prev": "Thẻ trước",
-    "next": "Thẻ tiếp"
+    "next": "Thẻ tiếp",
+    "hint": "Lướt sang bên"
   },
   "FeaturedNews": {
     "viewAll": "Xem tất cả tin tức",
@@ -102,7 +103,21 @@
       "next": "Trang sau",
       "status": "Trang {page} / {total}"
     },
-    "backToList": "← Tất cả tin tức"
+    "backToList": "← Tất cả tin tức",
+    "related": "Tin liên quan",
+    "share": {
+      "heading": "Chia sẻ bài viết",
+      "copy": "Sao chép liên kết",
+      "copied": "Đã sao chép liên kết",
+      "copyFailed": "Không sao chép được liên kết",
+      "native": "Chia sẻ",
+      "failed": "Không chia sẻ được"
+    },
+    "nav": {
+      "label": "Bài viết liền kề",
+      "prev": "Bài trước",
+      "next": "Bài sau"
+    }
   },
   "Careers": {
     "eyebrow": "Tuyển dụng",
@@ -143,6 +158,7 @@
       "portfolio": "Portfolio / LinkedIn",
       "cv": "CV / Hồ sơ",
       "cvDropzone": "Kéo thả CV vào đây, dán (Ctrl+V) hoặc bấm để chọn — PDF, DOC, DOCX",
+      "cvDropzoneTouch": "Bấm để chọn CV",
       "cvRemove": "Xóa file đã chọn",
       "note": "Giới thiệu ngắn",
       "notePlaceholder": "Giới thiệu về kinh nghiệm, kỹ năng hoặc điều bạn muốn chia sẻ...",
@@ -174,6 +190,10 @@
     },
     "ctaTitle": "Cùng tạo nên <em>điều ý nghĩa.</em>",
     "apply": "Liên hệ ứng tuyển →",
+    "row": {
+      "apply": "Ứng tuyển vị trí này →",
+      "viewPage": "Xem trang riêng"
+    },
     "detail": {
       "back": "← Tất cả vị trí",
       "department": "Nhóm",

@@ -1,9 +1,10 @@
 import { SectionHead } from "./shared/section-head";
 import { Reveal } from "./shared/reveal";
 import { CloudinaryMedia } from "./shared/cloudinary-media";
-import { ImagePlaceholder } from "@/components/shared/image-placeholder";
+import { ImageSlot } from "./shared/image-slot";
 import { list, str } from "@/lib/blocks/read";
 import { repeatToMin } from "@/lib/blocks/marquee";
+import { stripAccent } from "@/lib/blocks/accent";
 import type { BlockProps } from "./types";
 
 type Item = { image?: string; caption?: string };
@@ -22,8 +23,10 @@ function Tile({ item, hidden }: { item: Item; hidden: boolean }) {
             className="object-cover"
           />
         ) : (
-          <ImagePlaceholder
+          <ImageSlot
+            slot="photo-gallery.items.image"
             label={item.caption ?? ""}
+            dense
             className="h-full min-h-0! border-0"
           />
         )}
@@ -40,45 +43,34 @@ export function PhotoGalleryBlock({ data }: BlockProps) {
   if (!title) return null;
 
   const featured = str(data.featured);
-  const featuredCaption = str(data.featuredCaption);
   const items: Item[] = list(data.items)
     .map((i) => ({ image: str(i.image), caption: str(i.caption) }))
     .filter((i) => i.image || i.caption);
   const loop = repeatToMin(items, 6);
 
   return (
-    <section className="overflow-hidden border-b border-border py-20 md:py-28">
+    <section className="overflow-hidden border-b border-border py-12 md:py-16">
       <div className="mx-auto max-w-[1240px] px-4">
         <Reveal>
-          <SectionHead eyebrow={str(data.eyebrow)} title={title} />
+          <SectionHead title={title} />
         </Reveal>
-        {(featured || featuredCaption) && (
-          <Reveal>
-            <figure>
-              <div className="relative aspect-[21/9] w-full overflow-hidden rounded-3xl border border-border bg-card">
-                {featured ? (
-                  <CloudinaryMedia
-                    src={featured}
-                    alt={featuredCaption ?? ""}
-                    sizes="(min-width: 1240px) 1240px, 100vw"
-                    variant="player"
-                    className="object-cover"
-                  />
-                ) : (
-                  <ImagePlaceholder
-                    label={featuredCaption ?? ""}
-                    className="h-full min-h-0! rounded-3xl border-0"
-                  />
-                )}
-              </div>
-              {featuredCaption && (
-                <figcaption className="mt-3 text-sm text-muted-foreground">
-                  {featuredCaption}
-                </figcaption>
-              )}
-            </figure>
-          </Reveal>
-        )}
+        {/* Ảnh chính tỷ lệ 16:9 (cao hơn 21:9 cũ) trong đúng khung nội dung; cao tối đa 78% màn hình nên không bao giờ
+            tràn màn hình thấp, và co theo bề ngang trên điện thoại. */}
+        <Reveal>
+          <div className="relative aspect-[16/9] max-h-[78vh] w-full overflow-hidden rounded-3xl border border-border bg-card">
+            {featured ? (
+              <CloudinaryMedia
+                src={featured}
+                alt={stripAccent(title)}
+                sizes="(min-width: 1240px) 1240px, 100vw"
+                variant="player"
+                className="object-cover"
+              />
+            ) : (
+              <ImageSlot slot="photo-gallery.featured" className="h-full min-h-0! rounded-3xl border-0" />
+            )}
+          </div>
+        </Reveal>
       </div>
 
       {items.length > 0 && (

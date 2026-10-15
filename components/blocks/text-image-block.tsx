@@ -1,9 +1,8 @@
-import { Eyebrow } from "./shared/eyebrow";
 import { RichTitle } from "./shared/rich-title";
 import { Reveal } from "./shared/reveal";
 import { BlockLink } from "./shared/block-link";
 import { CloudinaryMedia } from "./shared/cloudinary-media";
-import { ImagePlaceholder } from "@/components/shared/image-placeholder";
+import { ImageSlot } from "./shared/image-slot";
 import { str } from "@/lib/blocks/read";
 import { stripAccent } from "@/lib/blocks/accent";
 import { cn } from "@/lib/utils";
@@ -13,7 +12,6 @@ export function TextImageBlock({ data, lang }: BlockProps) {
   const title = str(data.title);
   if (!title) return null;
 
-  const eyebrow = str(data.eyebrow);
   const text = str(data.text);
   const image = str(data.image);
   const imageRight = data.side === "right";
@@ -22,7 +20,7 @@ export function TextImageBlock({ data, lang }: BlockProps) {
   const plainTitle = stripAccent(title);
 
   return (
-    <section className="border-b border-border py-20 md:py-28">
+    <section className="border-b border-border py-12 md:py-16">
       <div className="mx-auto grid max-w-[1240px] gap-12 px-4 md:grid-cols-2 md:items-center">
         <Reveal className={cn(imageRight && "md:order-2")}>
           <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-border bg-card">
@@ -35,12 +33,11 @@ export function TextImageBlock({ data, lang }: BlockProps) {
                 className="object-cover"
               />
             ) : (
-              <ImagePlaceholder label={plainTitle} className="h-full rounded-3xl border-0" />
+              <ImageSlot slot="text-image.image" label={plainTitle} className="h-full rounded-3xl border-0" />
             )}
           </div>
         </Reveal>
         <Reveal delay={120}>
-          {eyebrow && <Eyebrow className="mb-4">{eyebrow}</Eyebrow>}
           <h2 className="text-3xl font-bold leading-[1.12] md:text-4xl lg:text-5xl">
             <RichTitle text={title} />
           </h2>

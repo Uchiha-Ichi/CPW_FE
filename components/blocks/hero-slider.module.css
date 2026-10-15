@@ -1,0 +1,132 @@
+/* Thời gian mỗi slide. Thanh tiến trình chạy hết khoảng này thì chuyển slide (xem onAnimationEnd trong hero-slider.tsx). */
+.root {
+  --hero-interval: 6s;
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+}
+.slide[data-state="prev"] {
+  visibility: visible;
+  z-index: 1;
+}
+.slide[data-state="active"] {
+  visibility: visible;
+  z-index: 2;
+}
+
+/* Ảnh mới nở ra từ góc phải dưới, đúng chỗ chỉ báo slide nằm. Slide đầu lúc vào trang không chạy hiệu ứng này
+   để ảnh hiện ngay (LCP): chỉ khi đã chuyển ít nhất một lần thì root mới có data-moved. */
+.root[data-moved] .slide[data-state="active"] {
+  animation: reveal 1.1s cubic-bezier(0.7, 0, 0.2, 1) both;
+  will-change: clip-path;
+}
+@keyframes reveal {
+  from { clip-path: circle(0% at 100% 100%); }
+  to { clip-path: circle(150% at 100% 100%); }
+}
+
+/* Zoom rất chậm. Khai báo giống nhau ở active và prev để slide cũ không giật về cỡ gốc khi ảnh mới đang nở đè lên. */
+.zoom {
+  position: absolute;
+  inset: 0;
+}
+.slide[data-state="active"] .zoom,
+.slide[data-state="prev"] .zoom {
+  animation: drift 9s linear both;
+}
+@keyframes drift {
+  from { transform: scale(1); }
+  to { transform: scale(1.07); }
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.62));
+}
+/* Điện thoại (< 520px): lớp phủ đậm hơn để chữ trắng và chữ nhấn xanh đọc được trên vùng ảnh sáng. */
+@media (max-width: 519px) {
+  .scrim {
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.76));
+  }
+}
+@media (min-width: 768px) {
+  .scrim {
+    background:
+      linear-gradient(90deg, rgba(0, 0, 0, 0.74) 0%, rgba(0, 0, 0, 0.46) 48%, rgba(0, 0, 0, 0.12) 100%),
+      linear-gradient(0deg, rgba(0, 0, 0, 0.4), transparent 28%);
+  }
+}
+
+/* Mỗi nút chỉ báo cao 24px cho dễ bấm, vạch nhìn thấy chỉ dày 2px. */
+.seg {
+  position: relative;
+  width: 2.5rem;
+  height: 1.5rem;
+  cursor: pointer;
+}
+.seg::before {
+  content: "";
+  position: absolute;
+  inset: calc(50% - 1px) 0 auto 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  transition: background-color 0.2s;
+}
+.seg:hover::before {
+  background: rgba(255, 255, 255, 0.55);
+}
+.fill {
+  position: absolute;
+  inset: calc(50% - 1px) 0 auto 0;
+  height: 2px;
+  background: #fff;
+  transform-origin: left center;
+  animation: fill var(--hero-interval) linear both;
+}
+@keyframes fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Dừng tự chuyển khi rê chuột vào hero hoặc khi đang dùng bàn phím trên chỉ báo. Trên màn cảm ứng :hover bị
+   "dính" sau khi chạm nên chỉ áp dụng cho thiết bị có chuột. */
+@media (hover: hover) {
+  .root:hover .fill { animation-play-state: paused; }
+}
+.root:has(:focus-visible) .fill { animation-play-state: paused; }
+
+.cue {
+  display: block;
+  width: 1px;
+  height: 3rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent);
+  transform-origin: top;
+  animation: cue 2.4s ease-in-out infinite;
+}
+@keyframes cue {
+  0% { transform: scaleY(0); opacity: 0; }
+  40% { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(1); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root[data-moved] .slide[data-state="active"],
+  .slide[data-state="active"] .zoom,
+  .slide[data-state="prev"] .zoom,
+  .cue { animation: none; }
+  /* Không tự chuyển (thanh tiến trình không chạy nên không bao giờ kết thúc); vạch của slide hiện tại hiện đầy. */
+  .fill { animation: none; }
+}

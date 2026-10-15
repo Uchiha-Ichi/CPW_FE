@@ -11,6 +11,7 @@ import { CarouselBlock } from "./carousel-block";
 import { MarqueeBlock } from "./marquee-block";
 import { PhotoGalleryBlock } from "./photo-gallery-block";
 import { NetworkBlock } from "./network/network-block";
+import { FeaturedNewsBlock } from "./featured-news/featured-news-block";
 
 // Bảng ánh xạ type của block (đúng tên trong cpw_be/src/pages/blocks/registry.ts) sang component.
 // Thêm loại block mới = thêm một dòng ở đây và một component.
@@ -26,4 +27,5 @@ export const BLOCK_COMPONENTS: Record<string, ComponentType<BlockProps> | undefi
   marquee: MarqueeBlock,
   "photo-gallery": PhotoGalleryBlock,
   network: NetworkBlock,
+  "featured-news": FeaturedNewsBlock,
 };

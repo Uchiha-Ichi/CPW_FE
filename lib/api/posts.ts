@@ -55,11 +55,13 @@ export async function getPosts(query: {
   page?: number;
   limit?: number;
   category?: PostCategory;
+  featured?: boolean;
 }): Promise<ApiResult<PostList>> {
   const params = new URLSearchParams({ lang: query.lang });
   if (query.page !== undefined) params.set("page", String(query.page));
   if (query.limit !== undefined) params.set("limit", String(query.limit));
   if (query.category) params.set("category", query.category);
+  if (query.featured === true) params.set("featured", "true");
   const result = await apiGet<unknown>(`/posts?${params.toString()}`, {
     tags: [CACHE_TAGS.posts],
   });
@@ -69,6 +71,20 @@ export async function getPosts(query: {
     : { status: "error" };
 }
 
+export const FEATURED_POST_LIMIT = 5; // trùng giới hạn trong spec 2026-10-13
+
+// Bài nổi bật đã đăng, mới nhất trước (backend lọc theo featured và đã đăng). Không ném lỗi: trạng thái khác "ok" trả nguyên.
+export async function getFeaturedPosts(
+  lang: Locale
+): Promise<ApiResult<PostSummary[]>> {
+  const result = await getPosts({
+    lang,
+    limit: FEATURED_POST_LIMIT,
+    featured: true,
+  });
+  if (result.status !== "ok") return result;
+  return { status: "ok", data: result.data.items };
+}
 export async function getPostBySlug(
   slug: string,
   lang: Locale

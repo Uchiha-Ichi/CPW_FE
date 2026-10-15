@@ -61,7 +61,16 @@ export function loadDraft(
     if (p.version !== 1 || typeof p.savedAt !== "number" || !isPostForm(p.form)) {
       return null;
     }
-    return { version: 1, savedAt: p.savedAt, form: p.form };
+    // Bản nháp cũ chưa có featured: chuẩn hoá, và dựng theo đúng thứ tự khoá của emptyForm()
+    // để JSON.stringify trong shouldOfferDraft không báo khác oan.
+    const form: PostForm = {
+      category: p.form.category,
+      coverUrl: p.form.coverUrl,
+      vi: p.form.vi,
+      en: p.form.en,
+      featured: p.form.featured === true,
+    };
+    return { version: 1, savedAt: p.savedAt, form };
   } catch {
     return null;
   }

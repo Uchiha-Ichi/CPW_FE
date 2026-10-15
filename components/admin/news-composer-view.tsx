@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ImagePlaceholder } from "@/components/shared/image-placeholder";
 import { CoverField } from "@/components/admin/post-cover-field";
 import { PostEditor } from "@/components/admin/post-editor";
@@ -177,6 +178,11 @@ export function NewsComposerView({ articleId }: { articleId: string | null }) {
 
   function updateCategory(category: PostCategory) {
     setForm((f) => ({ ...f, category }));
+    setDirty(true);
+  }
+
+  function updateFeatured(featured: boolean) {
+    setForm((f) => ({ ...f, featured }));
     setDirty(true);
   }
 
@@ -371,6 +377,27 @@ export function NewsComposerView({ articleId }: { articleId: string | null }) {
                 {publishedDate || "Chưa đăng"}
               </p>
             </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label
+              htmlFor="post-featured"
+              className="flex items-center gap-3 text-sm font-medium"
+            >
+              <Checkbox
+                id="post-featured"
+                checked={form.featured}
+                onCheckedChange={updateFeatured}
+                aria-describedby="post-featured-hint"
+              />
+              <span>Hiện ở Trang chủ (Tin tức nổi bật)</span>
+            </label>
+            <p
+              id="post-featured-hint"
+              className="pl-8 text-xs text-muted-foreground"
+            >
+              Trang chủ hiện tối đa 5 bài nổi bật mới đăng nhất. Chỉ bài đã đăng mới hiện.
+            </p>
           </div>
 
           <CoverField

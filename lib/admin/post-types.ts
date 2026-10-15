@@ -42,6 +42,7 @@ export interface AdminPost {
   cover?: PostCover;
   vi: PostLocale;
   en?: PostLocale;
+  featured?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -66,4 +67,5 @@ export interface PostPayload {
   vi: PostLocalePayload;
   en?: PostLocalePayload;
   cover?: { url: string };
+  featured?: boolean;
 }

@@ -58,6 +58,12 @@
     "prev": "Thẻ trước",
     "next": "Thẻ tiếp"
   },
+  "FeaturedNews": {
+    "viewAll": "Xem tất cả tin tức",
+    "slide": "Tin {n} / {total}",
+    "region": "Tin tức nổi bật",
+    "detail": "Chi tiết"
+  },
   "Network": {
     "mapCredit": "Bản đồ: Al MacDonald, CC BY-SA 3.0",
     "routes": "Tuyến quốc tế"

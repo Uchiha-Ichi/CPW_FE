@@ -58,6 +58,12 @@
     "prev": "Previous card",
     "next": "Next card"
   },
+  "FeaturedNews": {
+    "viewAll": "View all news",
+    "slide": "Story {n} of {total}",
+    "region": "Featured news",
+    "detail": "Details"
+  },
   "Network": {
     "mapCredit": "Map: Al MacDonald, CC BY-SA 3.0",
     "routes": "International routes"

@@ -21,6 +21,7 @@ export interface PostForm {
   coverUrl: string;
   vi: LocaleForm;
   en: LocaleForm;
+  featured: boolean;
 }
 
 export interface FormIssue {
@@ -33,7 +34,13 @@ function emptyLocale(): LocaleForm {
 }
 
 export function emptyForm(): PostForm {
-  return { category: "news", coverUrl: "", vi: emptyLocale(), en: emptyLocale() };
+  return {
+    category: "news",
+    coverUrl: "",
+    vi: emptyLocale(),
+    en: emptyLocale(),
+    featured: false,
+  };
 }
 
 // Editor rỗng trả về "<p></p>": coi là trống. Có ảnh thì không trống.
@@ -58,6 +65,7 @@ export function fromPost(post: AdminPost): PostForm {
     coverUrl: post.cover?.url ?? "",
     vi: toLocaleForm(post.vi),
     en: toLocaleForm(post.en),
+    featured: post.featured === true,
   };
 }
 
@@ -74,6 +82,7 @@ function toLocalePayload(locale: LocaleForm): PostLocalePayload {
 }
 
 // Backend: không gửi cover/en nghĩa là xóa chúng; không gửi status nghĩa là giữ nguyên.
+// Form luôn biết giá trị featured nên luôn gửi (không gửi thì backend giữ nguyên).
 export function toPayload(form: PostForm, status?: PostStatus): PostPayload {
   return {
     category: form.category,
@@ -81,6 +90,7 @@ export function toPayload(form: PostForm, status?: PostStatus): PostPayload {
     vi: toLocalePayload(form.vi),
     ...(isEnglishBlank(form.en) ? {} : { en: toLocalePayload(form.en) }),
     ...(form.coverUrl ? { cover: { url: form.coverUrl } } : {}),
+    featured: form.featured,
   };
 }
 

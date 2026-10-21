@@ -62,7 +62,9 @@ export default async function NewsPage({ params, searchParams }: Props) {
     recruitment: t("categories.recruitment"),
   };
   const items = result.status === "ok" ? result.data.items : [];
-  const [featured, ...rest] = items;
+  // Tin chính chỉ ở trang 1: bài đầu là bài mới nhất (backend sắp publishedAt giảm dần). Từ trang 2 chỉ có lưới tin phụ.
+  const featured = page === 1 ? items[0] : undefined;
+  const rest = featured ? items.slice(1) : items;
 
   return (
     <>
@@ -74,31 +76,36 @@ export default async function NewsPage({ params, searchParams }: Props) {
       />
 
       <PageHero
+        compact
         eyebrow={t("eyebrow")}
         title={t.rich("title", { em: (chunks) => <em className="not-italic text-primary">{chunks}</em> })}
         lead={t("lead")}
       />
 
-      <PageSection>
+      <PageSection compact>
         <CategoryFilter active={category} label={t("categoriesLabel")} labels={labels} />
 
-        <div className="mt-8">
+        <div className="mt-6">
           {result.status === "error" ? (
             <p role="status" className="py-12 text-muted-foreground">{t("error")}</p>
-          ) : !featured ? (
+          ) : items.length === 0 ? (
             <p className="py-12 text-muted-foreground">{t("empty")}</p>
           ) : (
-            <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
-              <Reveal>
-                <PostCard post={featured} lang={lang} variant="featured" categoryLabel={labels[featured.category]} />
-              </Reveal>
-              <div className="flex flex-col gap-6">
-                {rest.map((post) => (
-                  <Reveal key={post._id}>
-                    <PostCard post={post} lang={lang} variant="row" categoryLabel={labels[post.category]} />
-                  </Reveal>
-                ))}
-              </div>
+            <div className="space-y-8">
+              {featured && (
+                <Reveal>
+                  <PostCard post={featured} lang={lang} variant="featured" categoryLabel={labels[featured.category]} />
+                </Reveal>
+              )}
+              {rest.length > 0 && (
+                <div className="grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+                  {rest.map((post) => (
+                    <Reveal key={post._id}>
+                      <PostCard post={post} lang={lang} variant="compact" categoryLabel={labels[post.category]} />
+                    </Reveal>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>

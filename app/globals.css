@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, html:not([data-theme="light"]) *, .dark, .dark *));
 
 @theme inline {
   --color-background: var(--background);
@@ -136,6 +136,12 @@
   --vcb-panel-2: #111D2F;
   --vcb-ink: #050A14;
 
+  /* Khối nền navy, chữ nhấn trên nền navy và trong tech-editorial (mockup BẢN 65) */
+  --vcb-navy: #0D3768;
+  --vcb-navy-2: #06182F;
+  --vcb-champagne: #E6CF9C;
+  --vcb-ed-blue: #0066FF;
+
   /* Sidebar */
   --sidebar: #0C1422;
   --sidebar-foreground: #EEF6FF;
@@ -188,6 +194,12 @@
   --vcb-panel: #FBFAF7;
   --vcb-panel-2: #EEF3F9;
   --vcb-ink: #F4F7FB;
+
+  /* Khối nền navy, chữ nhấn trên nền navy và trong tech-editorial (mockup BẢN 65) */
+  --vcb-navy: #0D3768;
+  --vcb-navy-2: #06182F;
+  --vcb-champagne: #E6CF9C;
+  --vcb-ed-blue: #0066FF;
 
   --sidebar: #ffffff;
   --sidebar-foreground: #071426;

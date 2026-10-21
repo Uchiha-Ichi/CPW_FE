@@ -1,0 +1,78 @@
+/* Ảnh tự mờ chuyển (mockup BẢN 65 dòng 507–511, 793). Khung cần relative + overflow hidden vì ảnh thu từ scale(1.05). */
+.root {
+  position: relative;
+  overflow: hidden;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* Một ảnh: đứng yên. */
+.still {
+  opacity: 1;
+}
+
+/* animation-name theo số ảnh N (tên keyframes trong CSS module bị đổi tên, nên không đặt inline được);
+   animation-duration và animation-delay từng lớp đặt inline từ N. */
+.n2 { animation-name: ssf2; }
+.n3 { animation-name: ssf3; }
+.n4 { animation-name: ssf4; }
+.n5 { animation-name: ssf5; }
+.n6 { animation-name: ssf6; }
+
+/* Rê chuột thì dừng. */
+.root:hover .layer {
+  animation-play-state: paused;
+}
+
+/* Keyframes N = 2..6: fp = 1,1 / (N × 4,2) × 100, hp = 100 / N, ep = hp + fp. */
+@keyframes ssf2 {
+  0% { opacity: 0; transform: scale(1.05); }
+  13.095% { opacity: 1; }
+  50% { opacity: 1; }
+  63.095% { opacity: 0; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1); }
+}
+@keyframes ssf3 {
+  0% { opacity: 0; transform: scale(1.05); }
+  8.73% { opacity: 1; }
+  33.333% { opacity: 1; }
+  42.063% { opacity: 0; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1); }
+}
+@keyframes ssf4 {
+  0% { opacity: 0; transform: scale(1.05); }
+  6.548% { opacity: 1; }
+  25% { opacity: 1; }
+  31.548% { opacity: 0; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1); }
+}
+@keyframes ssf5 {
+  0% { opacity: 0; transform: scale(1.05); }
+  5.238% { opacity: 1; }
+  20% { opacity: 1; }
+  25.238% { opacity: 0; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1); }
+}
+@keyframes ssf6 {
+  0% { opacity: 0; transform: scale(1.05); }
+  4.365% { opacity: 1; }
+  16.667% { opacity: 1; }
+  21.032% { opacity: 0; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1); }
+}
+
+/* Reduced-motion: không animation, chỉ lớp 1 hiện. */
+@media (prefers-reduced-motion: reduce) {
+  .root .layer {
+    animation: none;
+  }
+  .root .layer:first-child {
+    opacity: 1;
+  }
+}

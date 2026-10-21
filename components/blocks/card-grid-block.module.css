@@ -1,187 +1,37 @@
-/* ── Thẻ chung cho cả hai bố cục. Mặc định (mobile, cảm ứng) mọi thẻ hiện đủ nội dung. ── */
-.card {
-  position: relative;
+/* Lưới thẻ tĩnh (mockup BẢN 65 CSS dòng 112–120): khung viền bo 18px, 3 cột, kẻ phân cách 1px giữa các ô. Mặc định một cột (mobile-first). */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--card);
+}
+.cell {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 1.5rem;
+  gap: 14px;
   min-width: 0;
-  min-height: 240px;
-  overflow: hidden;
-  padding: 1.75rem;
-  border: 1px solid var(--border);
-  border-radius: 1rem;
-  background: linear-gradient(
-    160deg,
-    color-mix(in srgb, var(--primary) 7%, var(--card)),
-    var(--card) 70%
-  );
-}
-.card:focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: -2px;
-}
-.photo {
-  object-fit: cover;
-}
-.scrim {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    to top,
-    rgb(0 0 0 / 0.78),
-    rgb(0 0 0 / 0.35) 55%,
-    rgb(0 0 0 / 0.12)
-  );
-}
-.num {
-  position: relative;
-  font-family: var(--font-display), sans-serif;
-  font-size: 2.75rem;
-  line-height: 1.1;
-  color: color-mix(in srgb, var(--foreground) 35%, transparent);
-}
-.body {
-  position: relative;
-}
-.title {
-  font-size: 1.5rem;
-  line-height: 1.2;
-}
-.rule {
-  display: block;
-  width: 3rem;
-  height: 2px;
-  margin-top: 1rem;
-  background: var(--primary);
-}
-.desc {
-  margin-top: 0.75rem;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: var(--muted-foreground);
+  padding: 22px;
 }
 
-/* ── Panel (1–4 thẻ; từ 5 thẻ card-grid-block.tsx chuyển sang dải trượt). Dưới 1024px: xếp dọc. Từ 1024px: nở ngang. ── */
-.panels {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: minmax(0, 1fr);
+/* Một cột: kẻ trên giữa các ô. */
+.cell + .cell {
+  border-top: 1px solid var(--border);
 }
 
-/* ── Thẻ "đang mở": card-grid-panels.tsx đặt data-active cho đúng một thẻ (thẻ đầu lúc đầu, rồi tự đổi mỗi 3 giây, hoặc
-      thẻ đang rê chuột / focus / bấm). --open (0 hoặc 1) là công tắc duy nhất của mỗi thẻ; đường kẻ, mô tả, màu, ảnh đều
-      nội suy theo nó. Áp dụng từ 1024px (kể cả reduced-motion), và dưới 1024px khi không bật reduced-motion. Dưới 1024px
-      mà bật reduced-motion: mọi thẻ hiện đủ nội dung như mặc định, không thu bé. ── */
-@media (min-width: 1024px), (prefers-reduced-motion: no-preference) {
-  .panels .card {
-    --open: 0;
-    border-color: color-mix(in srgb, var(--primary) calc(45% * var(--open)), var(--border));
+/* Từ 861px: 3 cột, bỏ kẻ trên của hàng đầu; kẻ trái ở mọi ô trừ ô đầu mỗi hàng; từ hàng 2 có kẻ trên (4–6 thẻ xuống hàng). */
+@media (min-width: 861px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-  .panels .card[data-active] {
-    --open: 1;
+  .cell:nth-child(-n + 3) {
+    border-top: 0;
   }
-  .panels .title {
-    color: color-mix(in srgb, var(--primary) calc(100% * var(--open)), var(--foreground));
+  .cell:not(:nth-child(3n + 1)) {
+    border-left: 1px solid var(--border);
   }
-  .panels .rule {
-    width: calc(3rem * var(--open));
+  .cell:nth-child(n + 4) {
+    border-top: 1px solid var(--border);
   }
-  .panels .desc {
-    max-height: calc(12rem * var(--open));
-    margin-top: calc(0.75rem * var(--open));
-    opacity: var(--open);
-    overflow: hidden;
-  }
-  /* Thẻ có ảnh nền: thẻ không mở thì ảnh tối và nhạt màu, thẻ mở thì sáng rõ và thu về từ trạng thái phóng nhẹ. */
-  .panels .photo {
-    filter: saturate(calc(0.55 + 0.45 * var(--open))) brightness(calc(0.7 + 0.3 * var(--open)));
-    scale: calc(1.08 - 0.08 * var(--open));
-  }
-}
-
-/* Từ 1024px: thẻ mở nở rộng ra. Không dùng gap để chuột không rơi vào khe. */
-@media (min-width: 1024px) {
-  .panels {
-    display: flex;
-    gap: 0;
-    height: 420px;
-  }
-  .panels .card {
-    flex-grow: calc(1 + 1.4 * var(--open));
-    flex-shrink: 1;
-    flex-basis: 0;
-    border-radius: 0;
-    background-image: none;
-    background-color: color-mix(in srgb, var(--primary) calc(5% + 9% * var(--open)), var(--card));
-  }
-  .panels .card:first-child {
-    border-radius: 1rem 0 0 1rem;
-  }
-  .panels .card:last-child {
-    border-radius: 0 1rem 1rem 0;
-  }
-  .panels .card + .card {
-    border-left-width: 0;
-  }
-}
-
-/* Dưới 1024px (xếp dọc): thẻ không mở thu bé lại còn số và tiêu đề, thẻ mở phóng ra đủ mô tả. */
-@media (max-width: 1023px) and (prefers-reduced-motion: no-preference) {
-  .panels .card {
-    min-height: calc(7.5rem + 7.5rem * var(--open));
-    gap: calc(0.5rem + 1rem * var(--open));
-  }
-  .panels .num {
-    font-size: calc(1.5rem + 1.25rem * var(--open));
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .panels .title {
-    transition: color 0.4s;
-  }
-  .panels .rule {
-    transition: width 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s;
-  }
-  .panels .photo {
-    transition:
-      filter 0.6s ease,
-      scale 1.2s cubic-bezier(0.2, 0.7, 0.2, 1);
-  }
-  .panels .desc {
-    transition:
-      max-height 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
-      margin-top 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
-      opacity 0.35s ease 0.15s;
-  }
-}
-@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
-  .panels .card {
-    transition:
-      flex-grow 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
-      background-color 0.4s,
-      border-color 0.4s;
-  }
-}
-@media (max-width: 1023px) and (prefers-reduced-motion: no-preference) {
-  .panels .card {
-    transition:
-      min-height 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
-      gap 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
-      border-color 0.4s;
-  }
-  .panels .num {
-    transition: font-size 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
-  }
-}
-
-/* ── Thẻ có ảnh nền: chữ trắng trên lớp phủ tối. Đặt CUỐI file để thắng các quy tắc màu chữ ở trên (cùng độ ưu tiên). ── */
-.card.hasImage .num,
-.card.hasImage .title {
-  color: #fff;
-}
-.card.hasImage .desc {
-  color: rgb(255 255 255 / 0.85);
 }

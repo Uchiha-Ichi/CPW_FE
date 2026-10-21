@@ -28,6 +28,7 @@ export const NETWORK_CONFIG: ResourceConfig = {
   singular: "quốc gia",
   fields: [
     { key: "name", label: "Quốc gia", type: "country", required: true },
+    { key: "nameEn", label: "Tên tiếng Anh", type: "text" },
     { key: "code", label: "Mã cờ", type: "hidden" },
     { key: "city", label: "Thành phố", type: "text" },
     { key: "note", label: "Vai trò", type: "text" },
@@ -38,12 +39,20 @@ export const NETWORK_CONFIG: ResourceConfig = {
       required: true,
       options: ["Hiển thị", "Ẩn"],
     },
+    {
+      key: "stage",
+      label: "Giai đoạn",
+      type: "select",
+      required: true,
+      options: ["Đã có mặt", "Đang mở rộng"],
+    },
     { key: "pos", label: "Vị trí trên bản đồ", type: "mappos" },
   ],
   columns: [
     { key: "name", label: "Quốc gia" },
     { key: "city", label: "Thành phố" },
     { key: "status", label: "Trạng thái" },
+    { key: "stage", label: "Giai đoạn" },
   ],
 };
 

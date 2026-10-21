@@ -1,0 +1,59 @@
+.photo {
+  --ox: -18px;
+  --oy: 18px;
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  transform: translateY(-50%);
+  right: max(16px, calc((100% - 1240px) / 2 + 16px));
+  width: min(40vw, 540px);
+  aspect-ratio: 5 / 4;
+  perspective: 1600px;
+  transform-style: preserve-3d;
+}
+
+.card {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(7, 20, 38, 0.1);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.back {
+  transform: rotateY(180deg);
+  background: var(--primary);
+}
+
+.photo:hover .card {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .photo {
+    position: relative;
+    top: auto;
+    transform: none;
+    right: auto;
+    width: auto;
+    margin: 32px 16px 0 24px;
+    height: 340px;
+    aspect-ratio: auto;
+    --ox: -8px;
+    --oy: 10px;
+  }
+}

@@ -19,6 +19,12 @@ import { PhotoColumnsBlock } from "./photo-columns-block";
 import { LatestPostsBlock } from "./latest-posts-block";
 import { VisionMissionBlock } from "./vision-mission-block";
 import { PhotoCirclesBlock } from "./photo-circles-block";
+import { TechEditorialBlock } from "./tech-editorial/tech-editorial-block";
+import { ImpactGridBlock } from "./impact-grid-block";
+import { TimelineBlock } from "./timeline-block";
+import { FingerprintBlock } from "./fingerprint/fingerprint-block";
+import { CapabilityGridBlock } from "./capability-grid-block";
+import { ProjectStripBlock } from "./project-strip-block";
 
 // Bảng ánh xạ type của block (đúng tên trong cpw_be/src/pages/blocks/registry.ts) sang component.
 // Thêm loại block mới = thêm một dòng ở đây và một component.
@@ -42,4 +48,10 @@ export const BLOCK_COMPONENTS: Record<string, ComponentType<BlockProps> | undefi
   "latest-posts": LatestPostsBlock,
   "vision-mission": VisionMissionBlock,
   "photo-circles": PhotoCirclesBlock,
+  "tech-editorial": TechEditorialBlock,
+  "impact-grid": ImpactGridBlock,
+  timeline: TimelineBlock,
+  fingerprint: FingerprintBlock,
+  "capability-grid": CapabilityGridBlock,
+  "project-strip": ProjectStripBlock,
 };

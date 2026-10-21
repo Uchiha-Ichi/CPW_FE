@@ -17,11 +17,17 @@ export const IMAGE_SPECS = {
     minWidth: 1920,
     hint: "Ảnh phủ kín đầu trang, chữ trắng nằm bên trái nên đặt chủ thể về bên phải và chọn ảnh không quá sáng. Thêm từ 2 ảnh thì đầu trang tự xoay. Dùng được video lặp ngắn, không tiếng.",
   },
-  "text-image.image": {
+  "hero.cards.image": {
+    ratio: "5:4",
+    orientation: "ngang",
+    minWidth: 1600,
+    hint: "Ảnh ngang lật theo vòng ở bên phải đầu trang (2–4 ảnh), chỉ dùng khi đầu trang không có Ảnh nền. Nên cùng một bàn làm việc, cùng tông sáng để lúc lật không giật mắt; chủ thể ở giữa vì ảnh bị cắt theo khung.",
+  },
+  "text-image.slides.image": {
     ratio: "4:3",
     orientation: "ngang",
     minWidth: 1400,
-    hint: "Cảnh làm việc hoặc không gian thật, không chèn chữ vào ảnh. Dùng được video.",
+    hint: "Cảnh làm việc hoặc không gian thật, không chèn chữ vào ảnh. Từ 2 ảnh thì khung tự mờ chuyển lần lượt, rê chuột thì dừng. Dùng được video lặp ngắn, không tiếng.",
   },
   "banner.image": {
     ratio: "16:9",
@@ -30,10 +36,22 @@ export const IMAGE_SPECS = {
     hint: "Ảnh hoặc video nền rộng; chữ trắng đè lên nên chọn ảnh không quá sáng.",
   },
   "card-grid.items.image": {
+    ratio: "3:2",
+    orientation: "ngang",
+    minWidth: 1600,
+    hint: "Ảnh cận cảnh sản phẩm hoặc chất liệu, chủ thể ở giữa vì ảnh bị cắt theo khung. Dùng được video.",
+  },
+  "capability-grid.items.image": {
     ratio: "4:3",
     orientation: "ngang",
     minWidth: 1200,
-    hint: "Chủ thể ở giữa vì ảnh bị cắt theo khung. Dùng được video.",
+    hint: "Ảnh ngang minh hoạ một năng lực của công ty; chủ thể ở giữa vì ảnh bị cắt theo khung, trên điện thoại khung thấp hơn (16:10). Dùng được video.",
+  },
+  "project-strip.items.image": {
+    ratio: "3:2",
+    orientation: "ngang",
+    minWidth: 1400,
+    hint: "Banner một dự án, chữ tên dự án đè lên phần dưới nên chọn ảnh nửa dưới không quá sáng; chủ thể ở giữa vì ảnh bị cắt theo khung. Dùng được video.",
   },
   "product-showcase.items.image": {
     ratio: "3:5",

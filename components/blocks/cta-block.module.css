@@ -1,0 +1,54 @@
+/* Nền navy cố định theo loại block (D9): giống nhau ở cả giao diện sáng và tối (mockup BẢN 65 dòng 302). */
+.section {
+  background: linear-gradient(180deg, var(--vcb-navy-2), var(--vcb-navy));
+  color: #fff;
+}
+
+/* Chữ nhấn champagne: CSS module không nằm trong @layer nên thắng lớp text-primary của RichTitle. */
+.title em {
+  color: var(--vcb-champagne);
+}
+
+/* Thắng text-muted-foreground của BLOCK_LEAD. */
+.lead {
+  color: rgb(255 255 255 / 0.82);
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 32px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 15px 30px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-weight: 500;
+  line-height: 1.6;
+  text-decoration: none;
+}
+.btn:focus-visible {
+  outline: 2px solid var(--vcb-champagne);
+  outline-offset: 3px;
+}
+
+.solid {
+  background: var(--vcb-champagne);
+  color: var(--vcb-navy-2);
+}
+.outline {
+  background: transparent;
+  color: #fff;
+  border-color: rgb(255 255 255 / 0.6);
+}
+
+@media (max-width: 560px) {
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+}

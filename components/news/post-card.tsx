@@ -14,7 +14,7 @@ export function PostCard({
   post: PostSummary;
   lang: Locale;
   categoryLabel?: string;
-  variant: "featured" | "row";
+  variant: "featured" | "compact";
 }) {
   const title = post.title ?? post.slug;
   const date = formatPostDate(post.publishedAt, lang);
@@ -27,7 +27,7 @@ export function PostCard({
       alt={title}
       fill
       preload={featured}
-      sizes={featured ? "(min-width: 1024px) 600px, 100vw" : "(min-width: 640px) 200px, 100vw"}
+      sizes={featured ? "(min-width: 1024px) 720px, 100vw" : "(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"}
       className="object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:group-hover:scale-105"
     />
   ) : (
@@ -35,7 +35,7 @@ export function PostCard({
   );
 
   const meta = (
-    <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
       {categoryLabel && <span className="text-primary">{categoryLabel}</span>}
       {date && post.publishedAt && <time dateTime={post.publishedAt}>{date}</time>}
     </div>
@@ -44,17 +44,17 @@ export function PostCard({
   if (featured) {
     return (
       <article className="group">
-        <Link href={href} className="block">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-border bg-card">
+        <Link href={href} className="grid gap-5 lg:grid-cols-[1.4fr_1fr] lg:items-center lg:gap-10">
+          <div className="relative aspect-[16/10] overflow-hidden rounded-3xl border border-border bg-card">
             {cover}
           </div>
-          <div className="mt-6 space-y-3">
+          <div className="space-y-3">
             {meta}
-            <h2 className="text-2xl font-bold leading-[1.2] transition-colors group-hover:text-primary md:text-3xl">
+            <h2 className="text-xl font-bold leading-[1.2] transition-colors group-hover:text-primary md:text-2xl lg:text-3xl">
               {title}
             </h2>
             {post.excerpt && (
-              <p className="line-clamp-3 text-lg leading-relaxed text-muted-foreground">{post.excerpt}</p>
+              <p className="line-clamp-3 leading-relaxed text-muted-foreground">{post.excerpt}</p>
             )}
           </div>
         </Link>
@@ -64,16 +64,13 @@ export function PostCard({
 
   return (
     <article className="group">
-      <Link
-        href={href}
-        className="flex flex-col gap-6 rounded-3xl border border-border bg-card p-5 transition-all duration-300 hover:border-primary/40 hover:shadow-[0_24px_65px_-40px_rgba(23,125,242,0.34)] sm:flex-row"
-      >
-        <div className="relative aspect-[4/3] shrink-0 overflow-hidden rounded-2xl bg-card sm:aspect-square sm:w-1/3">
+      <Link href={href} className="block">
+        <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-border bg-card">
           {cover}
         </div>
-        <div className="flex flex-col justify-center space-y-2">
+        <div className="mt-4 space-y-2">
           {meta}
-          <h3 className="-mt-1 line-clamp-3 pt-1 text-xl font-bold leading-[1.2] transition-colors group-hover:text-primary md:text-2xl">
+          <h3 className="-mt-1 line-clamp-2 pt-1 text-lg font-bold leading-[1.3] transition-colors group-hover:text-primary">
             {title}
           </h3>
         </div>

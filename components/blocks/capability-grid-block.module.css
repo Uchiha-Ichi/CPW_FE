@@ -1,0 +1,91 @@
+.section {
+  background: linear-gradient(180deg, var(--vcb-navy-2), var(--vcb-navy));
+  color: #fff;
+  border-bottom: 0;
+  padding-block: clamp(32px, 4.6vw, 60px);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 30px;
+}
+
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.photo {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+@media (max-width: 600px) {
+  .photo {
+    aspect-ratio: 16 / 10;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .photo img,
+  .photo video {
+    transition: transform 1.6s cubic-bezier(0.2, 0.7, 0.2, 1) var(--reveal-delay, 0ms);
+  }
+
+  :global([data-reveal="armed"]) .photo img,
+  :global([data-reveal="armed"]) .photo video {
+    transform: scale(1.08);
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 20px 22px 26px;
+}
+
+.num {
+  font-family: var(--font-display, var(--font-heading, sans-serif));
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--vcb-champagne);
+  letter-spacing: 0.08em;
+}
+
+.title {
+  margin-top: 12px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.desc {
+  margin-top: 10px;
+  font-size: 16.5px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.92);
+  text-wrap: balance;
+}

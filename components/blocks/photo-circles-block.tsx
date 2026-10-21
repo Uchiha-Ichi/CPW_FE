@@ -1,15 +1,16 @@
 import { Quote } from "lucide-react";
-import { SectionHead } from "./shared/section-head";
+import { BlockHead } from "./shared/block-head";
 import { Reveal } from "./shared/reveal";
 import { CloudinaryMedia } from "./shared/cloudinary-media";
 import { ImageSlot } from "./shared/image-slot";
 import { list, str } from "@/lib/blocks/read";
+import { BLOCK_SECTION, BLOCK_WRAP } from "@/lib/blocks/rhythm";
 import { cn } from "@/lib/utils";
 import type { BlockProps } from "./types";
 
-// Mỗi vòng tròn chồng lên vòng kế bên bằng chừng này đường kính. Khớp với -ml-[calc(var(--d)*0.18)] ở dưới
-// (class viết nguyên chữ để Tailwind quét được).
-const OVERLAP = 0.18;
+// Mỗi vòng tròn chồng lên vòng kế bên bằng chừng này đường kính (mockup CSS 165–171).
+// Khớp với -ml-[calc(var(--d)*0.12)] ở dưới.
+const OVERLAP = 0.12;
 
 export function PhotoCirclesBlock({ data }: BlockProps) {
   const title = str(data.title);
@@ -21,14 +22,15 @@ export function PhotoCirclesBlock({ data }: BlockProps) {
     .map((item) => ({ image: str(item.image), label: str(item.label) }))
     .filter((c) => c.image || c.label);
   const n = circles.length;
-  // Đường kính từ md trở lên: chia vừa bề ngang khung (tối đa 1208px), không quá 380px. Dưới md các vòng xếp dọc, rộng 280px.
-  const diameter = `min(380px, calc(min(100vw - 2rem, 1208px) / ${n - (n - 1) * OVERLAP}))`;
+
+  // Đường kính: chia vừa bề ngang khung, tối đa 340px, co theo màn hình nhỏ để không tràn.
+  const diameter = `min(31vw, 340px, calc(min(100vw - 2rem, 1208px) / ${n - (n - 1) * OVERLAP}))`;
 
   return (
-    <section className="border-b border-border py-12 md:py-16">
-      <div className="mx-auto max-w-[1240px] px-4">
+    <section className={BLOCK_SECTION}>
+      <div className={BLOCK_WRAP}>
         <Reveal>
-          <SectionHead title={title} flush />
+          <BlockHead title={title} />
         </Reveal>
         {quote && (
           <Reveal className="mt-8">
@@ -41,7 +43,7 @@ export function PhotoCirclesBlock({ data }: BlockProps) {
         {n > 0 && (
           <ul
             style={{ "--d": diameter } as React.CSSProperties}
-            className="mt-10 flex flex-col items-center pb-2 md:mt-12 md:flex-row md:justify-center"
+            className="mt-[34px] flex flex-row items-center justify-center px-2 pb-2"
           >
             {circles.map((circle, i) => (
               <li
@@ -49,17 +51,17 @@ export function PhotoCirclesBlock({ data }: BlockProps) {
                 // Vòng đứng trước nằm trên vòng đứng sau, để nhãn ở nửa dưới của mỗi vòng không bị vòng kế bên che.
                 style={{ zIndex: n - i }}
                 className={cn(
-                  "relative w-[min(280px,100%)] max-[519px]:w-[min(232px,100%)] md:w-[var(--d)]",
-                  i > 0 && "-mt-12 max-[519px]:-mt-10 md:mt-0 md:-ml-[calc(var(--d)*0.18)]",
+                  "relative w-[var(--d)] shrink-0",
+                  i > 0 && "-ml-[calc(var(--d)*0.12)]",
                 )}
               >
                 <Reveal delay={i * 80}>
-                  <figure className="relative aspect-square overflow-hidden rounded-full border-4 border-background bg-card shadow-[0_24px_50px_-28px_rgba(7,20,38,0.7)]">
+                  <figure className="relative aspect-square overflow-hidden rounded-full border-4 border-background bg-card shadow-[0_12px_32px_rgba(7,20,38,0.10)]">
                     {circle.image ? (
                       <CloudinaryMedia
                         src={circle.image}
                         alt={circle.label ?? ""}
-                        sizes="(min-width: 768px) 380px, 280px"
+                        sizes="340px"
                         variant="loop"
                         className="object-cover"
                       />
@@ -71,13 +73,13 @@ export function PhotoCirclesBlock({ data }: BlockProps) {
                         className="h-full min-h-0! rounded-full border-0 px-[16%]"
                       />
                     )}
-                    {circle.image && circle.label && (
+                    {circle.label && (
                       <>
                         <span
                           aria-hidden
-                          className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent"
+                          className="pointer-events-none absolute inset-x-0 bottom-0 top-[40%] bg-gradient-to-b from-transparent to-black/55"
                         />
-                        <figcaption className="absolute inset-x-0 bottom-[15%] px-[14%] text-center text-sm font-bold uppercase leading-snug tracking-[0.16em] text-white">
+                        <figcaption className="absolute inset-x-0 bottom-[14%] px-[12%] text-center text-[clamp(11px,1.5vw,17px)] font-bold leading-snug text-white [text-shadow:0_2px_8px_rgba(0,0,0,0.6)]">
                           {circle.label}
                         </figcaption>
                       </>

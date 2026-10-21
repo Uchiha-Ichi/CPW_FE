@@ -1,11 +1,12 @@
 import { ArrowRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Reveal } from "../shared/reveal";
-import { SectionHead } from "../shared/section-head";
+import { BlockHead } from "../shared/block-head";
 import { FeaturedNewsCarousel, type FeaturedNewsItem } from "./featured-news-carousel";
 import { Link } from "@/i18n/navigation";
 import { getFeaturedPosts } from "@/lib/api/posts";
 import { str } from "@/lib/blocks/read";
+import { BLOCK_SECTION, BLOCK_WRAP } from "@/lib/blocks/rhythm";
 import { formatPostDate } from "@/lib/news/format";
 import type { BlockProps } from "../types";
 
@@ -38,12 +39,12 @@ export async function FeaturedNewsBlock({ data, lang }: BlockProps) {
   const total = items.length;
 
   return (
-    <section className="border-b border-border py-12 md:py-16">
-      <div className="mx-auto max-w-[1240px] px-4">
+    <section className={BLOCK_SECTION}>
+      <div className={BLOCK_WRAP}>
         <Reveal>
-          <SectionHead title={title} flush />
+          <BlockHead title={title} />
         </Reveal>
-        <Reveal className="mt-8 md:mt-10">
+        <Reveal className="mt-8">
           <FeaturedNewsCarousel
             items={items}
             labels={{

@@ -215,18 +215,29 @@ export function AdminResourceTable({ config }: { config: ResourceConfig }) {
                         onChange={(e) => set(e.target.value)}
                       />
                     ) : f.type === "country" ? (
-                      <CountryCombobox
-                        code={formData.code ?? ""}
-                        name={formData[f.key] ?? ""}
-                        onSelect={(c) =>
-                          setFormData((d) => ({
-                            ...d,
-                            [f.key]: c.name,
-                            code: c.code,
-                            pos: c.pos,
-                          }))
-                        }
-                      />
+                      <>
+                        <CountryCombobox
+                          code={formData.code ?? ""}
+                          name={formData[f.key] ?? ""}
+                          onSelect={(c) =>
+                            setFormData((d) => ({
+                              ...d,
+                              [f.key]: c.name,
+                              code: c.code,
+                              pos: c.pos,
+                            }))
+                          }
+                        />
+                        {/* Chọn nước thì điền sẵn tên từ danh sách; admin sửa lại được ở ô này (D18). */}
+                        <div className="space-y-1.5 pt-2">
+                          <Label htmlFor={`${fieldId}-display`}>Tên hiển thị trên website</Label>
+                          <AdminInput
+                            id={`${fieldId}-display`}
+                            value={formData[f.key] ?? ""}
+                            onChange={(e) => set(e.target.value)}
+                          />
+                        </div>
+                      </>
                     ) : f.type === "mappos" ? (
                       <MapPositionPicker
                         value={formData[f.key] || "50,50"}

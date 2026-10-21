@@ -3,7 +3,7 @@ import type { UseEmblaCarouselType } from "embla-carousel-react";
 
 type EmblaApi = NonNullable<UseEmblaCarouselType[1]>;
 
-// Mỗi lần tự đổi cách nhau chừng này. Dùng chung cho mọi khối tự chạy (card-grid-panels.tsx cũng lấy hai hằng số này).
+// Mỗi lần tự đổi cách nhau chừng này. Dùng chung cho mọi khối tự chạy.
 export const AUTO_STEP_MS = 3000;
 // Lần đổi đầu tiên sau khi khối vừa vào màn hình (hoặc tab vừa hiện lại) đến sớm hơn: đợi trọn AUTO_STEP_MS thì người xem
 // tưởng khối đứng yên (đo được ~3,1 giây từ lúc vào màn hình đến lúc chuyển động).

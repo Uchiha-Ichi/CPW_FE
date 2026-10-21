@@ -1,7 +1,8 @@
 import { ArrowRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Reveal } from "./shared/reveal";
-import { SectionHead } from "./shared/section-head";
+import { BlockHead } from "./shared/block-head";
+import { BLOCK_SECTION, BLOCK_WRAP } from "@/lib/blocks/rhythm";
 import { RelatedCard } from "@/components/news/related-posts";
 import { Link } from "@/i18n/navigation";
 import { getPosts, POST_CATEGORIES } from "@/lib/api/posts";
@@ -26,12 +27,12 @@ export async function LatestPostsBlock({ data, lang }: BlockProps) {
   ]);
 
   return (
-    <section className="border-b border-border py-12 md:py-16">
-      <div className="mx-auto max-w-[1240px] px-4">
+    <section className={BLOCK_SECTION}>
+      <div className={BLOCK_WRAP}>
         <Reveal>
-          <SectionHead title={title} flush />
+          <BlockHead title={title} />
         </Reveal>
-        <ul className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 md:mt-10">
+        <ul className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {result.data.items.slice(0, LATEST_POST_LIMIT).map((post, i) => (
             <li key={post._id}>
               <Reveal delay={i * 80}>

@@ -1,10 +1,11 @@
 import { RichTitle } from "./shared/rich-title";
 import { Reveal } from "./shared/reveal";
 import { BlockLink } from "./shared/block-link";
-import { CloudinaryMedia } from "./shared/cloudinary-media";
 import { ImageSlot } from "./shared/image-slot";
-import { str } from "@/lib/blocks/read";
+import { Slideshow } from "./shared/slideshow";
+import { list, str } from "@/lib/blocks/read";
 import { stripAccent } from "@/lib/blocks/accent";
+import { BLOCK_SECTION, BLOCK_WRAP } from "@/lib/blocks/rhythm";
 import { cn } from "@/lib/utils";
 import type { BlockProps } from "./types";
 
@@ -13,42 +14,49 @@ export function TextImageBlock({ data, lang }: BlockProps) {
   if (!title) return null;
 
   const text = str(data.text);
-  const image = str(data.image);
+  const text2 = str(data.text2);
+  const slides = list(data.slides)
+    .map((s) => str(s.image))
+    .filter((src): src is string => !!src);
   const imageRight = data.side === "right";
   const linkLabel = str(data.linkLabel);
   const linkHref = str(data.linkHref);
   const plainTitle = stripAccent(title);
 
   return (
-    <section className="border-b border-border py-12 md:py-16">
-      <div className="mx-auto grid max-w-[1240px] gap-12 px-4 md:grid-cols-2 md:items-center">
-        <Reveal className={cn(imageRight && "md:order-2")}>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-border bg-card">
-            {image ? (
-              <CloudinaryMedia
-                src={image}
+    <section className={BLOCK_SECTION}>
+      <div
+        className={cn(
+          BLOCK_WRAP,
+          "grid grid-cols-1 items-center gap-[clamp(28px,6vw,72px)] min-[861px]:grid-cols-2",
+        )}
+      >
+        {/* DOM ảnh trước chữ: điện thoại ảnh trên, chữ dưới (D5). */}
+        <Reveal className={cn(imageRight && "min-[861px]:order-2")}>
+          <div className="relative aspect-[4/3] overflow-hidden rounded-[28px] border border-border bg-card">
+            {slides.length > 0 ? (
+              <Slideshow
+                images={slides}
                 alt={plainTitle}
-                sizes="(min-width: 768px) 50vw, 100vw"
-                variant="player"
-                className="object-cover"
+                sizes="(min-width: 861px) 50vw, 100vw"
+                className="h-full w-full"
               />
             ) : (
-              <ImageSlot slot="text-image.image" label={plainTitle} className="h-full rounded-3xl border-0" />
+              <ImageSlot slot="text-image.slides.image" label={plainTitle} className="h-full border-0" />
             )}
           </div>
         </Reveal>
         <Reveal delay={120}>
-          <h2 className="text-3xl font-bold leading-[1.12] md:text-4xl lg:text-5xl">
+          <h2 className="text-[clamp(30px,3.8vw,48px)] font-bold leading-[1.12] tracking-normal text-balance">
             <RichTitle text={title} />
           </h2>
-          {text && (
-            <p className="mt-6 text-lg leading-relaxed text-muted-foreground">{text}</p>
-          )}
+          {text && <p className="mt-[22px] text-lg leading-[1.6] text-muted-foreground">{text}</p>}
+          {text2 && <p className="mt-3.5 text-lg leading-[1.6] text-muted-foreground">{text2}</p>}
           {linkLabel && linkHref && (
             <BlockLink
               href={linkHref}
               lang={lang}
-              className="mt-8 inline-flex items-center gap-2 font-medium text-primary hover:underline"
+              className="mt-7 inline-flex items-center gap-2 font-medium text-primary hover:underline"
             >
               {linkLabel} <span aria-hidden>↗</span>
             </BlockLink>

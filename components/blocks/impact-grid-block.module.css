@@ -1,0 +1,129 @@
+/* Khối "Tầm ảnh hưởng" (impact-grid): 1 số khổng lồ bên trái, các số còn lại thành dòng phẳng bên phải.
+   Chép mockup BẢN 65 dòng 311–317, 519–536 (bố cục has-hl; icon bị ẩn nên không có). Nền trong suốt (D17).
+   Màu theo token site: mặc định (tối) dùng token, giao diện sáng chỉ đổi màu số ở các dòng bên phải (D6). */
+.root {
+  /* Số ở các dòng bên phải: tối dùng --foreground, sáng dùng navy của mockup (--navy → --vcb-navy). */
+  --ig-num: var(--foreground);
+}
+:global(html[data-theme="light"]) .root {
+  --ig-num: var(--vcb-navy);
+}
+
+/* --ig-span = số dòng bên phải: ô số lớn chiếm đúng ngần ấy hàng (mockup cố định 3 vì luôn có 4 số). */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  column-gap: clamp(24px, 4vw, 56px);
+  row-gap: 0;
+  align-items: stretch;
+  margin-top: 32px;
+}
+
+/* Ô số lớn */
+.lead {
+  grid-column: 1;
+  grid-row: 1 / span var(--ig-span);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.leadValue {
+  display: block;
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(54px, 9.2vw, 132px);
+  font-weight: 800;
+  line-height: 1;
+  /* theo mockup BẢN 65, Hoàng duyệt 2026-10-17 */
+  letter-spacing: -0.045em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  color: var(--primary);
+}
+.leadTitle {
+  margin: 14px 0 0;
+  font-size: clamp(20px, 2vw, 26px);
+  line-height: 1.35;
+  /* Mockup: mọi h1–h4 không giãn chữ, ngắt dòng cân bằng (site có sẵn -0.015em trong @layer base). */
+  letter-spacing: normal;
+  text-wrap: balance;
+  color: var(--foreground);
+}
+.leadText {
+  margin: 8px 0 0;
+  font-size: 16.5px;
+  /* Mockup `.ig-c p` (CSS 317) đặt line-height 1.5 cho mọi mô tả, kể cả ô số lớn; đo mockup ra 24,75 px = 16,5 × 1,5. */
+  line-height: 1.5;
+  color: var(--muted-foreground);
+  text-wrap: pretty;
+}
+
+/* Các dòng bên phải */
+.row {
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: clamp(132px, 15vw, 210px) minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: clamp(16px, 2vw, 28px);
+  align-content: center;
+  align-items: center;
+  padding: 20px 0;
+  border-top: 1px solid var(--border);
+}
+.row:last-child {
+  border-bottom: 1px solid var(--border);
+}
+.value {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  display: block;
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(32px, 3.5vw, 48px);
+  font-weight: 800;
+  line-height: 1;
+  /* theo mockup BẢN 65, Hoàng duyệt 2026-10-17 */
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  color: var(--ig-num);
+}
+.rowTitle {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: end;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.35;
+  letter-spacing: normal;
+  text-wrap: balance;
+  color: var(--foreground);
+}
+.rowText {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: start;
+  margin: 6px 0 0;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+  text-wrap: pretty;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .lead {
+    grid-row: auto;
+    padding: 24px 0 22px;
+    border-bottom: 0;
+  }
+  .lead,
+  .row {
+    grid-column: 1;
+  }
+}

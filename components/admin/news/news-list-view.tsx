@@ -14,14 +14,14 @@ import {
   listAdminPosts,
   publishPost,
   unpublishPost,
-} from "@/lib/admin/post-api";
-import { ApiError, errorMessages, isSessionExpired } from "@/lib/admin/post-errors";
-import { htmlIsEmpty } from "@/lib/admin/post-form";
+} from "@/lib/admin/news/api";
+import { ApiError, errorMessages, isSessionExpired } from "@/lib/admin/api-error";
+import { htmlIsEmpty } from "@/lib/admin/news/form";
 import {
   POST_CATEGORY_LABELS,
   POST_STATUS_LABELS,
   type AdminPost,
-} from "@/lib/admin/post-types";
+} from "@/lib/admin/news/types";
 
 const PAGE_SIZE = 20;
 

@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PagePreviewBar } from "@/components/admin/page-preview-bar";
+import { PagePreviewBar } from "@/components/admin/page-editor/page-preview-bar";
 import { BlockRenderer } from "@/components/blocks/block-renderer";
 import { EmptyPage } from "@/components/blocks/empty-page";
-import { getPagePreview } from "@/lib/admin/page-preview";
-import { ADMIN_TOKEN_COOKIE } from "@/lib/admin/auth-cookies";
+import { getPagePreview } from "@/lib/admin/page-editor/preview";
+import { ADMIN_TOKEN_COOKIE } from "@/lib/admin/auth/cookies";
 import { hasLocale } from "@/lib/i18n/config";
 
 type Props = { params: Promise<{ lang: string; pageKey: string }> };

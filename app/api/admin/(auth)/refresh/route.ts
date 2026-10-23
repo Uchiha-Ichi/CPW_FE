@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ADMIN_REFRESH_COOKIE } from "@/lib/admin/auth-cookies";
-import { refreshSession } from "@/lib/admin/refresh";
-import { applySessionCookies, clearSessionCookies } from "@/lib/admin/session-cookies";
+import {
+  ADMIN_REFRESH_COOKIE,
+  applySessionCookies,
+  clearSessionCookies,
+} from "@/lib/admin/auth/cookies";
+import { refreshSession } from "@/lib/admin/auth/refresh";
 
 // Layout admin chuyển tới đây khi access token hết hạn (Server Component không đặt được cookie).
 // Luôn chuyển tới đường dẫn cố định, không nhận tham số đích (tránh open redirect).

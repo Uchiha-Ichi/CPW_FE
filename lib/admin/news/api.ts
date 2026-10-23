@@ -1,5 +1,5 @@
-import { ApiError, friendlyMessages } from "./post-errors";
-import type { AdminPost, AdminPostListResponse, PostPayload } from "./post-types";
+import { ApiError, friendlyMessages } from "@/lib/admin/api-error";
+import type { AdminPost, AdminPostListResponse, PostPayload } from "./types";
 
 const BASE = "/api/admin/proxy";
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;

@@ -1,9 +1,9 @@
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
-import { AdminShell } from "@/components/admin/admin-shell";
+import { AdminShell } from "@/components/admin/shell/admin-shell";
 import { AdminNotice } from "@/components/admin/ui/admin-notice";
-import { ADMIN_REFRESHED_COOKIE, ADMIN_TOKEN_COOKIE } from "@/lib/admin/auth-cookies";
-import { getAdminAccess } from "@/lib/admin/session";
+import { ADMIN_REFRESHED_COOKIE, ADMIN_TOKEN_COOKIE } from "@/lib/admin/auth/cookies";
+import { getAdminAccess } from "@/lib/admin/auth/access";
 
 export default async function AdminProtectedLayout({
   children,

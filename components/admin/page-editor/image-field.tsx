@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { AdminButton } from "@/components/admin/ui/admin-button";
 import { CloudinaryImage } from "@/components/blocks/shared/cloudinary-image";
 import { uploadPageImage, uploadPageVideo } from "@/lib/admin/page-editor/api";
-import { errorMessages } from "@/lib/admin/post-errors";
+import { errorMessages } from "@/lib/admin/api-error";
 import { isCloudinaryVideoUrl } from "@/lib/images/is-video-url";
 
 interface ImageFieldProps {
@@ -16,6 +16,7 @@ interface ImageFieldProps {
   mediaVariant?: "loop" | "player";
   // Quy cách ảnh của chỗ này (tỷ lệ, cỡ, nên chọn ảnh gì); lấy từ lib/blocks/image-specs.ts.
   hint?: string;
+  imageOnly?: boolean;
 }
 
 export function ImageField({
@@ -26,6 +27,7 @@ export function ImageField({
   onChange,
   mediaVariant = "player",
   hint,
+  imageOnly = false,
 }: ImageFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -33,6 +35,10 @@ export function ImageField({
   const locked = disabled || uploading;
 
   async function pick(file: File) {
+    if (imageOnly && file.type.startsWith("video/")) {
+      setError("Ảnh sản phẩm chỉ nhận ảnh.");
+      return;
+    }
     setUploading(true);
     setError(null);
     try {
@@ -62,7 +68,9 @@ export function ImageField({
           e.preventDefault();
           if (locked) return;
           const file = Array.from(e.dataTransfer.files).find(
-            (f) => f.type.startsWith("image/") || f.type.startsWith("video/"),
+            (f) =>
+              f.type.startsWith("image/") ||
+              (!imageOnly && f.type.startsWith("video/")),
           );
           if (file) void pick(file);
         }}
@@ -97,7 +105,13 @@ export function ImageField({
             disabled={locked}
             onClick={() => inputRef.current?.click()}
           >
-            {value ? "Đổi ảnh/video" : "Chọn ảnh/video"}
+            {value
+              ? imageOnly
+                ? "Đổi ảnh"
+                : "Đổi ảnh/video"
+              : imageOnly
+                ? "Chọn ảnh"
+                : "Chọn ảnh/video"}
           </AdminButton>
           {value && (
             <AdminButton
@@ -108,15 +122,23 @@ export function ImageField({
               disabled={locked}
               onClick={() => onChange(undefined)}
             >
-              Bỏ ảnh/video
+              {imageOnly ? "Bỏ ảnh" : "Bỏ ảnh/video"}
             </AdminButton>
           )}
-          <span>{uploading ? "Đang tải ảnh/video…" : "hoặc kéo thả ảnh/video vào đây"}</span>
+          <span>
+            {uploading
+              ? imageOnly
+                ? "Đang tải ảnh…"
+                : "Đang tải ảnh/video…"
+              : imageOnly
+                ? "hoặc kéo thả ảnh vào đây"
+                : "hoặc kéo thả ảnh/video vào đây"}
+          </span>
         </div>
         <input
           ref={inputRef}
           type="file"
-          accept="image/*,video/*"
+          accept={imageOnly ? "image/*" : "image/*,video/*"}
           hidden
           disabled={locked}
           onChange={(e) => {

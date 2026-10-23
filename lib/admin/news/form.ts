@@ -8,7 +8,7 @@ import {
   type PostLocalePayload,
   type PostPayload,
   type PostStatus,
-} from "./post-types";
+} from "./types";
 
 export interface LocaleForm {
   title: string;

@@ -12,19 +12,36 @@ import { AdminTable } from "@/components/admin/ui/admin-table";
 import { AdminTextarea } from "@/components/admin/ui/admin-textarea";
 import { StatusChip } from "@/components/admin/ui/status-chip";
 import { Label } from "@/components/ui/label";
-import { MapPositionPicker } from "@/components/admin/map-position-picker";
-import { CountryCombobox } from "@/components/admin/country-combobox";
-import type { ResourceConfig } from "@/lib/admin/resource-config";
+import { MapPositionPicker } from "@/components/admin/resources/map-position-picker";
+import { CountryCombobox } from "@/components/admin/resources/country-combobox";
+import { ImageField } from "@/components/admin/page-editor/image-field";
+import { imageHintFor } from "@/lib/blocks/image-specs";
+import type { ResourceConfig, ResourceField } from "@/lib/admin/resources/config";
 
-type Item = Record<string, any> & { _id: string };
+type Item = Record<string, unknown> & { _id: string };
 
 // Màu chip theo giá trị trạng thái thật trong resource-config (Hiển thị/Ẩn, Đang tuyển/Đã đóng).
-const STATUS_TONE: Record<string, "ok" | "muted"> = {
+const STATUS_TONE: Record<string, "ok" | "muted" | "warn"> = {
   "Hiển thị": "ok",
   "Đang tuyển": "ok",
+  "Sắp ra mắt": "warn",
   "Ẩn": "muted",
   "Đã đóng": "muted",
 };
+
+export function toPayload(
+  fields: ResourceField[],
+  data: Record<string, string>,
+): Record<string, string | number> {
+  const payload: Record<string, string | number> = { ...data };
+  for (const f of fields) {
+    if (f.type === "number") {
+      const raw = data[f.key];
+      payload[f.key] = raw !== undefined && raw.trim() !== "" ? Number(raw) : 0;
+    }
+  }
+  return payload;
+}
 
 export function AdminResourceTable({ config }: { config: ResourceConfig }) {
   const [items, setItems] = useState<Item[]>([]);
@@ -36,6 +53,7 @@ export function AdminResourceTable({ config }: { config: ResourceConfig }) {
   const uid = useId();
   const titleId = `${uid}-title`;
 
+  // Tải lại sau khi lưu/xóa.
   async function load() {
     setLoading(true);
     const res = await fetch(`/api/admin/proxy/${config.path}`);
@@ -43,9 +61,21 @@ export function AdminResourceTable({ config }: { config: ResourceConfig }) {
     setLoading(false);
   }
 
+  // Lần tải đầu: loading đã là true từ useState nên không gọi setLoading(true); setState nằm trong callback của promise
+  // (mỗi bảng là một route riêng nên config.path không đổi trong một lần mount).
   useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    let cancelled = false;
+    fetch(`/api/admin/proxy/${config.path}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: Item[] | null) => {
+        if (!cancelled && data) setItems(data);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [config.path]);
 
   function defaultFor(f: ResourceConfig["fields"][number]): string {
@@ -64,7 +94,14 @@ export function AdminResourceTable({ config }: { config: ResourceConfig }) {
   function openEdit(item: Item) {
     setEditing(item);
     const initial: Record<string, string> = {};
-    config.fields.forEach((f) => (initial[f.key] = item[f.key] ?? defaultFor(f)));
+    config.fields.forEach((f) => {
+      if (f.type === "number") {
+        initial[f.key] = String(item[f.key] ?? "");
+      } else {
+        initial[f.key] =
+          (item[f.key] as string | undefined) ?? defaultFor(f);
+      }
+    });
     setFormData(initial);
     setError(null);
     setFormOpen(true);
@@ -86,7 +123,7 @@ export function AdminResourceTable({ config }: { config: ResourceConfig }) {
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(toPayload(config.fields, formData)),
     });
     if (!res.ok) {
       const body = await res.json().catch(() => ({ message: "Có lỗi xảy ra" }));
@@ -187,11 +224,14 @@ export function AdminResourceTable({ config }: { config: ResourceConfig }) {
                 const set = (v: string) => setFormData((d) => ({ ...d, [f.key]: v }));
                 // country và mappos là điều khiển tự dựng, đã có nhãn truy cập riêng (aria-label), nên tên
                 // trường chỉ là đoạn chữ; các loại còn lại là phần tử form thật nên nối bằng <Label htmlFor>.
-                const standalone = f.type === "country" || f.type === "mappos";
+                const standalone =
+                  f.type === "country" || f.type === "mappos" || f.type === "image";
                 return (
                   <div key={f.key} className="space-y-1.5">
                     {standalone ? (
-                      <p className="text-sm leading-none font-medium">{f.label}</p>
+                      f.type === "image" ? null : (
+                        <p className="text-sm leading-none font-medium">{f.label}</p>
+                      )
                     ) : (
                       <Label htmlFor={fieldId}>{f.label}</Label>
                     )}
@@ -244,6 +284,25 @@ export function AdminResourceTable({ config }: { config: ResourceConfig }) {
                         onChange={(next) =>
                           setFormData((d) => ({ ...d, [f.key]: next }))
                         }
+                      />
+                    ) : f.type === "image" ? (
+                      <ImageField
+                        label={f.label}
+                        value={formData[f.key] ?? ""}
+                        onChange={(url) => set(url ?? "")}
+                        imageOnly
+                        hint={imageHintFor("product-list", null, "image")}
+                      />
+                    ) : f.type === "number" ? (
+                      <AdminInput
+                        id={fieldId}
+                        type="number"
+                        min={0}
+                        max={9999}
+                        step={1}
+                        inputMode="numeric"
+                        value={formData[f.key] ?? ""}
+                        onChange={(e) => set(e.target.value)}
                       />
                     ) : (
                       <AdminInput

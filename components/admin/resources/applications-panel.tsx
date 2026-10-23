@@ -47,6 +47,7 @@ export function ApplicationsPanel() {
   const [loading, setLoading] = useState(true);
   const [openPosition, setOpenPosition] = useState<string | null>(null);
 
+  // Tải lại sau khi xóa.
   async function load() {
     setLoading(true);
     const res = await fetch("/api/admin/proxy/applications");
@@ -54,8 +55,20 @@ export function ApplicationsPanel() {
     setLoading(false);
   }
 
+  // Lần tải đầu: loading đã là true từ useState nên không gọi setLoading(true); setState nằm trong callback của promise.
   useEffect(() => {
-    load();
+    let cancelled = false;
+    fetch("/api/admin/proxy/applications")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: Application[] | null) => {
+        if (!cancelled && data) setItems(data);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function updateStatus(id: string, status: string) {

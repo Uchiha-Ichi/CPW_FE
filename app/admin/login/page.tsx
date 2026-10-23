@@ -30,7 +30,14 @@ export default function AdminLoginPage() {
     });
     setLoading(false);
     if (!res.ok) {
-      setError("Email hoặc mật khẩu không đúng");
+      // 429: backend chặn tạm vì đăng nhập quá nhiều lần; 5xx/503: không tới được backend.
+      setError(
+        res.status === 429
+          ? "Đăng nhập quá nhiều lần. Vui lòng thử lại sau ít phút."
+          : res.status >= 500
+            ? "Không kết nối được máy chủ. Vui lòng thử lại sau ít phút."
+            : "Email hoặc mật khẩu không đúng",
+      );
       return;
     }
     router.push("/admin");

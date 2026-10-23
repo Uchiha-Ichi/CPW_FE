@@ -3,11 +3,20 @@ import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
 import { API_BASE } from "@/lib/api/config";
 import { tagsForAdminWrite } from "@/lib/api/tags";
-import { ADMIN_REFRESH_COOKIE, ADMIN_TOKEN_COOKIE } from "@/lib/admin/auth-cookies";
-import { refreshSession, type RefreshedSession } from "@/lib/admin/refresh";
-import { applySessionCookies } from "@/lib/admin/session-cookies";
+import {
+  ADMIN_REFRESH_COOKIE,
+  ADMIN_TOKEN_COOKIE,
+  applySessionCookies,
+} from "@/lib/admin/auth/cookies";
+import { refreshSession, type RefreshedSession } from "@/lib/admin/auth/refresh";
+import { isSameOriginRequest } from "@/lib/admin/auth/same-origin";
 
 async function proxy(req: NextRequest, path: string[]) {
+  // Ghi dữ liệu chỉ nhận request từ chính site (xem lib/admin/auth/same-origin.ts); GET/HEAD chỉ đọc nên không cần.
+  if (!["GET", "HEAD"].includes(req.method) && !isSameOriginRequest(req.headers)) {
+    return NextResponse.json({ message: "Yêu cầu không hợp lệ" }, { status: 403 });
+  }
+
   const jar = await cookies();
   const token = jar.get(ADMIN_TOKEN_COOKIE)?.value;
   const refreshToken = jar.get(ADMIN_REFRESH_COOKIE)?.value;

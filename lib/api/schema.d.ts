@@ -27,8 +27,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Nội dung đã đăng của một trang, theo thứ tự hero trước */
-        get: operations["PagesController_getPublicByPageKey"];
+        /** Nội dung đã đăng của một trang (chữ đã giải ngôn ngữ) */
+        get: operations["PagesController_findPublic"];
         put?: never;
         post?: never;
         delete?: never;
@@ -37,104 +37,103 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/pages": {
+    "/api/pages/block-types": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Toàn bộ khối nội dung (pub+draft), lọc theo trang */
-        get: operations["PagesController_findAll"];
-        put?: never;
-        /** Tạo khối nội dung mới (ở trạng thái draft) */
-        post: operations["PagesController_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/pages/{id}/draft": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
+        /** Registry các loại block và danh sách trang (để admin dựng form) */
+        get: operations["PagesController_blockTypes"];
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        /** Ghi đè bản nháp của một khối nội dung */
-        patch: operations["PagesController_updateDraft"];
-        trace?: never;
-    };
-    "/api/pages/{id}/publish": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Đăng một khối nội dung (pub := draft) */
-        post: operations["PagesController_publishOne"];
-        delete?: never;
-        options?: never;
-        head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/pages/publish": {
+    "/api/pages/{pageKey}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
-        put?: never;
-        /** Đăng toàn bộ khối đang chờ của một trang */
-        post: operations["PagesController_publishPage"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/pages/discard": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Bỏ bản nháp đang chờ của một trang */
-        post: operations["PagesController_discardPage"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/pages/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
+        /** Trang cho admin: pub, draft, working và version */
+        get: operations["PagesController_getAdmin"];
         put?: never;
         post?: never;
-        /** Xóa hẳn một khối nội dung */
-        delete: operations["PagesController_remove"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/pages/{pageKey}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Nội dung đang soạn của trang để xem trước (chữ đã giải ngôn ngữ) */
+        get: operations["PagesController_preview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/pages/{pageKey}/draft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Ghi đè bản nháp của trang (kiểm baseVersion) */
+        put: operations["PagesController_saveDraft"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/pages/{pageKey}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Đăng trang: pub := draft, draft := null */
+        post: operations["PagesController_publish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/pages/{pageKey}/discard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Bỏ bản nháp của trang */
+        post: operations["PagesController_discard"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -343,15 +342,15 @@ export interface paths {
         patch: operations["JobsController_update"];
         trace?: never;
     };
-    "/api/news/public": {
+    "/api/network/public": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Bài viết đã đăng, mới nhất trước */
-        get: operations["NewsController_findPublic"];
+        /** Quốc gia đang hiển thị trên bản đồ */
+        get: operations["NetworkController_findPublic"];
         put?: never;
         post?: never;
         delete?: never;
@@ -360,25 +359,112 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/news": {
+    "/api/network": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Toàn bộ bài viết (admin) */
-        get: operations["NewsController_findAll"];
+        /** Toàn bộ quốc gia */
+        get: operations["NetworkController_findAll"];
         put?: never;
-        /** Thêm bài viết */
-        post: operations["NewsController_create"];
+        /** Thêm quốc gia */
+        post: operations["NetworkController_create"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/news/{id}": {
+    "/api/network/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Xóa quốc gia */
+        delete: operations["NetworkController_remove"];
+        options?: never;
+        head?: never;
+        /** Cập nhật quốc gia */
+        patch: operations["NetworkController_update"];
+        trace?: never;
+    };
+    "/api/posts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lấy danh sách bài viết public (chỉ bài đã đăng) */
+        get: operations["PostsController_findPublic"];
+        put?: never;
+        /** Thêm bài viết */
+        post: operations["PostsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/posts/admin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Toàn bộ bài viết (admin, có phân trang) */
+        get: operations["PostsController_findAllAdmin"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/posts/admin/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Chi tiết bài viết cho admin */
+        get: operations["PostsController_findAdminById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/posts/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Chi tiết bài viết public theo slug */
+        get: operations["PostsController_findBySlug"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/posts/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -389,50 +475,252 @@ export interface paths {
         put?: never;
         post?: never;
         /** Xóa bài viết */
-        delete: operations["NewsController_remove"];
+        delete: operations["PostsController_remove"];
         options?: never;
         head?: never;
         /** Cập nhật bài viết */
-        patch: operations["NewsController_update"];
+        patch: operations["PostsController_update"];
+        trace?: never;
+    };
+    "/api/posts/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Đăng bài viết */
+        patch: operations["PostsController_publish"];
+        trace?: never;
+    };
+    "/api/posts/{id}/unpublish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Gỡ bài viết */
+        patch: operations["PostsController_unpublish"];
+        trace?: never;
+    };
+    "/api/contacts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ContactsController_findAll"];
+        put?: never;
+        post: operations["ContactsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/contacts/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ContactsController_findOne"];
+        put?: never;
+        post?: never;
+        delete: operations["ContactsController_remove"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/contacts/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["ContactsController_updateStatus"];
+        trace?: never;
+    };
+    "/api/applications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ApplicationsController_findAll"];
+        put?: never;
+        /** Nộp hồ sơ ứng tuyển (kèm CV) */
+        post: operations["ApplicationsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/applications/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ApplicationsController_findOne"];
+        put?: never;
+        post?: never;
+        delete: operations["ApplicationsController_remove"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/applications/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["ApplicationsController_updateStatus"];
+        trace?: never;
+    };
+    "/api/uploads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Tải 1 ảnh lên Cloudinary, trả về URL và publicId */
+        post: operations["UploadsController_upload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/uploads/images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Tải nhiều ảnh lên Cloudinary (tối đa 5 ảnh) */
+        post: operations["UploadsController_uploadImages"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/uploads/video": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Tải 1 video lên Cloudinary, trả về URL và publicId */
+        post: operations["UploadsController_uploadVideo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/site-settings/public": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Thông tin liên hệ của công ty (công khai) */
+        get: operations["SiteSettingsController_getPublic"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/site-settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Lưu thông tin liên hệ (thay nguyên bản ghi, admin) */
+        patch: operations["SiteSettingsController_save"];
         trace?: never;
     };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        ContentItemDto: {
-            t: string;
-            d: string;
+        SaveDraftDto: {
+            /** @description Phiên bản trang mà admin đang xem (0 nếu trang chưa có dữ liệu) */
+            baseVersion: number;
+            /** @description Toàn bộ danh sách block của bản nháp, theo thứ tự hiển thị */
+            blocks: Record<string, never>[];
         };
-        PublicPageBlockDto: {
-            /** @enum {string} */
-            page: "Trang chủ" | "Về chúng tôi" | "Tuyển dụng" | "Liên hệ" | "Tin tức";
-            block: string;
-            /** @enum {string} */
-            layout: "hero" | "text" | "imgleft" | "imgright" | "banner" | "cards" | "cta";
-            title: string;
-            text?: string;
-            image?: string;
-            btnLabel?: string;
-            btnLink?: string;
-            items?: components["schemas"]["ContentItemDto"][];
-        };
-        UpsertPageBlockDto: {
-            /** @enum {string} */
-            page: "Trang chủ" | "Về chúng tôi" | "Tuyển dụng" | "Liên hệ" | "Tin tức";
-            block: string;
-            /** @enum {string} */
-            layout: "hero" | "text" | "imgleft" | "imgright" | "banner" | "cards" | "cta";
-            title: string;
-            text?: string;
-            image?: string;
-            btnLabel?: string;
-            btnLink?: string;
-            items?: components["schemas"]["ContentItemDto"][];
+        BaseVersionDto: {
+            /** @description Phiên bản trang mà admin đang xem (0 nếu trang chưa có dữ liệu) */
+            baseVersion: number;
         };
         LoginDto: {
             email: string;
             password: string;
+        };
+        RefreshTokenDto: {
+            refreshToken: string;
+        };
+        LogoutDto: {
+            refreshToken?: string;
         };
         RegisterDto: {
             /**
@@ -457,13 +745,24 @@ export interface components {
              */
             role: "admin" | "staff";
         };
+        PublicProductDto: {
+            _id: string;
+            name: string;
+            description?: string;
+            image?: string;
+            comingSoon: boolean;
+        };
         UpsertProductDto: {
             name: string;
+            nameEn?: string;
             /** @enum {string} */
             category: "Trang sức" | "Đồ da" | "Pháp lam" | "Đậu bạc" | "Đá quý";
             /** @enum {string} */
-            status: "Hiển thị" | "Ẩn";
+            status: "Hiển thị" | "Sắp ra mắt" | "Ẩn";
             description?: string;
+            descriptionEn?: string;
+            image?: string;
+            order?: number;
         };
         UpsertJobDto: {
             title: string;
@@ -477,17 +776,91 @@ export interface components {
             status: "Đang tuyển" | "Đã đóng";
             description?: string;
         };
-        UpsertNewsArticleDto: {
+        UpsertNetworkCountryDto: {
+            name: string;
+            nameEn?: string;
+            code?: string;
+            city?: string;
+            note?: string;
+            /** @enum {string} */
+            status: "Hiển thị" | "Ẩn";
+            /** @enum {string} */
+            stage?: "Đã có mặt" | "Đang mở rộng";
+            pos?: string;
+        };
+        ViLocalizedDto: {
+            excerpt?: string;
+            content?: string;
             title: string;
+        };
+        EnLocalizedDto: {
+            excerpt?: string;
+            content?: string;
+            title: string;
+        };
+        CoverDto: {
+            url: string;
+            /** @description Bỏ qua: server tự suy ra publicId từ url */
+            publicId?: string;
+        };
+        UpsertPostDto: {
             /** @enum {string} */
-            category: "Tin công ty" | "Thị trường" | "Sự kiện";
-            /** @description ISO date string, e.g. 2026-09-28 */
-            date: string;
+            category: "life-at-company" | "news" | "recruitment";
             /** @enum {string} */
-            status: "Đã đăng" | "Bản nháp";
-            summary?: string;
-            body?: string;
-            cover?: string;
+            status?: "draft" | "published";
+            /** @description Hiện ở khối Tin tức nổi bật trên Trang chủ. Không gửi thì giữ nguyên. */
+            featured?: boolean;
+            vi: components["schemas"]["ViLocalizedDto"];
+            en?: components["schemas"]["EnLocalizedDto"];
+            cover?: components["schemas"]["CoverDto"];
+        };
+        CreateContactDto: {
+            /** @example Nguyen Van A */
+            name: string;
+            /** @example nguyenvana@example.com */
+            email: string;
+            /** @example 0123456789 */
+            phone?: string;
+            /** @example I want to partner with Viễn Chí Bảo */
+            message: string;
+        };
+        UpdateContactStatusDto: {
+            /**
+             * @example read
+             * @enum {string}
+             */
+            status: "new" | "read" | "replied";
+        };
+        UpdateApplicationStatusDto: {
+            /**
+             * @example interview
+             * @enum {string}
+             */
+            status: "new" | "reviewing" | "interview" | "rejected" | "hired";
+        };
+        SocialsDto: {
+            zalo?: string;
+            tiktok?: string;
+            facebook?: string;
+            youtube?: string;
+            instagram?: string;
+            threads?: string;
+        };
+        OfficeDto: {
+            street?: string;
+            city?: string;
+        };
+        OfficesDto: {
+            headquarters?: components["schemas"]["OfficeDto"];
+            showroom?: components["schemas"]["OfficeDto"];
+        };
+        SaveSiteSettingsDto: {
+            name?: string;
+            taxId?: string;
+            phone?: string;
+            email?: string;
+            socials?: components["schemas"]["SocialsDto"];
+            offices?: components["schemas"]["OfficesDto"];
         };
     };
     responses: never;
@@ -515,32 +888,31 @@ export interface operations {
             };
         };
     };
-    PagesController_getPublicByPageKey: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                pageKey: "home" | "about" | "careers" | "contact" | "news";
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PublicPageBlockDto"][];
-                };
-            };
-        };
-    };
-    PagesController_findAll: {
+    PagesController_findPublic: {
         parameters: {
             query?: {
-                page?: "Trang chủ" | "Về chúng tôi" | "Tuyển dụng" | "Liên hệ" | "Tin tức";
+                /** @description Ngôn ngữ (mặc định vi) */
+                lang?: "vi" | "en";
             };
+            header?: never;
+            path: {
+                pageKey: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PagesController_blockTypes: {
+        parameters: {
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
@@ -555,20 +927,18 @@ export interface operations {
             };
         };
     };
-    PagesController_create: {
+    PagesController_getAdmin: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                pageKey: string;
+            };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpsertPageBlockDto"];
-            };
-        };
+        requestBody?: never;
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -576,18 +946,40 @@ export interface operations {
             };
         };
     };
-    PagesController_updateDraft: {
+    PagesController_preview: {
+        parameters: {
+            query?: {
+                /** @description Ngôn ngữ (mặc định vi) */
+                lang?: "vi" | "en";
+            };
+            header?: never;
+            path: {
+                pageKey: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PagesController_saveDraft: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                id: string;
+                pageKey: string;
             };
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpsertPageBlockDto"];
+                "application/json": components["schemas"]["SaveDraftDto"];
             };
         };
         responses: {
@@ -599,18 +991,22 @@ export interface operations {
             };
         };
     };
-    PagesController_publishOne: {
+    PagesController_publish: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                id: string;
+                pageKey: string;
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BaseVersionDto"];
+            };
+        };
         responses: {
-            201: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -618,54 +1014,20 @@ export interface operations {
             };
         };
     };
-    PagesController_publishPage: {
-        parameters: {
-            query: {
-                page: "Trang chủ" | "Về chúng tôi" | "Tuyển dụng" | "Liên hệ" | "Tin tức";
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    PagesController_discardPage: {
-        parameters: {
-            query: {
-                page: "Trang chủ" | "Về chúng tôi" | "Tuyển dụng" | "Liên hệ" | "Tin tức";
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    PagesController_remove: {
+    PagesController_discard: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                id: string;
+                pageKey: string;
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BaseVersionDto"];
+            };
+        };
         responses: {
             200: {
                 headers: {
@@ -703,7 +1065,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RefreshTokenDto"];
+            };
+        };
         responses: {
             200: {
                 headers: {
@@ -720,7 +1086,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LogoutDto"];
+            };
+        };
         responses: {
             200: {
                 headers: {
@@ -770,7 +1140,9 @@ export interface operations {
     };
     ProductsController_findPublic: {
         parameters: {
-            query?: never;
+            query?: {
+                lang?: "vi" | "en";
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -781,7 +1153,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PublicProductDto"][];
+                };
             };
         };
     };
@@ -981,7 +1355,7 @@ export interface operations {
             };
         };
     };
-    NewsController_findPublic: {
+    NetworkController_findPublic: {
         parameters: {
             query?: never;
             header?: never;
@@ -998,7 +1372,7 @@ export interface operations {
             };
         };
     };
-    NewsController_findAll: {
+    NetworkController_findAll: {
         parameters: {
             query?: never;
             header?: never;
@@ -1015,7 +1389,7 @@ export interface operations {
             };
         };
     };
-    NewsController_create: {
+    NetworkController_create: {
         parameters: {
             query?: never;
             header?: never;
@@ -1024,7 +1398,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpsertNewsArticleDto"];
+                "application/json": components["schemas"]["UpsertNetworkCountryDto"];
             };
         };
         responses: {
@@ -1036,7 +1410,7 @@ export interface operations {
             };
         };
     };
-    NewsController_remove: {
+    NetworkController_remove: {
         parameters: {
             query?: never;
             header?: never;
@@ -1055,7 +1429,7 @@ export interface operations {
             };
         };
     };
-    NewsController_update: {
+    NetworkController_update: {
         parameters: {
             query?: never;
             header?: never;
@@ -1066,7 +1440,513 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpsertNewsArticleDto"];
+                "application/json": components["schemas"]["UpsertNetworkCountryDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PostsController_findPublic: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+                category?: "life-at-company" | "news" | "recruitment";
+                lang?: "vi" | "en";
+                /** @description true: chỉ bài nổi bật */
+                featured?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PostsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpsertPostDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PostsController_findAllAdmin: {
+        parameters: {
+            query?: {
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PostsController_findAdminById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PostsController_findBySlug: {
+        parameters: {
+            query?: {
+                lang?: "vi" | "en";
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PostsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PostsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpsertPostDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PostsController_publish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PostsController_unpublish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ContactsController_findAll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ContactsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateContactDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ContactsController_findOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ContactsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ContactsController_updateStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateContactStatusDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ApplicationsController_findAll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ApplicationsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    cv?: string;
+                };
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ApplicationsController_findOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ApplicationsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ApplicationsController_updateStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateApplicationStatusDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UploadsController_upload: {
+        parameters: {
+            query?: {
+                /** @description Đặt folder=posts khi tải ảnh cho bài viết */
+                folder?: "posts" | "pages";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file?: string;
+                };
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UploadsController_uploadImages: {
+        parameters: {
+            query?: {
+                /** @description Đặt folder=posts khi tải ảnh cho bài viết */
+                folder?: "posts" | "pages";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    files?: string[];
+                };
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UploadsController_uploadVideo: {
+        parameters: {
+            query: {
+                /** @description Đặt folder=pages khi tải video cho block trong trang */
+                folder?: "posts" | "pages";
+                /** @description loop = clip ngắn tự chạy, player = video dài có controls */
+                variant: "loop" | "player";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file?: string;
+                };
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SiteSettingsController_getPublic: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    SiteSettingsController_save: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveSiteSettingsDto"];
             };
         };
         responses: {

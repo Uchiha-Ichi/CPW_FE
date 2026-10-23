@@ -1,4 +1,4 @@
-import { ApiError } from "@/lib/admin/post-errors";
+import { ApiError } from "@/lib/admin/api-error";
 import { pageFriendlyMessages } from "./errors";
 import type {
   AdminPageView,

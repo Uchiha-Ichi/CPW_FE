@@ -27,7 +27,7 @@ import {
   type Path,
 } from "@/lib/admin/page-editor/state";
 import type { BlockDef, BlockTypesResponse } from "@/lib/admin/page-editor/types";
-import { errorMessages, isSessionExpired } from "@/lib/admin/post-errors";
+import { errorMessages, isSessionExpired } from "@/lib/admin/api-error";
 
 interface LoadError {
   key: string;

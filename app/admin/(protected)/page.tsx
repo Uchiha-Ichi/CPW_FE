@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import Link from "next/link";
-import { ADMIN_NAV_ITEMS } from "@/components/admin/admin-nav-items";
+import { ADMIN_NAV_ITEMS } from "@/components/admin/shell/admin-nav-items";
 import { AdminPage } from "@/components/admin/ui/admin-page";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminPanel } from "@/components/admin/ui/admin-panel";

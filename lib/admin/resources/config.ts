@@ -1,5 +1,5 @@
 // "country": chọn quốc gia, tự điền name + code (cờ) + pos. "hidden": giữ giá trị trong form, không hiện ô nhập.
-export type FieldType = "text" | "select" | "textarea" | "mappos" | "country" | "hidden";
+export type FieldType = "text" | "select" | "textarea" | "mappos" | "country" | "hidden" | "image" | "number";
 
 export interface ResourceField {
   key: string;
@@ -62,6 +62,7 @@ export const PRODUCTS_CONFIG: ResourceConfig = {
   singular: "sản phẩm",
   fields: [
     { key: "name", label: "Tên sản phẩm", type: "text", required: true },
+    { key: "nameEn", label: "Tên tiếng Anh", type: "text" },
     {
       key: "category",
       label: "Danh mục",
@@ -74,14 +75,18 @@ export const PRODUCTS_CONFIG: ResourceConfig = {
       label: "Trạng thái",
       type: "select",
       required: true,
-      options: ["Hiển thị", "Ẩn"],
+      options: ["Hiển thị", "Sắp ra mắt", "Ẩn"],
     },
     { key: "description", label: "Mô tả ngắn", type: "text" },
+    { key: "descriptionEn", label: "Mô tả ngắn tiếng Anh", type: "text" },
+    { key: "image", label: "Ảnh", type: "image" },
+    { key: "order", label: "Thứ tự hiển thị", type: "number" },
   ],
   columns: [
     { key: "name", label: "Sản phẩm" },
     { key: "category", label: "Danh mục" },
     { key: "status", label: "Trạng thái" },
+    { key: "order", label: "Thứ tự" },
   ],
 };
 

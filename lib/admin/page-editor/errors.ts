@@ -1,4 +1,4 @@
-import { ApiError } from "@/lib/admin/post-errors";
+import { ApiError } from "@/lib/admin/api-error";
 
 const CONFLICT_FALLBACK =
   "Trang vừa được cập nhật ở nơi khác. Hãy tải lại rồi sửa tiếp.";

@@ -1,8 +1,8 @@
-import {
-  ADMIN_REFRESHED_COOKIE,
-  ADMIN_REFRESH_COOKIE,
-  ADMIN_TOKEN_COOKIE,
-} from "./auth-cookies";
+// Cookie phiên của FE. Backend không đặt cookie nào: token đi qua body JSON (POST /auth/login, /auth/refresh)
+// và server Next cất vào các cookie dưới đây bằng applySessionCookies.
+export const ADMIN_TOKEN_COOKIE = "admin_token";
+export const ADMIN_REFRESH_COOKIE = "admin_rt";
+export const ADMIN_REFRESHED_COOKIE = "admin_just_refreshed";
 
 export type SessionTokens = {
   accessToken: string;

@@ -1,6 +1,6 @@
-import { emptySiteSettings, parseSiteSettings, type SiteSettings } from "../site/settings-model";
-import { ApiError, friendlyMessages } from "./post-errors";
-import { toPayload, type SiteSettingsFormValues } from "./site-settings-form";
+import { emptySiteSettings, parseSiteSettings, type SiteSettings } from "@/lib/site/settings-model";
+import { ApiError, friendlyMessages } from "@/lib/admin/api-error";
+import { toPayload, type SiteSettingsFormValues } from "./form";
 
 const BASE = "/api/admin/proxy";
 

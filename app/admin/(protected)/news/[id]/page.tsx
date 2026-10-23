@@ -1,4 +1,4 @@
-import { NewsComposerView } from "@/components/admin/news-composer-view";
+import { NewsComposerView } from "@/components/admin/news/news-composer-view";
 
 export default async function AdminNewsEditPage({
   params,

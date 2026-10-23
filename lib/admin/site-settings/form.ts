@@ -4,8 +4,8 @@ import {
   OFFICE_KEYS,
   SOCIAL_KEYS,
   type SiteSettings,
-} from "../site/settings-model";
-import { SOCIAL_LABELS } from "../site/socials";
+} from "@/lib/site/settings-model";
+import { SOCIAL_LABELS } from "@/lib/site/socials";
 
 // Cùng quy tắc với backend (site-settings.constants.ts): 8 đến 15 chữ số, tối đa 30 ký tự.
 const PHONE = /^\+?(?:[\s.\-()]*\d){8,15}[\s.\-()]*$/;

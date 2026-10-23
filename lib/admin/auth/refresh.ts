@@ -1,15 +1,24 @@
 import { API_BASE } from "@/lib/api/config";
-import {
-  BACKEND_ACCESS_COOKIE,
-  BACKEND_REFRESH_COOKIE,
-  parseSetCookie,
-} from "./auth-cookies";
 
 export type RefreshedSession = {
   accessToken: string;
   refreshToken: string;
   refreshMaxAge: number | null;
 };
+
+// Đọc cặp token trong body JSON mà backend trả ở POST /auth/login và /auth/refresh
+// ({ accessToken, refreshToken, refreshExpiresIn } — refreshExpiresIn tính bằng giây). Sai hình thì null.
+export function readTokenResponse(body: unknown): RefreshedSession | null {
+  if (typeof body !== "object" || body === null) return null;
+  const { accessToken, refreshToken, refreshExpiresIn } = body as Record<string, unknown>;
+  if (typeof accessToken !== "string" || !accessToken) return null;
+  if (typeof refreshToken !== "string" || !refreshToken) return null;
+  const refreshMaxAge =
+    typeof refreshExpiresIn === "number" && Number.isFinite(refreshExpiresIn) && refreshExpiresIn > 0
+      ? Math.floor(refreshExpiresIn)
+      : null;
+  return { accessToken, refreshToken, refreshMaxAge };
+}
 
 // Backend xoay refresh token mỗi lần dùng (chỉ lưu một hash): hai lần refresh cùng token cũ thì lần sau
 // bị từ chối. Nên gom các lần gọi trùng token thành một, và giữ kết quả thành công thêm một lúc cho
@@ -29,15 +38,7 @@ async function callRefresh(refreshToken: string): Promise<RefreshedSession | nul
       signal: AbortSignal.timeout(5000),
     });
     if (!res.ok) return null;
-    const setCookies = res.headers.getSetCookie();
-    const access = parseSetCookie(setCookies, BACKEND_ACCESS_COOKIE);
-    const refresh = parseSetCookie(setCookies, BACKEND_REFRESH_COOKIE);
-    if (!access || !refresh) return null;
-    return {
-      accessToken: access.value,
-      refreshToken: refresh.value,
-      refreshMaxAge: refresh.maxAge,
-    };
+    return readTokenResponse(await res.json());
   } catch {
     return null;
   }

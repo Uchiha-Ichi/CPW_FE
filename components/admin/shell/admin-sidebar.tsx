@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ExternalLink, LogOut } from "lucide-react";
-import { ADMIN_NAV_ITEMS, isNavActive } from "@/components/admin/admin-nav-items";
+import { ADMIN_NAV_ITEMS, isNavActive } from "@/components/admin/shell/admin-nav-items";
 import { AdminLogo } from "@/components/admin/ui/admin-logo";
 import { cn } from "@/lib/utils";
 

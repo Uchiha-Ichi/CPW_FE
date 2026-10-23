@@ -11,7 +11,7 @@ import {
   ComboboxList,
 } from "@/components/ui/combobox";
 import { InputGroupAddon } from "@/components/ui/input-group";
-import { findCountry, getCountryOptions, type CountryOption } from "@/lib/admin/countries";
+import { findCountry, getCountryOptions, type CountryOption } from "@/lib/admin/resources/countries";
 
 // Bỏ dấu và chữ hoa để gõ "viet nam" vẫn ra "Việt Nam".
 const fold = (s: string) =>

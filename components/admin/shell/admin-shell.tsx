@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import { AdminSidebar } from "@/components/admin/admin-sidebar";
+import { AdminSidebar } from "@/components/admin/shell/admin-sidebar";
 import { AdminLogo } from "@/components/admin/ui/admin-logo";
 import {
   Sheet,

@@ -15,22 +15,22 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { ImagePlaceholder } from "@/components/shared/image-placeholder";
-import { CoverField } from "@/components/admin/post-cover-field";
-import { PostEditor } from "@/components/admin/post-editor";
+import { CoverField } from "@/components/admin/news/post-cover-field";
+import { PostEditor } from "@/components/admin/news/post-editor";
 import {
   createPost,
   getAdminPost,
   updatePost,
   uploadPostImage,
-} from "@/lib/admin/post-api";
-import { errorMessages, isSessionExpired } from "@/lib/admin/post-errors";
+} from "@/lib/admin/news/api";
+import { errorMessages, isSessionExpired } from "@/lib/admin/api-error";
 import {
   clearDraft,
   loadDraft,
   saveDraft,
   shouldOfferDraft,
   type StoredDraft,
-} from "@/lib/admin/post-draft-storage";
+} from "@/lib/admin/news/draft-storage";
 import {
   emptyForm,
   englishWarning,
@@ -41,7 +41,7 @@ import {
   validateForm,
   type FormIssue,
   type PostForm,
-} from "@/lib/admin/post-form";
+} from "@/lib/admin/news/form";
 import {
   POST_CATEGORIES,
   POST_CATEGORY_LABELS,
@@ -49,7 +49,7 @@ import {
   type PostCategory,
   type PostLang,
   type PostStatus,
-} from "@/lib/admin/post-types";
+} from "@/lib/admin/news/types";
 
 const LANG_LABELS: Record<PostLang, string> = {
   vi: "Tiếng Việt",

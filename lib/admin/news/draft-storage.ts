@@ -1,5 +1,5 @@
-import { isFormMeaningful, type LocaleForm, type PostForm } from "./post-form";
-import { POST_CATEGORIES } from "./post-types";
+import { isFormMeaningful, type LocaleForm, type PostForm } from "./form";
+import { POST_CATEGORIES } from "./types";
 
 const PREFIX = "vcb-admin-post-draft:";
 

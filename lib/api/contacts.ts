@@ -8,11 +8,15 @@ export interface ContactInput {
 }
 
 // POST /contacts (public). Không ném lỗi: người gọi quyết định hiện thông báo gì.
-export async function createContact(input: ContactInput): Promise<{ ok: true } | { ok: false }> {
+// `extraHeaders`: header chuyển IP người dùng (lib/api/client-ip.ts) khi gọi từ server.
+export async function createContact(
+  input: ContactInput,
+  extraHeaders: Record<string, string> = {},
+): Promise<{ ok: true } | { ok: false }> {
   try {
     const res = await fetch(`${API_BASE}/contacts`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...extraHeaders },
       body: JSON.stringify(input),
       cache: "no-store",
     });

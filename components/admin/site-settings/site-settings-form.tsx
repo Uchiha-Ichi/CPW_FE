@@ -8,14 +8,14 @@ import { AdminButton } from "@/components/admin/ui/admin-button";
 import { AdminInput } from "@/components/admin/ui/admin-input";
 import { AdminNotice } from "@/components/admin/ui/admin-notice";
 import { Label } from "@/components/ui/label";
-import { errorMessages, isSessionExpired } from "@/lib/admin/post-errors";
-import { getAdminSiteSettings, saveAdminSiteSettings } from "@/lib/admin/site-settings-api";
+import { errorMessages, isSessionExpired } from "@/lib/admin/api-error";
+import { getAdminSiteSettings, saveAdminSiteSettings } from "@/lib/admin/site-settings/api";
 import {
   emptyFormValues,
   fromSettings,
   siteSettingsFormSchema,
   type SiteSettingsFormValues,
-} from "@/lib/admin/site-settings-form";
+} from "@/lib/admin/site-settings/form";
 import { SOCIAL_KEYS } from "@/lib/site/settings-model";
 import { SOCIAL_LABELS } from "@/lib/site/socials";
 

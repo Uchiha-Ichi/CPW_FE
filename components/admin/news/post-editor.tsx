@@ -6,13 +6,13 @@ import type { Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import { AdminButton } from "@/components/admin/ui/admin-button";
-import { uploadPostImage } from "@/lib/admin/post-api";
-import { errorMessages } from "@/lib/admin/post-errors";
+import { uploadPostImage } from "@/lib/admin/news/api";
+import { errorMessages } from "@/lib/admin/api-error";
 import {
   IMAGE_OPTIONS,
   STARTER_KIT_OPTIONS,
   isImageFile,
-} from "@/lib/admin/post-editor-config";
+} from "@/lib/admin/news/editor-config";
 
 interface PostEditorProps {
   value: string;

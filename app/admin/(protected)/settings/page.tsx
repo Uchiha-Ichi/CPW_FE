@@ -1,4 +1,4 @@
-import { SiteSettingsForm } from "@/components/admin/site-settings-form";
+import { SiteSettingsForm } from "@/components/admin/site-settings/site-settings-form";
 import { AdminPage } from "@/components/admin/ui/admin-page";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 

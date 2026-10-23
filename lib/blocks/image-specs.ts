@@ -41,6 +41,13 @@ export const IMAGE_SPECS = {
     minWidth: 1600,
     hint: "Ảnh cận cảnh sản phẩm hoặc chất liệu, chủ thể ở giữa vì ảnh bị cắt theo khung. Dùng được video.",
   },
+  // Ảnh của sản phẩm trong bảng Sản phẩm (khối product-list). Không phải field trong block nên chỉ tra theo tên, không qua registry.
+  "product-list.image": {
+    ratio: "3:2",
+    orientation: "ngang",
+    minWidth: 1600,
+    hint: "Ảnh cận cảnh sản phẩm hoặc chất liệu, chủ thể ở giữa vì ảnh bị cắt theo khung. Chỉ nhận ảnh, không dùng video.",
+  },
   "capability-grid.items.image": {
     ratio: "4:3",
     orientation: "ngang",

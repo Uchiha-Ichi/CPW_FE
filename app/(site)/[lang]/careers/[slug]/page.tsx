@@ -105,7 +105,7 @@ export default async function JobDetailPage({ params }: Props) {
                 <dt className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                   {t(`detail.${key}`)}
                 </dt>
-                <dd className="mt-1 text-base font-medium">{value}</dd>
+                <dd className="mt-1 break-words text-base font-medium">{value}</dd>
               </div>
             ))}
           </dl>
@@ -113,7 +113,7 @@ export default async function JobDetailPage({ params }: Props) {
           <div className="mt-8 space-y-5 text-[1.05rem] leading-8 text-foreground/90">
             {paragraphs.length > 0 ? (
               paragraphs.map((text, i) => (
-                <p key={i} className="whitespace-pre-line">{text}</p>
+                <p key={i} className="whitespace-pre-line break-words">{text}</p>
               ))
             ) : (
               <p className="text-muted-foreground">{t("detail.noDescription")}</p>

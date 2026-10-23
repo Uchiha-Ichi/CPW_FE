@@ -5,7 +5,7 @@ import { getSiteSettings } from "@/lib/api/site-settings";
 import { addressLine, brandName } from "@/lib/site/contact-info";
 import { visibleSocials } from "@/lib/site/socials";
 
-const navLinkClass = "max-[519px]:block max-[519px]:py-[11px]";
+const navLinkClass = "max-[880px]:block max-[880px]:py-[11px]";
 
 export async function SiteFooter() {
   const [t, nav, meta, settings] = await Promise.all([
@@ -39,8 +39,8 @@ export async function SiteFooter() {
         </div>
         <div>
           <h2 className="font-semibold mb-3">{t("navigation")}</h2>
-          {/* Điện thoại (< 520px): mỗi liên kết cao ~40px để dễ chạm; khoảng cách giữa các dòng nằm trong vùng chạm nên bỏ space-y. */}
-          <ul className="space-y-2 text-muted-foreground max-[519px]:space-y-0">
+          {/* Điện thoại và máy tính bảng (< 880px, cùng mốc với header): mỗi liên kết cao ~40px để dễ chạm; khoảng cách giữa các dòng nằm trong vùng chạm nên bỏ space-y. */}
+          <ul className="space-y-2 text-muted-foreground max-[880px]:space-y-0">
             <li><Link href="/" className={navLinkClass}>{nav("nav.home")}</Link></li>
             <li><Link href="/about" className={navLinkClass}>{nav("nav.about")}</Link></li>
             <li><Link href="/careers" className={navLinkClass}>{nav("nav.careers")}</Link></li>

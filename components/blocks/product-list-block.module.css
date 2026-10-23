@@ -1,0 +1,159 @@
+/* Dưới 1024px (điện thoại, máy tính bảng dọc): các thẻ xếp dọc một cột, kẻ trên giữa các ô, không mở rộng.
+   Từ 1024px: MỘT HÀNG; thẻ đang chọn (data-active, do product-list-row.tsx đặt) rộng gấp đôi các thẻ còn lại. */
+.row {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--card);
+}
+
+.cell {
+  min-width: 0;
+  padding: 22px;
+}
+
+.cell + .cell {
+  border-top: 1px solid var(--border);
+}
+
+.inner,
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+/* Khung ảnh: 3:2 khi xếp dọc (trần 340px để ảnh không quá cao trên máy tính bảng). */
+.frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  aspect-ratio: 3 / 2;
+  max-height: 340px;
+}
+
+@media (min-width: 1024px) {
+  .row {
+    flex-direction: row;
+  }
+
+  .cell {
+    flex: 1 1 0;
+  }
+
+  .cell + .cell {
+    border-top: 0;
+    border-left: 1px solid var(--border);
+  }
+
+  .cell[data-active="true"] {
+    flex-grow: 2;
+  }
+
+  /* Chiều cao khung ảnh và vùng chữ CỐ ĐỊNH: thẻ đổi độ rộng thì ảnh chỉ cắt khác đi và chữ chỉ ngắt dòng khác đi,
+     chiều cao cả hàng không đổi nên phần trang phía dưới không bị nhảy. */
+  .frame {
+    aspect-ratio: auto;
+    max-height: none;
+    height: clamp(190px, 18vw, 250px);
+  }
+
+  .text {
+    min-height: 11rem;
+  }
+
+  /* Mô tả: thẻ đang chọn 4 dòng, thẻ còn lại 2 dòng (mô tả không giới hạn độ dài trong bảng Sản phẩm). */
+  .desc {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+
+  .cell[data-active="true"] .desc {
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+  }
+
+  .cell[data-active="true"] .title {
+    color: var(--primary);
+  }
+}
+
+/* Nhãn "Sắp ra mắt": dải chéo ở góc phải trên của ảnh (kiểu ruy-băng góc). Tâm dải nằm cách góc khoảng 35px mỗi chiều,
+   xoay 45° nên chạy từ trên-trái xuống dưới-phải; phần dải thò ra ngoài bị khung ảnh (.frame: overflow hidden + bo góc)
+   cắt gọn. pointer-events: none để dải không chắn rê chuột vào thẻ. */
+.badge {
+  position: absolute;
+  top: 24px;
+  right: -40px;
+  z-index: 1;
+  width: 150px;
+  padding: 5px 0;
+  transform: rotate(45deg);
+  text-align: center;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.25);
+  pointer-events: none;
+}
+
+.media {
+  position: absolute;
+  inset: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Thẻ đang chọn đổi độ rộng mượt. Dưới 1024px không có thẻ nào đổi độ rộng nên không ảnh hưởng. */
+  .cell {
+    transition: flex-grow 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .title {
+    transition: color 0.4s;
+  }
+
+  .media {
+    transition: transform 1.2s cubic-bezier(0.2, 0.7, 0.2, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  [data-reveal="armed"] .media {
+    transform: scale(1.06);
+  }
+
+  [data-reveal="shown"] .media {
+    transform: none;
+  }
+
+  /* Ảnh "thở": phóng nhẹ rồi thu về, lặp mãi (khoảng 8 giây một vòng). Chạy trên ảnh/video con của .media, vì chính
+     .media đã dùng transform cho hiệu ứng hiện dần ở trên (đặt chung thì animation đè mất transition). */
+  .media > * {
+    animation: breathe 4s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+
+  /* Thẻ chẵn lệch nửa nhịp để các ảnh không thở đồng loạt. */
+  .cell:nth-child(even) .media > * {
+    animation-delay: -2s;
+  }
+
+  /* Rê chuột vào thẻ thì dừng. */
+  .cell:hover .media > * {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes breathe {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}

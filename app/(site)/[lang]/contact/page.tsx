@@ -85,7 +85,8 @@ export default async function ContactPage({ params, searchParams }: Props) {
       />
 
       <PageSection>
-        <div className="grid gap-12 md:grid-cols-2 md:items-start">
+        {/* grid-cols-1 = minmax(0,1fr): cột không bị địa chỉ email dài (không có chỗ ngắt) kéo rộng quá khung hình ở 360px. */}
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2 md:items-start">
           <Reveal>
             <SectionHead
               flush
@@ -116,9 +117,9 @@ export default async function ContactPage({ params, searchParams }: Props) {
                   href={`mailto:${settings.email}`}
                   className="group flex items-center justify-between rounded-3xl border border-border bg-card p-6 transition-colors hover:border-primary/50"
                 >
-                  <div className="flex flex-col">
+                  <div className="flex min-w-0 flex-col">
                     <span className="mb-1 text-xs font-semibold tracking-widest text-muted-foreground">{t("methods.email")}</span>
-                    <strong className="text-xl">{settings.email}</strong>
+                    <strong className="break-words text-xl">{settings.email}</strong>
                   </div>
                   <span aria-hidden className="text-primary opacity-0 transition-opacity group-hover:opacity-100">↗</span>
                 </a>

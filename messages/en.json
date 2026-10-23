@@ -65,6 +65,9 @@
     "region": "Featured news",
     "detail": "Details"
   },
+  "Products": {
+    "comingSoon": "Coming soon"
+  },
   "Network": {
     "mapCredit": "Map: Al MacDonald, CC BY-SA 3.0"
   },

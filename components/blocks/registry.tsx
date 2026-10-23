@@ -6,6 +6,7 @@ import { BannerBlock } from "./banner-block";
 import { CtaBlock } from "./cta-block";
 import { StatementBlock } from "./statement-block";
 import { CardGridBlock } from "./card-grid-block";
+import { ProductListBlock } from "./product-list-block";
 import { ProductShowcaseBlock } from "./product-showcase-block";
 import { StatsBlock } from "./stats-block";
 import { CarouselBlock } from "./carousel-block";
@@ -35,6 +36,7 @@ export const BLOCK_COMPONENTS: Record<string, ComponentType<BlockProps> | undefi
   cta: CtaBlock,
   statement: StatementBlock,
   "card-grid": CardGridBlock,
+  "product-list": ProductListBlock,
   "product-showcase": ProductShowcaseBlock,
   stats: StatsBlock,
   carousel: CarouselBlock,

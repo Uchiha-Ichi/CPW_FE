@@ -57,6 +57,26 @@
   :global([data-reveal="armed"]) .photo video {
     transform: scale(1.08);
   }
+
+  /* Thẻ tự thu nhỏ rồi phóng to, lặp mãi: 0,96 ↔ 1,03 lần, mỗi chiều 3 giây (cả vòng 6 giây). Chạy trên .card, vì
+     Reveal bọc ngoài đã dùng transform cho hiệu ứng hiện dần. Khe giữa các thẻ là 18px: thẻ phóng tối đa nở ra
+     khoảng 4px mỗi bên nên không đè lên thẻ bên cạnh.
+     Mỗi thẻ lệch 1,5 giây so với thẻ trước (--i, tối đa 4 thẻ nên vừa một vòng 6 giây) thành làn sóng từ trái sang
+     phải. Trừ 6 giây để độ trễ luôn âm: thẻ nào cũng đã chạy giữa chừng ngay khi tải, không đứng yên chờ tới lượt. */
+  .card {
+    animation: capability-zoom 3s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i, 0) * 1.5s - 6s);
+  }
+
+  /* Rê chuột vào thẻ thì thẻ đó dừng. */
+  .card:hover {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes capability-zoom {
+  from { transform: scale(0.96); }
+  to { transform: scale(1.03); }
 }
 
 .content {
@@ -66,16 +86,7 @@
   padding: 20px 22px 26px;
 }
 
-.num {
-  font-family: var(--font-display, var(--font-heading, sans-serif));
-  font-weight: 700;
-  font-size: 14px;
-  color: var(--vcb-champagne);
-  letter-spacing: 0.08em;
-}
-
 .title {
-  margin-top: 12px;
   font-size: 24px;
   font-weight: 700;
   color: #fff;

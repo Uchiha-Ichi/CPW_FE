@@ -44,7 +44,11 @@ export function CapabilityGridBlock({ data }: BlockProps) {
         >
           {items.map((item, k) => (
             <Reveal key={k} delay={k * 110} className="h-full">
-              <div className={styles.card}>
+              {/* --i: thứ tự thẻ, để CSS lệch pha hiệu ứng thu/phóng thành làn sóng từ trái sang phải. */}
+              <div
+                className={styles.card}
+                style={{ "--i": k } as React.CSSProperties}
+              >
                 <div className={styles.photo}>
                   {item.image ? (
                     <CloudinaryMedia
@@ -63,9 +67,6 @@ export function CapabilityGridBlock({ data }: BlockProps) {
                   )}
                 </div>
                 <div className={styles.content}>
-                  <span className={styles.num}>
-                    {String(k + 1).padStart(2, "0")}
-                  </span>
                   <h3 className={styles.title}>{item.t}</h3>
                   {item.d && <p className={styles.desc}>{item.d}</p>}
                 </div>

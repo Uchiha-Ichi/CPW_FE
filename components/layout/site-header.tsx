@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Menu, Moon, Sun, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useTheme } from "next-themes";
 import {
   Sheet,
   SheetClose,
@@ -16,6 +15,7 @@ import {
 import { Link, usePathname } from "@/i18n/navigation";
 import { locales } from "@/lib/i18n/config";
 import { LOGO_URL } from "@/lib/site/business";
+import { useTheme } from "@/lib/theme/use-theme";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
@@ -39,7 +39,7 @@ export function SiteHeader() {
   const t = useTranslations("Header");
   const lang = useLocale();
   const pathname = usePathname();
-  const { resolvedTheme, setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -111,7 +111,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-2">
           <nav
             aria-label={t("language")}
-            className="flex h-11 items-center overflow-hidden rounded-[11px] border border-[color:var(--vcb-line-strong)] bg-[var(--vcb-panel)] text-[0.9375rem] font-medium"
+            className="flex h-[46px] items-center overflow-hidden rounded-[11px] border border-[color:var(--vcb-line-strong)] bg-[var(--vcb-panel)] text-[0.9375rem] font-medium"
           >
             {locales.map((code) => (
               <Link
@@ -136,7 +136,7 @@ export function SiteHeader() {
           <button
             type="button"
             onClick={() =>
-              setTheme(resolvedTheme === "light" ? "dark" : "light")
+              setTheme(theme === "light" ? "dark" : "light")
             }
             aria-label={t("themeToggle")}
             title={t("themeToggle")}
@@ -169,7 +169,7 @@ export function SiteHeader() {
               </SheetHeader>
               <SheetClose
                 aria-label={t("close")}
-                className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground"
+                className="absolute right-1 top-1 flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground"
               >
                 <X size={16} aria-hidden />
               </SheetClose>

@@ -3,10 +3,10 @@ import { BRAND_PATHS } from "@/components/blocks/shared/brand-paths";
 import type { SocialKey } from "@/lib/site/settings-model";
 import type { VisibleSocial } from "@/lib/site/socials";
 
-// Điện thoại (< 520px): đệm 8px quanh icon để vùng chạm đạt ~40px; gap của hàng đổi thành 0 và -ml-2 bù lại để icon
-// vẫn thẳng lề trái với chữ phía trên.
+// Điện thoại và máy tính bảng (< 880px, cùng mốc với header): đệm 8px quanh icon để vùng chạm đạt ~40px; gap của hàng
+// đổi thành 0 và -ml-2 bù lại để icon vẫn thẳng lề trái với chữ phía trên.
 const linkClass =
-  "opacity-80 hover:opacity-100 motion-safe:hover:scale-105 transition-opacity motion-safe:transition-transform max-[519px]:p-2";
+  "opacity-80 hover:opacity-100 motion-safe:hover:scale-105 transition-opacity motion-safe:transition-transform max-[880px]:p-2";
 
 // Màu ô nền của từng nền tảng; logo trắng nằm trong ô. TikTok và Threads là logo đơn sắc nên dùng ô đen.
 // Instagram dùng dải màu riêng (gradient bên dưới) nên không có trong bảng này.
@@ -44,7 +44,7 @@ function SocialIcon({ name, size }: { name: SocialKey; size: number }): ReactNod
 export function SocialLinks({ items, size = 32 }: { items: VisibleSocial[]; size?: number }) {
   if (items.length === 0) return null;
   return (
-    <div className="flex items-center gap-3 max-[519px]:-ml-2 max-[519px]:gap-0">
+    <div className="flex items-center gap-3 max-[880px]:-ml-2 max-[880px]:gap-0">
       {items.map((item) => (
         <a
           key={item.key}

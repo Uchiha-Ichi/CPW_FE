@@ -3,6 +3,7 @@ import { ApiError, friendlyMessages } from "@/lib/admin/api-error";
 const BASE = "/api/admin/proxy";
 const JSON_HEADERS = { "Content-Type": "application/json" };
 const APPLICATIONS = "applications";
+const CONTACTS = "contacts";
 
 // friendlyMessages viết câu 404 cho bài viết; bảng tài nguyên cần câu chung.
 function resourceMessages(status: number, body: unknown): string[] {
@@ -63,3 +64,15 @@ export const updateApplicationStatus = (id: string, status: string) =>
   });
 
 export const deleteApplication = (id: string) => deleteResource(APPLICATIONS, id);
+
+// Tin nhắn gửi từ form trang Liên hệ (backend: src/contacts), mới nhất trước.
+export const listContacts = <T>() => listResource<T>(CONTACTS);
+
+export const updateContactStatus = (id: string, status: string) =>
+  request<unknown>(`/${CONTACTS}/${enc(id)}/status`, {
+    method: "PATCH",
+    headers: JSON_HEADERS,
+    body: JSON.stringify({ status }),
+  });
+
+export const deleteContact = (id: string) => deleteResource(CONTACTS, id);

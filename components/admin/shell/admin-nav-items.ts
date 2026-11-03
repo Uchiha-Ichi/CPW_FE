@@ -2,6 +2,7 @@ import {
   Briefcase,
   FileText,
   LayoutDashboard,
+  Mail,
   MapPin,
   Newspaper,
   Package,
@@ -17,6 +18,7 @@ export const ADMIN_NAV_ITEMS: { href: string; label: string; icon: LucideIcon }[
   { href: "/admin/news", label: "Tin tức", icon: Newspaper },
   { href: "/admin/products", label: "Sản phẩm", icon: Package },
   { href: "/admin/jobs", label: "Tuyển dụng", icon: Briefcase },
+  { href: "/admin/contacts", label: "Khách liên hệ", icon: Mail },
   { href: "/admin/network", label: "Bản đồ quốc gia", icon: MapPin },
   { href: "/admin/settings", label: "Thông tin liên hệ", icon: Phone },
 ];

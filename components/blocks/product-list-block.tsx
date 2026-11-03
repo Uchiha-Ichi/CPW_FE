@@ -11,9 +11,9 @@ import { cn } from "@/lib/utils";
 import type { BlockProps } from "./types";
 import styles from "./product-list-block.module.css";
 
-const PRODUCT_LIMIT = 4;
+const PRODUCT_LIMIT = 5;
 
-// Khối danh sách sản phẩm lấy từ bảng Sản phẩm: tối đa 4 thẻ, cùng một hàng (từ 1024px), thẻ đang chọn mở rộng và tự
+// Khối danh sách sản phẩm lấy từ bảng Sản phẩm: tối đa 5 thẻ, cùng một hàng (từ 1024px), thẻ đang chọn mở rộng và tự
 // chuyển (product-list-row.tsx).
 export async function ProductListBlock({ data, lang }: BlockProps) {
   const title = str(data.title);

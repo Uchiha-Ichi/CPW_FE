@@ -1,27 +1,97 @@
-.list {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr));
-  gap: 32px;
-  margin-top: 36px;
-  padding: 0;
-  list-style: none;
+/* Hành trình theo mốc thu gọn: mốc đang active luôn trượt ra chính giữa dải trên,
+   tự động chạy sang mốc kế tiếp sau ~2s và hiển thị thẻ nội dung nổi bật ở ngay trung tâm bên dưới. */
+.root {
+  --item-w: 164px;
+  margin-top: 28px;
+  outline: none;
 }
 
-.list::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 8px;
-  height: 2px;
-  background: var(--border);
+.root:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 6px;
+  border-radius: 12px;
+}
+
+.viewport {
+  max-width: 820px;
+  margin: 0 auto;
+  overflow: hidden;
+  cursor: grab;
+  overscroll-behavior-x: contain;
+  /* Đệm trên cho vòng sáng của chấm; mờ dần hai mép trái/phải để tôn mốc ở chính giữa. */
+  padding: 14px 0 6px;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+}
+
+.viewport:active {
+  cursor: grabbing;
+}
+
+.track {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  touch-action: pan-y pinch-zoom;
 }
 
 .item {
   position: relative;
-  padding-right: 8px;
+  flex: 0 0 var(--item-w);
+  min-width: 0;
   list-style: none;
+  cursor: pointer;
+}
+
+/* ── Đường trục ngang nối từ tâm chấm hiện tại (left: 50%) tới tâm chấm kế tiếp (width: 100%) ── */
+.line {
+  position: absolute;
+  left: 50%;
+  top: 9px;
+  width: 100%;
+  height: 2px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.item:last-child .line {
+  display: none;
+}
+
+.lineFill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--tech-cyan));
+  transform-origin: left center;
+  transform: scaleX(0);
+}
+
+.item[data-state="past"] .lineFill {
+  transform: scaleX(1);
+}
+
+/* ── Nút bấm gồm chấm mốc + số năm (căn giữa trong mỗi ô) ── */
+.trigger {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+}
+
+.trigger:focus-visible .dot {
+  outline: 2px solid var(--ring);
+  outline-offset: 4px;
 }
 
 .dot {
@@ -30,50 +100,188 @@
   width: 18px;
   height: 18px;
   border-radius: 9999px;
+  background: var(--background);
+  border: 2px solid color-mix(in srgb, var(--muted-foreground) 42%, transparent);
+  box-shadow: 0 0 0 3px var(--background);
+  transform: scale(0.72);
+}
+
+.dot::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 9999px;
+  border: 1.5px solid var(--primary);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.item[data-state="past"] .dot {
+  background: color-mix(in srgb, var(--primary) 75%, var(--background));
+  border: 3px solid var(--background);
+  box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--primary) 62%, transparent);
+  transform: scale(0.84);
+}
+
+.item[data-state="active"] .dot {
   background: var(--primary);
-  border: 4px solid var(--background);
-  box-shadow: 0 0 0 1.5px var(--primary);
+  border: 3.5px solid var(--background);
+  box-shadow:
+    0 0 0 2px var(--primary),
+    0 0 16px color-mix(in srgb, var(--primary) 55%, transparent);
+  transform: scale(1.14);
 }
 
 .title {
-  margin-top: 24px;
-  font-size: 26px;
+  margin-top: 12px;
+  font-size: 19px;
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: normal;
+  color: var(--muted-foreground);
+  opacity: 0.36;
+  transform: scale(0.82);
+  transform-origin: center top;
+}
+
+/* Mốc là năm: thu gọn vừa vặn, nổi bật khi ra chính giữa. */
+.year {
+  margin-top: 10px;
+  font-size: clamp(23px, 2.5vw, 31px);
+  font-weight: 800;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.item[data-state="past"] .title {
+  opacity: 0.52;
+  color: color-mix(in srgb, var(--primary) 55%, var(--muted-foreground));
+  transform: scale(0.86);
+}
+
+.item[data-state="active"] .title {
+  opacity: 1;
+  color: var(--primary);
+  transform: scale(1.08);
+  text-shadow: 0 8px 22px color-mix(in srgb, var(--primary) 24%, transparent);
+}
+
+/* ── Khung hiển thị nội dung ở chính giữa bên dưới mốc đang chọn ── */
+.stage {
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.stageGrid {
+  display: grid;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.card {
+  grid-area: 1 / 1;
+  padding: 16px 22px;
+  border-radius: 14px;
+  text-align: center;
+  background: color-mix(in srgb, var(--card) 75%, transparent);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 30px -18px rgb(7 20 38 / 0.12);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+
+.card[data-active] {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 .desc {
-  margin-top: 12px;
+  margin: 0 auto;
   color: var(--muted-foreground);
-  font-size: 16.5px;
-  max-width: 34ch;
-  line-height: 1.5;
+  font-size: 15.5px;
+  max-width: 38ch;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+@keyframes timelineProgress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes dotPulse {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.75;
+  }
+  100% {
+    transform: scale(1.65);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dot,
+  .title,
+  .card {
+    transition:
+      transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+      color 0.35s ease,
+      background-color 0.35s ease,
+      border-color 0.35s ease,
+      box-shadow 0.35s ease,
+      visibility 0.4s;
+  }
+
+  .item:not([data-state="active"]):hover .dot {
+    transform: scale(0.92);
+    border-color: var(--primary);
+  }
+
+  .item:not([data-state="active"]):hover .title {
+    opacity: 0.8;
+    color: var(--primary);
+    transform: scale(0.92);
+  }
+
+  .item[data-state="active"] .dot::after {
+    animation: dotPulse 1.8s cubic-bezier(0.2, 0.7, 0.2, 1) infinite;
+  }
+
+  .item[data-state="active"] .lineFill {
+    animation: timelineProgress var(--step-ms, 2200ms) linear forwards;
+  }
+
+  .root[data-paused] .item[data-state="active"] .lineFill {
+    animation-play-state: paused;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item[data-state="active"] .lineFill {
+    transform: scaleX(1);
+  }
 }
 
 @media (max-width: 760px) {
-  .list {
-    grid-template-columns: 1fr;
-    gap: 28px;
-    padding-left: 34px;
+  .root {
+    --item-w: 128px;
   }
 
-  .list::before {
-    left: 8px;
-    right: auto;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    height: auto;
-  }
-
-  .dot {
-    position: absolute;
-    left: -34px;
-    top: 2px;
-  }
-
-  .title {
-    margin-top: 0;
+  .card {
+    padding: 18px 18px 20px;
   }
 }
+
+

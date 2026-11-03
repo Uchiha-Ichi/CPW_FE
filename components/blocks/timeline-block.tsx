@@ -1,13 +1,8 @@
-import styles from "./timeline-block.module.css";
 import { BlockHead } from "./shared/block-head";
+import { TimelineTrack, type TimelineItem } from "./timeline-track";
 import { list, str } from "@/lib/blocks/read";
 import { BLOCK_SECTION, BLOCK_WRAP } from "@/lib/blocks/rhythm";
 import type { BlockProps } from "./types";
-
-interface TimelineItem {
-  t: string;
-  d?: string;
-}
 
 export function TimelineBlock({ data }: BlockProps) {
   const title = str(data.title);
@@ -28,16 +23,9 @@ export function TimelineBlock({ data }: BlockProps) {
     <section className={BLOCK_SECTION}>
       <div className={BLOCK_WRAP}>
         <BlockHead title={title} titleClassName="max-w-[16em]" />
-        <ol className={styles.list} style={{ "--n": items.length } as React.CSSProperties}>
-          {items.map((item, i) => (
-            <li key={i} className={styles.item}>
-              <span aria-hidden="true" className={styles.dot} />
-              <h3 className={styles.title}>{item.t}</h3>
-              {item.d && <p className={styles.desc}>{item.d}</p>}
-            </li>
-          ))}
-        </ol>
+        <TimelineTrack items={items} />
       </div>
     </section>
   );
 }
+

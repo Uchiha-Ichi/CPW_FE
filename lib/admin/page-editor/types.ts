@@ -62,12 +62,6 @@ export interface BlockTypesResponse {
   maxBlocksPerPage: number;
 }
 
-// Chữ trong block luôn là {vi, en?}.
-export interface Localized {
-  vi: string;
-  en?: string;
-}
-
 export type BlockData = Record<string, unknown>;
 
 export interface EditorBlock {
@@ -87,9 +81,4 @@ export interface AdminPageView {
   pub: Snapshot | null;
   draft: Snapshot | null;
   working: Snapshot;
-}
-
-export interface UploadedImage {
-  url: string;
-  publicId: string;
 }

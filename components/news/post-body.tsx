@@ -7,7 +7,7 @@ import parse, {
 import { createElement, type ElementType } from "react";
 import { CloudinaryImage } from "@/components/blocks/shared/cloudinary-image";
 
-// Danh sách thẻ khớp bộ lọc của backend (cpw_be/src/posts/post-content.ts, ALLOWED_TAGS).
+// Danh sách thẻ khớp bộ lọc của backend (cpw_be/src/posts/helpers/post-content.ts, ALLOWED_TAGS).
 // FE vẫn tự lọc một lần nữa: không tin dữ liệu từ API tuyệt đối.
 const ALLOWED_TAGS = new Set([
   "p",

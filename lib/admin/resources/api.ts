@@ -1,7 +1,6 @@
-import { ApiError, friendlyMessages } from "@/lib/admin/api-error";
+import { friendlyMessages } from "@/lib/admin/api-error";
+import { createAdminRequest, JSON_HEADERS } from "@/lib/admin/request";
 
-const BASE = "/api/admin/proxy";
-const JSON_HEADERS = { "Content-Type": "application/json" };
 const APPLICATIONS = "applications";
 const CONTACTS = "contacts";
 
@@ -11,26 +10,7 @@ function resourceMessages(status: number, body: unknown): string[] {
   return friendlyMessages(status, body);
 }
 
-// Cùng khuôn với request() trong news/api.ts và site-settings/api.ts.
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  let res: Response;
-  try {
-    res = await fetch(`${BASE}${path}`, init);
-  } catch {
-    throw new ApiError(0, resourceMessages(0, null));
-  }
-  const text = await res.text();
-  let body: unknown = null;
-  if (text) {
-    try {
-      body = JSON.parse(text);
-    } catch {
-      body = text;
-    }
-  }
-  if (!res.ok) throw new ApiError(res.status, resourceMessages(res.status, body));
-  return body as T;
-}
+const request = createAdminRequest(resourceMessages);
 
 const enc = encodeURIComponent;
 

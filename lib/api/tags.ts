@@ -5,6 +5,7 @@ export const CACHE_TAGS = {
   jobs: "jobs",
   network: "network",
   products: "products",
+  siteSettings: "site-settings",
 } as const;
 
 export type CacheTag = (typeof CACHE_TAGS)[keyof typeof CACHE_TAGS];
@@ -25,6 +26,8 @@ export function tagsForAdminWrite(method: string, path: readonly string[]): Cach
       return [CACHE_TAGS.network];
     case "products":
       return [CACHE_TAGS.products];
+    case "site-settings":
+      return [CACHE_TAGS.siteSettings];
     case "pages":
       // Chỉ publish đổi nội dung public; draft và discard chỉ đổi bản nháp.
       return action === "publish" ? [CACHE_TAGS.pages] : [];

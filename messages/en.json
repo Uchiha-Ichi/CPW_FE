@@ -55,8 +55,6 @@
   },
   "Carousel": {
     "region": "Carousel",
-    "prev": "Previous card",
-    "next": "Next card",
     "hint": "Swipe sideways"
   },
   "FeaturedNews": {

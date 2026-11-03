@@ -58,20 +58,6 @@ export function removeAt<T>(list: readonly T[], index: number): T[] {
   return list.filter((_, i) => i !== index);
 }
 
-export function getIn(root: unknown, path: Path): unknown {
-  let current: unknown = root;
-  for (const key of path) {
-    if (typeof key === "number") {
-      if (!Array.isArray(current)) return undefined;
-      current = current[key];
-    } else {
-      if (!isRecord(current)) return undefined;
-      current = current[key];
-    }
-  }
-  return current;
-}
-
 // Ghi bất biến. value === undefined thì xóa khóa (chỉ áp dụng cho khóa chữ, không áp cho chỉ số mảng).
 export function setIn(root: unknown, path: Path, value: unknown): unknown {
   if (path.length === 0) return value;

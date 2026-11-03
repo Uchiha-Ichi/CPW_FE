@@ -82,15 +82,6 @@ export function routePath(
   return `M ${round(x1)} ${round(y1)} Q ${round(cx)} ${round(cy)} ${round(x2)} ${round(y2)}`;
 }
 
-// Mỗi nước còn lại nối với trụ sở (mặc định Việt Nam). Không có trụ sở thì không vẽ đường.
-export function routesFrom(pins: Pin[], hubCode = "vn"): { code: string; d: string }[] {
-  const hub = pins.find((p) => p.code === hubCode);
-  if (!hub) return [];
-  return pins
-    .filter((p) => p.code !== hubCode)
-    .map((p) => ({ code: p.code, d: routePath(hub, p) }));
-}
-
 export type RouteKind = "cross" | "reach" | "next-next" | "hub-next" | "hub-live";
 
 // Trụ sở: mặc định của networkRoutes, bản đồ dùng lại để tô chấm/cờ trụ sở.

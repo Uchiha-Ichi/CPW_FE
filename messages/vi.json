@@ -55,8 +55,6 @@
   },
   "Carousel": {
     "region": "Băng trượt",
-    "prev": "Thẻ trước",
-    "next": "Thẻ tiếp",
     "hint": "Lướt sang bên"
   },
   "FeaturedNews": {

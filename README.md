@@ -8,15 +8,16 @@ Next.js 16 (App Router), React 19, Tailwind 4, shadcn/ui. Đa ngôn ngữ `vi` v
 pnpm install
 pnpm dev        # http://localhost:3000
 pnpm build      # biên dịch và kiểm kiểu
-pnpm test       # vitest
 pnpm lint       # eslint (không tự sửa)
-pnpm gen:api-types   # sinh lib/api/schema.d.ts từ Swagger của backend đang chạy
 ```
+
+Không có test tự động: xác nhận thay đổi bằng `pnpm build` và kiểm tay trên trình duyệt.
 
 ## Biến môi trường
 
-- `NEXT_PUBLIC_API_URL`: địa chỉ API backend (mặc định `http://localhost:8000/api`).
-- `NEXT_PUBLIC_SITE_URL`: địa chỉ gốc của site, dùng cho canonical, hreflang, sitemap (mặc định `http://localhost:3000`).
+- `NEXT_PUBLIC_API_URL`: địa chỉ API backend, ví dụ `http://localhost:8000/api`. Bắt buộc, thiếu thì dừng.
+- `NEXT_PUBLIC_SITE_URL`: địa chỉ gốc của site, dùng cho canonical, hreflang, sitemap, ví dụ `http://localhost:3000`. Bắt buộc, thiếu thì dừng.
+- `FORWARDED_IP_SECRET` (tùy chọn, chỉ phía server): khoá chung với `cpw_be` (cùng tên biến) để backend đếm giới hạn tần suất theo IP thật của người dùng khi login và gửi form liên hệ.
 
 ## Cấu trúc
 

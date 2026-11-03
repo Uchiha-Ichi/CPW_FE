@@ -8,7 +8,8 @@ const eslintConfig = defineConfig([
   {
     rules: {
       "react/no-unescaped-entities": "off",
-      "no-console": "warn",
+      // console.warn/error là log lỗi có chủ đích (apiGet, form liên hệ, nộp hồ sơ); chỉ cảnh báo console.log còn sót.
+      "no-console": ["warn", { allow: ["warn", "error"] }],
     },
   },
   // Override default ignores of eslint-config-next.

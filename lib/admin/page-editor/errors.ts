@@ -4,7 +4,7 @@ const CONFLICT_FALLBACK =
   "Trang vừa được cập nhật ở nơi khác. Hãy tải lại rồi sửa tiếp.";
 
 // Lấy câu lỗi của server nguyên văn (backend đã viết tiếng Việt, có "Khối 2 (Đầu trang): ...").
-// Không cắt tiền tố như post-errors vì sẽ làm hỏng câu.
+// Không cắt tiền tố như friendlyMessages (lib/admin/api-error.ts) vì sẽ làm hỏng câu.
 function serverMessages(body: unknown): string[] {
   if (body && typeof body === "object" && "message" in body) {
     const message = (body as { message: unknown }).message;

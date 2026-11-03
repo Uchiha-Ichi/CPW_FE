@@ -6,5 +6,5 @@ export default createMiddleware(routing);
 
 export const config = {
   // Bỏ qua /admin, /api, /_next, /icon, /apple-icon và mọi đường dẫn có đuôi file (có dấu chấm).
-  matcher: ["/((?!admin|api|trpc|_next|_vercel|icon|apple-icon|.*\\..*).*)"],
+  matcher: ["/((?!admin|api|_next|_vercel|icon|apple-icon|.*\\..*).*)"],
 };

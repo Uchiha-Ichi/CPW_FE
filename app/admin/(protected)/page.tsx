@@ -4,6 +4,7 @@ import { ADMIN_NAV_ITEMS } from "@/components/admin/shell/admin-nav-items";
 import { AdminPage } from "@/components/admin/ui/admin-page";
 import { AdminPageHeader } from "@/components/admin/ui/admin-page-header";
 import { AdminPanel } from "@/components/admin/ui/admin-panel";
+import { ADMIN_TOKEN_COOKIE } from "@/lib/admin/auth/cookies";
 import { API_BASE } from "@/lib/api/config";
 
 // href và icon lấy từ ADMIN_NAV_ITEMS theo đường dẫn trang, để thẻ trỏ đúng mục menu tương ứng.
@@ -34,7 +35,7 @@ async function countFor(path: string, token: string): Promise<number> {
 }
 
 export default async function AdminOverviewPage() {
-  const token = (await cookies()).get("admin_token")!.value;
+  const token = (await cookies()).get(ADMIN_TOKEN_COOKIE)!.value;
   const counts = await Promise.all(
     COLLECTIONS.map((c) => countFor(c.path, token))
   );

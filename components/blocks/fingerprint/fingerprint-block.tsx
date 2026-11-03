@@ -1,5 +1,5 @@
 import { str } from "@/lib/blocks/read";
-import { FingerprintCanvas } from "./fingerprint-canvas";
+import { RingCanvas } from "./ring-canvas";
 import type { BlockProps } from "../types";
 
 export function FingerprintBlock({ data }: BlockProps) {
@@ -7,9 +7,5 @@ export function FingerprintBlock({ data }: BlockProps) {
   const line2 = str(data.line2);
   if (!line1 || !line2) return null;
 
-  return (
-    <section className="overflow-hidden border-b border-border">
-      <FingerprintCanvas line1={line1} line2={line2} />
-    </section>
-  );
+  return <RingCanvas line1={line1} line2={line2} />;
 }

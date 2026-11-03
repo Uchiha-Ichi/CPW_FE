@@ -1,57 +1,142 @@
-.stage {
-  position: relative;
-  height: clamp(480px, 52vw, 700px);
+/* Khối công nghệ (fingerprint): hai câu bên trái, chiếc nhẫn three.js bên phải (mockup Option 1, cuối trang Về chúng tôi).
+   Nhịp chữ: câu 1 hiện khi nhẫn bay vào (s1), câu 2 hiện khi sóng sáng quét ra nhẫn bóng (s2), bóng đổ dưới nhẫn (s3).
+   Nền navy giống khối "4 năng lực độc quyền" (capability-grid) ở ngay dưới, ở cả hai theme: nhẫn bạch kim chìm đi trên nền sáng. */
+.sec {
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--vcb-navy-2), var(--vcb-navy));
+  color: #fff;
+  border-bottom: 0;
 }
 
-.canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.txt {
-  pointer-events: none;
-  display: flex;
-  flex-direction: column;
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(20px, 4vw, 56px);
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  text-align: center;
-  padding: 0 16px;
+}
+
+.h {
   margin: 0;
-  position: absolute;
-  inset: 0;
-  z-index: 1;
   font-family: var(--font-display, var(--font-heading, sans-serif));
   font-weight: 800;
-  font-size: clamp(28px, 5.2vw, 72px);
-  line-height: 1.08;
-  /* D16: letter-spacing ban đầu -0.035em */
+  font-size: clamp(32px, 4.4vw, 60px);
+  line-height: 1.1;
+  /* theo mockup, giống bản vân tay cũ (D16) */
   letter-spacing: -0.035em;
-  color: var(--foreground);
-  text-shadow: 0 0 10px var(--background), 0 0 26px var(--background);
-}
-
-:global(html[data-theme="light"]) .txt {
-  color: #0F172A;
+  color: #fff;
+  text-wrap: balance;
 }
 
 .l1,
 .l2 {
   display: block;
-  font-size: inherit;
-  font-weight: inherit;
-  line-height: inherit;
-  white-space: nowrap;
-  will-change: transform;
 }
 
+/* Xanh thương hiệu #0066FF quá tối trên nền navy (tương phản ~2,5:1 ở đáy), dùng xanh nhạt cùng tông với đường lưới của cảnh. */
 .l2 {
-  color: #A3AEC0;
+  color: #58B7FF;
 }
 
-:global(html[data-theme="light"]) .l2 {
-  color: #566780;
+.stage {
+  position: relative;
+  aspect-ratio: 4 / 3;
+}
+
+.cv {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.shadow {
+  position: absolute;
+  left: 24%;
+  right: 24%;
+  bottom: 6%;
+  height: 8%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+  filter: blur(5px);
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
+
+/* Thấu kính: chỉ lộ bản vẽ lưới bên trong vòng tròn quanh con trỏ. */
+.lens {
+  position: absolute;
+  inset: 0;
+  clip-path: circle(0px at 50% 50%);
+  pointer-events: none;
+}
+
+.lgrid {
+  position: absolute;
+  inset: 0;
+  background-color: #0B1A30;
+  background-image:
+    linear-gradient(rgba(88, 183, 255, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(88, 183, 255, 0.16) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+.pointer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 102, 255, 0.65);
+  box-shadow:
+    0 12px 30px rgba(0, 102, 255, 0.2),
+    inset 0 0 0 5px rgba(255, 255, 255, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+
+.stage.lensOn {
+  cursor: none;
+}
+
+.stage.lensOn .pointer {
+  opacity: 1;
+}
+
+.sec.s3 .shadow {
+  opacity: 1;
+}
+
+/* Chỉ ẩn chữ khi cảnh đã dựng xong (JS đặt data-armed) và người dùng không tắt chuyển động. */
+@media (prefers-reduced-motion: no-preference) {
+  .sec[data-armed] .h span {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+      opacity 0.8s ease,
+      transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .sec[data-armed].s1 .l1,
+  .sec[data-armed].s2 .l2 {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Không tạo được WebGL: bỏ khung nhẫn, chỉ còn chữ. */
+.sec[data-gl="off"] .stage {
+  display: none;
+}
+
+.sec[data-gl="off"] .grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (max-width: 860px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

@@ -3,10 +3,17 @@
 import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { AdminButton } from "@/components/admin/ui/admin-button";
+import { AdminNotice } from "@/components/admin/ui/admin-notice";
 import { AdminPage } from "@/components/admin/ui/admin-page";
 import { AdminPanel } from "@/components/admin/ui/admin-panel";
 import { AdminSelect } from "@/components/admin/ui/admin-select";
 import { AdminTable } from "@/components/admin/ui/admin-table";
+import { errorMessages } from "@/lib/admin/api-error";
+import {
+  deleteApplication,
+  listApplications,
+  updateApplicationStatus,
+} from "@/lib/admin/resources/api";
 import { cn } from "@/lib/utils";
 
 type Application = {
@@ -46,22 +53,29 @@ export function ApplicationsPanel() {
   const [items, setItems] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [openPosition, setOpenPosition] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   // Tải lại sau khi xóa.
   async function load() {
     setLoading(true);
-    const res = await fetch("/api/admin/proxy/applications");
-    if (res.ok) setItems(await res.json());
+    try {
+      setItems(await listApplications<Application>());
+      setError(null);
+    } catch (err) {
+      setError(errorMessages(err).join(" "));
+    }
     setLoading(false);
   }
 
   // Lần tải đầu: loading đã là true từ useState nên không gọi setLoading(true); setState nằm trong callback của promise.
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/admin/proxy/applications")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data: Application[] | null) => {
-        if (!cancelled && data) setItems(data);
+    listApplications<Application>()
+      .then((data) => {
+        if (!cancelled) setItems(data);
+      })
+      .catch((err: unknown) => {
+        if (!cancelled) setError(errorMessages(err).join(" "));
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -73,17 +87,32 @@ export function ApplicationsPanel() {
 
   async function updateStatus(id: string, status: string) {
     // Cập nhật lạc quan trước, gọi API sau — đổi trạng thái không cần chờ tải lại cả danh sách.
+    const previous = items.find((it) => it._id === id)?.status;
     setItems((prev) => prev.map((it) => (it._id === id ? { ...it, status } : it)));
-    await fetch(`/api/admin/proxy/applications/${id}/status`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
+    try {
+      await updateApplicationStatus(id, status);
+      setError(null);
+    } catch (err) {
+      // Hoàn tác, trừ khi admin đã chọn trạng thái khác trong lúc chờ.
+      setItems((prev) =>
+        prev.map((it) =>
+          it._id === id && it.status === status && previous !== undefined
+            ? { ...it, status: previous }
+            : it,
+        ),
+      );
+      setError(errorMessages(err).join(" "));
+    }
   }
 
   async function remove(item: Application) {
     if (!confirm(`Xóa hồ sơ của "${item.name}"?`)) return;
-    await fetch(`/api/admin/proxy/applications/${item._id}`, { method: "DELETE" });
+    try {
+      await deleteApplication(item._id);
+    } catch (err) {
+      setError(errorMessages(err).join(" "));
+      return;
+    }
     load();
   }
 
@@ -101,6 +130,12 @@ export function ApplicationsPanel() {
   return (
     <AdminPage className="pt-0">
       <h2 className="text-xl">Hồ sơ ứng tuyển</h2>
+
+      {error && (
+        <AdminNotice tone="danger" className="mt-4">
+          {error}
+        </AdminNotice>
+      )}
 
       {groups.length === 0 ? (
         <p className="mt-4 text-sm text-muted-foreground">Chưa có hồ sơ ứng tuyển nào.</p>

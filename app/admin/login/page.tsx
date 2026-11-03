@@ -8,6 +8,7 @@ import { AdminInput } from "@/components/admin/ui/admin-input";
 import { AdminLogo } from "@/components/admin/ui/admin-logo";
 import { AdminNotice } from "@/components/admin/ui/admin-notice";
 import { Label } from "@/components/ui/label";
+import { login } from "@/lib/admin/auth/api";
 
 const ERROR_ID = "login-error";
 
@@ -23,21 +24,10 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const res = await fetch("/api/admin/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    const message = await login(email, password);
     setLoading(false);
-    if (!res.ok) {
-      // 429: backend chặn tạm vì đăng nhập quá nhiều lần; 5xx/503: không tới được backend.
-      setError(
-        res.status === 429
-          ? "Đăng nhập quá nhiều lần. Vui lòng thử lại sau ít phút."
-          : res.status >= 500
-            ? "Không kết nối được máy chủ. Vui lòng thử lại sau ít phút."
-            : "Email hoặc mật khẩu không đúng",
-      );
+    if (message) {
+      setError(message);
       return;
     }
     router.push("/admin");

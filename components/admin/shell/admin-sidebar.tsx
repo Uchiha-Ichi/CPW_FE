@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { ExternalLink, LogOut } from "lucide-react";
 import { ADMIN_NAV_ITEMS, isNavActive } from "@/components/admin/shell/admin-nav-items";
 import { AdminLogo } from "@/components/admin/ui/admin-logo";
+import { logout } from "@/lib/admin/auth/api";
 import { cn } from "@/lib/utils";
 
 const ITEM =
@@ -45,8 +46,8 @@ export function AdminNav({ onNavigate }: { onNavigate?: () => void }) {
 export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
   const router = useRouter();
 
-  async function logout() {
-    await fetch("/api/admin/logout", { method: "POST" });
+  async function onLogout() {
+    await logout();
     router.push("/admin/login");
     router.refresh();
   }
@@ -67,7 +68,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
           <ExternalLink className="size-[18px] shrink-0" aria-hidden />
           Xem website
         </a>
-        <button type="button" onClick={logout} className={cn(ITEM, ITEM_IDLE)}>
+        <button type="button" onClick={onLogout} className={cn(ITEM, ITEM_IDLE)}>
           <LogOut className="size-[18px] shrink-0" aria-hidden />
           Đăng xuất
         </button>

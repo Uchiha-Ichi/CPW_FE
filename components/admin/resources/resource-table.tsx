@@ -16,6 +16,13 @@ import { MapPositionPicker } from "@/components/admin/resources/map-position-pic
 import { CountryCombobox } from "@/components/admin/resources/country-combobox";
 import { ImageField } from "@/components/admin/page-editor/image-field";
 import { imageHintFor } from "@/lib/blocks/image-specs";
+import { errorMessages } from "@/lib/admin/api-error";
+import {
+  createResource,
+  deleteResource,
+  listResource,
+  updateResource,
+} from "@/lib/admin/resources/api";
 import type { ResourceConfig, ResourceField } from "@/lib/admin/resources/config";
 
 type Item = Record<string, unknown> & { _id: string };
@@ -50,14 +57,20 @@ export function AdminResourceTable({ config }: { config: ResourceConfig }) {
   const [formOpen, setFormOpen] = useState(false);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
+  // Lỗi tải danh sách hoặc xóa (lỗi của form lưu nằm trong `error`, hiện trong hộp thoại).
+  const [listError, setListError] = useState<string | null>(null);
   const uid = useId();
   const titleId = `${uid}-title`;
 
   // Tải lại sau khi lưu/xóa.
   async function load() {
     setLoading(true);
-    const res = await fetch(`/api/admin/proxy/${config.path}`);
-    if (res.ok) setItems(await res.json());
+    try {
+      setItems(await listResource<Item>(config.path));
+      setListError(null);
+    } catch (err) {
+      setListError(errorMessages(err).join(" "));
+    }
     setLoading(false);
   }
 
@@ -65,10 +78,12 @@ export function AdminResourceTable({ config }: { config: ResourceConfig }) {
   // (mỗi bảng là một route riêng nên config.path không đổi trong một lần mount).
   useEffect(() => {
     let cancelled = false;
-    fetch(`/api/admin/proxy/${config.path}`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data: Item[] | null) => {
-        if (!cancelled && data) setItems(data);
+    listResource<Item>(config.path)
+      .then((data) => {
+        if (!cancelled) setItems(data);
+      })
+      .catch((err: unknown) => {
+        if (!cancelled) setListError(errorMessages(err).join(" "));
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -116,18 +131,12 @@ export function AdminResourceTable({ config }: { config: ResourceConfig }) {
       setError(`Cần nhập ${missing.label.toLowerCase()}`);
       return;
     }
-    const method = editing ? "PATCH" : "POST";
-    const url = editing
-      ? `/api/admin/proxy/${config.path}/${editing._id}`
-      : `/api/admin/proxy/${config.path}`;
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(toPayload(config.fields, formData)),
-    });
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({ message: "Có lỗi xảy ra" }));
-      setError(body.message ?? "Có lỗi xảy ra");
+    const payload = toPayload(config.fields, formData);
+    try {
+      if (editing) await updateResource(config.path, editing._id, payload);
+      else await createResource(config.path, payload);
+    } catch (err) {
+      setError(errorMessages(err).join(" "));
       return;
     }
     setFormOpen(false);
@@ -136,9 +145,12 @@ export function AdminResourceTable({ config }: { config: ResourceConfig }) {
 
   async function remove(item: Item) {
     if (!confirm(`Xóa "${item[config.fields[0].key]}"?`)) return;
-    await fetch(`/api/admin/proxy/${config.path}/${item._id}`, {
-      method: "DELETE",
-    });
+    try {
+      await deleteResource(config.path, item._id);
+    } catch (err) {
+      setListError(errorMessages(err).join(" "));
+      return;
+    }
     load();
   }
 
@@ -156,6 +168,12 @@ export function AdminResourceTable({ config }: { config: ResourceConfig }) {
         title={config.label}
         actions={<AdminButton onClick={openAdd}>Thêm {config.singular}</AdminButton>}
       />
+
+      {listError && (
+        <AdminNotice tone="danger" className="mb-4">
+          {listError}
+        </AdminNotice>
+      )}
 
       <AdminTable>
         <thead>

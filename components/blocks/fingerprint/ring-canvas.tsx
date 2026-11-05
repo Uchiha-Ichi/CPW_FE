@@ -10,8 +10,14 @@ interface RingCanvasProps {
   line2: string;
 }
 
-// Chữ hai câu bên trái, chiếc nhẫn dựng bằng three.js bên phải. Chưa có JS, hoặc trình duyệt không có WebGL:
-// chỉ còn hai câu chữ (data-gl="off" thu gọn khung nhẫn). `three` chỉ được nạp khi section sắp lọt vào khung nhìn.
+// Mô hình nhẫn (thay nhẫn khác = thay file này, xem ring-model.ts).
+const RING_URL = "/models/ring.glb";
+// Ảnh môi trường studio (HDR, CC0 của Poly Haven) mà kim loại và đá phản chiếu.
+const STUDIO_URL = "/models/studio.hdr";
+
+// Chữ hai câu bên trái, chiếc nhẫn dựng bằng three.js bên phải. Chưa có JS, trình duyệt không có WebGL, hoặc không tải được
+// file nhẫn: chỉ còn hai câu chữ (data-gl="off" thu gọn khung nhẫn). `three` và file nhẫn chỉ được tải khi section sắp lọt
+// vào khung nhìn.
 export function RingCanvas({ line1, line2 }: RingCanvasProps) {
   const secRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -35,20 +41,47 @@ export function RingCanvas({ line1, line2 }: RingCanvasProps) {
     let io: IntersectionObserver | null = null;
 
     const start = async () => {
-      const [T3, { mountRingScene }] = await Promise.all([import("three"), import("./ring-scene")]);
-      if (cancelled) return;
-      const cleanup = mountRingScene(
-        T3,
-        { sec, stage, cv, lcv, lens, pointer },
-        { s1: styles.s1, s2: styles.s2, s3: styles.s3, lens: styles.lensOn },
-        reduce,
-      );
-      if (!cleanup) {
-        sec.dataset.gl = "off";
-        return;
+      try {
+        const [T3, { mountRingScene }, { loadRingParts }, data, studio] = await Promise.all([
+          import("three"),
+          import("./ring-scene"),
+          import("./ring-model"),
+          fetch(RING_URL).then((r) => {
+            if (!r.ok) throw new Error(`${RING_URL}: HTTP ${r.status}`);
+            return r.arrayBuffer();
+          }),
+          import("three/addons/loaders/HDRLoader.js").then(({ HDRLoader }) => new HDRLoader().loadAsync(STUDIO_URL)),
+        ]);
+        if (cancelled) {
+          studio.dispose();
+          return;
+        }
+        const rp = await loadRingParts(T3, data);
+        if (cancelled) {
+          rp.dispose();
+          studio.dispose();
+          return;
+        }
+        const cleanup = mountRingScene(
+          T3,
+          rp,
+          studio,
+          { sec, stage, cv, lcv, lens, pointer },
+          { s1: styles.s1, s2: styles.s2, s3: styles.s3, lens: styles.lensOn },
+          reduce,
+        );
+        if (!cleanup) {
+          rp.dispose();
+          studio.dispose();
+          sec.dataset.gl = "off";
+          return;
+        }
+        dispose = cleanup;
+        if (!reduce) sec.dataset.armed = "true"; // từ đây chữ ẩn đi, chờ nhịp của cảnh mới hiện
+      } catch (e) {
+        console.warn("Không tải được mô hình nhẫn", e);
+        if (!cancelled) sec.dataset.gl = "off";
       }
-      dispose = cleanup;
-      if (!reduce) sec.dataset.armed = "true"; // từ đây chữ ẩn đi, chờ nhịp của cảnh mới hiện
     };
 
     if ("IntersectionObserver" in window) {

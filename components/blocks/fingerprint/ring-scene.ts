@@ -1,13 +1,12 @@
 import type * as THREE from "three";
 import {
   createRingMaterials,
-  createRingParts,
   createSolid,
   createWire,
+  type RingParts,
 } from "./ring-model";
 
 type Three = typeof THREE;
-type PanelFn = (w: number, h: number, col: number, k: number, x: number, y: number, z: number) => void;
 
 export interface RingEls {
   sec: HTMLElement;
@@ -36,9 +35,12 @@ const smooth = (x: number) => {
 // Khối luôn có nền navy (cả hai theme), đường lưới luôn dùng xanh nhạt cho đủ tương phản.
 const wireHex = () => 0x58b7ff;
 
-// Dựng cảnh nhẫn vào hai canvas có sẵn. Trả về hàm dọn dẹp, hoặc null nếu trình duyệt không tạo được WebGL.
+// Dựng cảnh nhẫn (rp: hình nhẫn đã đọc từ file; studio: ảnh môi trường HDR dạng equirect) vào hai canvas có sẵn. Trả về hàm
+// dọn dẹp (dọn luôn rp), hoặc null nếu trình duyệt không tạo được WebGL (khi đó rp và studio vẫn thuộc về nơi gọi).
 export function mountRingScene(
   T3: Three,
+  rp: RingParts,
+  studio: THREE.Texture,
   els: RingEls,
   cls: RingClasses,
   reduce: boolean,
@@ -61,8 +63,8 @@ export function mountRingScene(
   renderers.forEach((r) => {
     r.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
     r.localClippingEnabled = true;
-    r.toneMapping = T3.ACESFilmicToneMapping;
-    r.toneMappingExposure = 0.9;
+    r.toneMapping = T3.ACESFilmicToneMapping; // như WebGi khi dựng file nhẫn (Tonemap: ACES, exposure 1)
+    r.toneMappingExposure = 1;
   });
 
   const TAU = Math.PI * 2;
@@ -72,91 +74,15 @@ export function mountRingScene(
   cam.position.set(0, 0.9, 8.6);
   cam.lookAt(0, 0.6, 0);
 
-  // Môi trường phản chiếu. Kim loại: phòng studio sáng, mềm như ảnh dựng CAD trang sức: vách chuyển dần từ sáng xuống xám,
-  // vài softbox lớn cường độ thấp (không có điểm chói gắt) và một tấm chắn xám để thân nhẫn có khối; bạc chuyển sắc mềm, không đen gắt.
-  // Đá: nền tối rải nhiều đèn chấm kích cỡ khác nhau, để từng mặt cắt phẳng hoặc chói trắng hoặc tối hẳn (đó là thứ làm đá "lấp lánh").
+  // Môi trường phản chiếu: ảnh HDR chụp studio thật (studio, dạng equirect), như WebGi dùng ảnh HDR studio khi dựng file nhẫn.
+  // Kim loại lấy bản đã lọc theo độ nhám (PMREM); đá dò tia cần lấy mẫu sắc nét theo hướng tia thoát nên dùng bản cube có mipmap.
+  studio.generateMipmaps = true; // fromEquirectangularTexture chép cài đặt mipmap của ảnh nguồn sang cube
+  studio.minFilter = T3.LinearMipmapLinearFilter;
   const pm = new T3.PMREMGenerator(r1);
-  // sky (tuỳ chọn): cường độ [đỉnh, chân trời, sàn] của phòng, nhân với màu base.
-  const makeEnv = (base: number, fill: (panel: PanelFn, es: THREE.Scene) => void, sky?: [number, number, number]) => {
-    const es = new T3.Scene();
-    const room = new T3.BoxGeometry(30, 30, 30, 1, 12, 1);
-    if (sky) {
-      const pos = room.getAttribute("position");
-      const tint = new T3.Color(base);
-      const col = new Float32Array(pos.count * 3);
-      for (let i = 0; i < pos.count; i++) {
-        const h = pos.getY(i) / 15;
-        const k = h >= 0 ? sky[1] + (sky[0] - sky[1]) * h : sky[1] + (sky[2] - sky[1]) * -h;
-        col.set([tint.r * k, tint.g * k, tint.b * k], i * 3);
-      }
-      room.setAttribute("color", new T3.BufferAttribute(col, 3));
-    }
-    es.add(
-      new T3.Mesh(room, new T3.MeshBasicMaterial(sky ? { vertexColors: true, side: T3.BackSide } : { color: base, side: T3.BackSide })),
-    );
-    fill((w, h, col, k, x, y, z) => {
-      const m = new T3.Mesh(
-        new T3.PlaneGeometry(w, h),
-        new T3.MeshBasicMaterial({ color: new T3.Color(col).multiplyScalar(k), side: T3.DoubleSide }),
-      );
-      m.position.set(x, y, z);
-      m.lookAt(0, 0, 0);
-      es.add(m);
-    }, es);
-    const rt = pm.fromScene(es, 0.02);
-    es.traverse((o) => {
-      if (o instanceof T3.Mesh) {
-        o.geometry.dispose();
-        (o.material as THREE.Material).dispose();
-      }
-    });
-    return rt;
-  };
-  // Toàn bộ màu môi trường kim loại để xám trung tính: ảnh mẫu đo được gần như không ngả màu (bão hoà ~0,5%).
-  const envRT = makeEnv(
-    0xeeeeef,
-    (panel) => {
-      panel(26, 12, 0xffffff, 1.8, 0, 12, 6); // softbox trần lớn, mềm
-      panel(10, 22, 0xffffff, 1.5, -13, 2, 6); // softbox trái
-      panel(10, 20, 0xf4f4f6, 1.2, 13, 0, -2); // softbox phải
-      panel(24, 14, 0xe6e6e8, 0.9, 0, 1, 14); // đèn phụ phía trước
-      panel(14, 4, 0xc4cbdc, 0.6, 0, -9, 8); // vệt hơi lạnh phía dưới
-      panel(4, 14, 0xffffff, 1.7, 8, 3, 12); // một dải sáng hẹp: nét highlight sắc duy nhất
-      panel(24, 6, 0xececee, 1, 0, -6, -12);
-      panel(5, 14, 0x20242e, 1, -6, 0, 12); // một tấm chắn xám đậm: dải tối mềm cho thân nhẫn có khối
-    },
-    [1.3, 0.55, 0.3],
-  );
-  // Ảnh mẫu đo được: viên đá không có mặt nào tối (0% dưới 90/255), ~55% mặt sáng vừa, ~32% rất sáng, chỉ ~10% điểm có màu.
-  // Nên nền là xám sáng trung tính; mặt cắt đổi giữa xám sáng và chói trắng khi hướng phản chiếu rơi vào đèn chấm.
-  const stoneEnvRT = makeEnv(0x9a9aa2, (panel, es) => {
-    es.add(
-      new T3.Mesh(
-        new T3.SphereGeometry(13.5, 32, 12, 0, TAU, 0, 1.2),
-        new T3.MeshBasicMaterial({ color: new T3.Color(0xf0f0f4).multiplyScalar(0.5), side: T3.BackSide }),
-      ),
-    );
-    let seed = 7;
-    const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-    const tints = [0xffffff, 0xffffff, 0xffffff, 0xffffff, 0xffffff, 0xdbe8ff, 0xffe9c8, 0x9fc0ff, 0xffc99a];
-    for (let i = 0; i < 64; i++) {
-      const th = rnd() * TAU;
-      const ph = Math.acos(2 * rnd() - 1);
-      const sz = 1.2 + rnd() * 2.6;
-      panel(
-        sz,
-        sz * (0.5 + rnd()),
-        tints[Math.floor(rnd() * tints.length)],
-        2.5 + rnd() * 3.5,
-        12 * Math.sin(ph) * Math.cos(th),
-        12 * Math.cos(ph),
-        12 * Math.sin(ph) * Math.sin(th),
-      );
-    }
-    // Mặt bàn phản chiếu trần: ngả lam nhạt như ảnh mẫu (tâm mặt bàn đo được ~#CADBF1, vài điểm lam đậm ~#5796D9)
-    panel(18, 7, 0x9dbcff, 3.5, 0, 12, 5);
-  });
+  const envRT = pm.fromEquirectangular(studio);
   pm.dispose();
+  const gemRT = new T3.WebGLCubeRenderTarget(512).fromEquirectangularTexture(r1, studio);
+  studio.dispose();
 
   scene.add(new T3.AmbientLight(0xffffff, 0.25));
   // Đèn rọi trên kim loại bóng chỉ tạo một điểm sáng gắt (cảm giác "đèn xoi vào"); ánh sáng chính đã có từ môi trường, nên để rất nhẹ.
@@ -171,9 +97,9 @@ export function mountRingScene(
   const pSolid = new T3.Plane(new T3.Vector3(-1, 0, 0), -3);
   const pWire = new T3.Plane(new T3.Vector3(1, 0, 0), 3);
 
-  const rp = createRingParts(T3);
-  const mats = createRingMaterials(T3, envRT.texture, stoneEnvRT.texture);
-  [mats.metal, mats.pave, mats.stoneBack, mats.stoneFront].forEach((m) => (m.clippingPlanes = [pSolid]));
+  const mats = createRingMaterials(T3, rp, envRT.texture, gemRT.texture);
+  mats.all.forEach((m) => (m.clippingPlanes = [pSolid]));
+  const spin = new T3.Matrix4(); // xoay môi trường quanh đá, xem update()
 
   const grp = new T3.Group();
   scene.add(grp);
@@ -359,9 +285,8 @@ export function mountRingScene(
     });
 
     // Ánh sáng quanh đá quay chậm: mỗi mặt cắt liên tục chuyển giữa chói và tối, như kim cương dưới đèn.
-    mats.stoneBack.envMapRotation.y = t * 0.45;
-    mats.stoneFront.envMapRotation.y = t * 0.45;
-    mats.pave.envMapRotation.y = -t * 0.6 + 1.7;
+    spin.makeRotationY(t * 0.45);
+    mats.gems.forEach((m) => m.uniforms.envRotation.value.setFromMatrix4(spin));
 
     lensGrp.position.copy(grp.position);
     lensGrp.rotation.copy(grp.rotation);
@@ -464,7 +389,8 @@ export function mountRingScene(
     ro.disconnect();
     themeObs.disconnect();
     rp.dispose();
-    [mats.metal, mats.pave, mats.stoneBack, mats.stoneFront, wireMat, lensMat, lensFineMat, streakMat].forEach((m) => m.dispose());
+    mats.dispose();
+    [wireMat, lensMat, lensFineMat, streakMat].forEach((m) => m.dispose());
     glints.forEach(({ s }) => (s.material as THREE.SpriteMaterial).dispose());
     [glow, glowLine].forEach((m) => {
       m.geometry.dispose();
@@ -475,7 +401,7 @@ export function mountRingScene(
     glowTex.dispose();
     lineTex.dispose();
     envRT.dispose();
-    stoneEnvRT.dispose();
+    gemRT.dispose();
     renderers.forEach((r) => {
       r.dispose();
       r.forceContextLoss();

@@ -19,6 +19,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Bộ giải Draco nén sẵn của Google (chép từ three/examples), không phải code của dự án.
+    "public/draco/**",
   ]),
 ]);
 

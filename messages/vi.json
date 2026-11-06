@@ -172,7 +172,7 @@
         "url": "Đường dẫn không hợp lệ",
         "fileRequired": "Vui lòng đính kèm CV",
         "fileType": "Chỉ nhận tệp PDF hoặc Word (doc, docx)",
-        "fileTooLarge": "Tệp CV vượt quá 10MB",
+        "fileTooLarge": "Tệp CV vượt quá 4MB",
         "consent": "Bạn cần đồng ý chia sẻ thông tin cá nhân để nộp hồ sơ"
       },
       "toast": {

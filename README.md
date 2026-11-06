@@ -15,9 +15,9 @@ Không có test tự động: xác nhận thay đổi bằng `pnpm build` và ki
 
 ## Biến môi trường
 
-- `NEXT_PUBLIC_API_URL`: địa chỉ API backend, ví dụ `http://localhost:8000/api`. Bắt buộc, thiếu thì dừng.
+- `API_URL` (chỉ phía server): địa chỉ API backend, ví dụ `http://localhost:8000/api`. Bắt buộc, thiếu thì dừng. Không có tiền tố `NEXT_PUBLIC_` nên không lộ ra trình duyệt: trình duyệt không gọi thẳng backend.
 - `NEXT_PUBLIC_SITE_URL`: địa chỉ gốc của site, dùng cho canonical, hreflang, sitemap, ví dụ `http://localhost:3000`. Bắt buộc, thiếu thì dừng.
-- `FORWARDED_IP_SECRET` (tùy chọn, chỉ phía server): khoá chung với `cpw_be` (cùng tên biến) để backend đếm giới hạn tần suất theo IP thật của người dùng khi login và gửi form liên hệ.
+- `FORWARDED_IP_SECRET` (tùy chọn, chỉ phía server): khoá chung với `cpw_be` (cùng tên biến) để backend đếm giới hạn tần suất theo IP thật của người dùng khi login, gửi form liên hệ và nộp hồ sơ.
 
 ## Cấu trúc
 

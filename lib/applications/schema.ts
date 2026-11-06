@@ -4,8 +4,9 @@ import { z } from "zod";
 export const POSITION_OTHER = "Khác";
 
 export const MAX_NOTE_LENGTH = 3000;
-// Khớp APP_CONSTANTS.MAX_FILE_SIZE và ALLOWED_DOCUMENT_MIME_TYPES ở backend (cpw_be).
-const MAX_CV_SIZE = 10 * 1024 * 1024;
+// Hồ sơ đi qua server Next (app/api/applications/route.ts) mà Vercel chặn body trên 4.5 MB, nên CV tối đa 4 MB.
+// Loại file khớp ALLOWED_DOCUMENT_MIME_TYPES ở backend (cpw_be).
+const MAX_CV_SIZE = 4 * 1024 * 1024;
 const ACCEPTED_CV_TYPES = [
   "application/pdf",
   "application/msword",

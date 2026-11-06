@@ -172,7 +172,7 @@
         "url": "Invalid link",
         "fileRequired": "Please attach your CV",
         "fileType": "Only PDF or Word files (doc, docx) are accepted",
-        "fileTooLarge": "The CV file exceeds 10MB",
+        "fileTooLarge": "The CV file exceeds 4MB",
         "consent": "You need to agree to share your personal information to apply"
       },
       "toast": {

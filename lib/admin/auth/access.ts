@@ -1,4 +1,4 @@
-import { API_BASE } from "@/lib/api/config";
+import { adminFetch } from "./client";
 
 export type AdminAccess =
   | { status: "admin" }
@@ -9,15 +9,15 @@ export type AdminAccess =
 // Giá trị của ROLE.ADMIN ở backend (cpw_be/src/common/enum.ts).
 const ADMIN_ROLE = "admin";
 
-// Hỏi backend người đang giữ token là ai. Không bao giờ ném lỗi; mọi trường hợp không chắc
-// chắn trả "unavailable" (đóng), không bao giờ trả "admin".
-export async function getAdminAccess(token: string): Promise<AdminAccess> {
+// Chạy trên trình duyệt: hỏi backend người đang đăng nhập là ai (cookie phiên tự gửi kèm, hết hạn thì
+// adminFetch tự gia hạn một lần). Không bao giờ ném lỗi; mọi trường hợp không chắc chắn trả "unavailable"
+// (đóng), không bao giờ trả "admin".
+export async function getAdminAccess(): Promise<AdminAccess> {
   try {
-    const res = await fetch(`${API_BASE}/auth/profile`, {
-      headers: { Authorization: `Bearer ${token}` },
+    const res = await adminFetch("/auth/profile", {
       cache: "no-store",
-      // Backend treo thì sau 5 giây cho kết quả "unavailable" (lỗi abort rơi vào catch bên dưới).
-      signal: AbortSignal.timeout(5000),
+      // Backend treo thì sau 10 giây cho kết quả "unavailable" (lỗi abort rơi vào catch bên dưới).
+      signal: AbortSignal.timeout(10_000),
     });
     if (res.status === 401) return { status: "unauthenticated" };
     if (res.status === 403) return { status: "forbidden" };

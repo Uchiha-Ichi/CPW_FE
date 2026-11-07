@@ -15,13 +15,14 @@ Không có test tự động: xác nhận thay đổi bằng `pnpm build` và ki
 
 ## Biến môi trường
 
-- `API_URL` (chỉ phía server): địa chỉ API backend, ví dụ `http://localhost:8000/api`. Bắt buộc, thiếu thì dừng. Không có tiền tố `NEXT_PUBLIC_` nên không lộ ra trình duyệt: trình duyệt không gọi thẳng backend.
+- `API_URL` (chỉ phía server): địa chỉ API backend, ví dụ `http://localhost:8000/api`. Bắt buộc, thiếu thì dừng (cả `pnpm dev` lẫn `pnpm build`). Dùng cho code server và cho rewrites `/api/*` trong `next.config.ts`: trình duyệt chỉ gọi `/api/*` trên domain FE, không gọi thẳng backend. Trên Vercel phải có lúc build vì rewrites được dựng lúc build.
+- `REVALIDATE_SECRET` (chỉ phía server): khoá chung với `cpw_be` (cùng tên biến). Backend gửi kèm khi gọi `POST /api/revalidate` để xoá cache trang public sau khi admin ghi dữ liệu. Thiếu thì route trả 503 và site public chỉ cập nhật khi cache hết hạn.
 - `NEXT_PUBLIC_SITE_URL`: địa chỉ gốc của site, dùng cho canonical, hreflang, sitemap, ví dụ `http://localhost:3000`. Bắt buộc, thiếu thì dừng.
-- `FORWARDED_IP_SECRET` (tùy chọn, chỉ phía server): khoá chung với `cpw_be` (cùng tên biến) để backend đếm giới hạn tần suất theo IP thật của người dùng khi login, gửi form liên hệ và nộp hồ sơ.
+- `FORWARDED_IP_SECRET` (tùy chọn, chỉ phía server): khoá chung với `cpw_be` (cùng tên biến) để backend đếm giới hạn tần suất theo IP thật của người dùng khi login và gửi form liên hệ.
 
 ## Cấu trúc
 
-- `app/(site)/[lang]/`: các trang public. `app/admin/`: trang quản trị. `app/api/admin/`: đăng nhập và proxy tới backend.
+- `app/(site)/[lang]/`: các trang public. `app/admin/`: trang quản trị. `app/api/revalidate`: route duy nhất của FE dưới `/api`, nhận lệnh xoá cache từ backend; mọi `/api/*` khác (kể cả upload, nộp hồ sơ) được chuyển nguyên sang backend.
 - `components/ui/`: chỉ file shadcn tạo bằng CLI. `components/blocks/`: các loại block của trang chủ và Về chúng tôi.
 - `lib/api/`: mọi lời gọi tới backend. `lib/seo/`: metadata, JSON-LD, sitemap. `messages/`: chữ cố định theo ngôn ngữ.
 - Quy tắc làm việc chi tiết: `CLAUDE.md` và `AGENTS.md`.

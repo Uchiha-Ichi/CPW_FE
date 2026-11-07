@@ -2,9 +2,9 @@ export type SubmitApplicationResult =
   | { ok: true }
   | { ok: false; reason: "invalid" | "failed" };
 
-// Gửi hồ sơ (multipart/form-data vì có file CV) vào route của chính FE, app/api/applications/route.ts; route đó
-// chuyển tiếp sang POST /applications của backend. Gọi từ client component nên không import lib/api/config.ts
-// (server-only): trình duyệt không biết URL backend.
+// Gửi hồ sơ (multipart/form-data vì có file CV) tới /api/applications trên chính domain FE; rewrites trong
+// next.config.ts chuyển nguyên sang POST /applications của backend, không qua code nào của FE. Gọi từ client
+// component nên không import lib/api/config.ts (server-only): trình duyệt không biết URL backend.
 export async function createApplication(
   formData: FormData,
 ): Promise<SubmitApplicationResult> {

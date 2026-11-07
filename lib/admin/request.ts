@@ -1,8 +1,8 @@
 import { ApiError } from "./api-error";
+import { adminFetch } from "./auth/client";
 
-// Mọi gọi API admin từ trình duyệt đi qua proxy của chính Next (app/api/admin/proxy/[...path]/route.ts).
-const PROXY_BASE = "/api/admin/proxy";
-
+// Mọi gọi API admin từ trình duyệt đi qua adminFetch (lib/admin/auth/client.ts): /api/* trên domain FE,
+// kèm cookie phiên và mã CSRF, tự gia hạn phiên một lần khi gặp 401.
 export const JSON_HEADERS = { "Content-Type": "application/json" };
 
 // Tạo hàm request cho một mảng admin. `toMessages` đổi mã lỗi + body thành câu hiện cho admin
@@ -11,7 +11,7 @@ export function createAdminRequest(toMessages: (status: number, body: unknown) =
   return async function request<T = unknown>(path: string, init?: RequestInit): Promise<T> {
     let res: Response;
     try {
-      res = await fetch(`${PROXY_BASE}${path}`, init);
+      res = await adminFetch(path, init);
     } catch {
       throw new ApiError(0, toMessages(0, null));
     }

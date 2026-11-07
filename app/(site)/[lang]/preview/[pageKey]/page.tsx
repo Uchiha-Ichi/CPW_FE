@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PagePreviewBar } from "@/components/admin/page-editor/page-preview-bar";
 import { BlockRenderer } from "@/components/blocks/block-renderer";
 import { EmptyPage } from "@/components/blocks/empty-page";
 import { getPagePreview } from "@/lib/admin/page-editor/preview";
-import { ADMIN_TOKEN_COOKIE } from "@/lib/admin/auth/cookies";
 import { hasLocale } from "@/lib/i18n/config";
 
 type Props = { params: Promise<{ lang: string; pageKey: string }> };
@@ -43,10 +42,12 @@ export default async function PagePreviewPage({ params }: Props) {
   // Phải kiểm lang trước khi gọi getPagePreview: hàm đó nối lang vào query string không mã hóa.
   if (!hasLocale(lang)) notFound();
 
-  const token = (await cookies()).get(ADMIN_TOKEN_COOKIE)?.value;
-  if (!token) return <SessionExpired />;
+  // Block phải render trên server nên trang này tự hỏi backend. Phiên do backend giữ trong cookie: chỉ chuyển
+  // nguyên header Cookie sang (không đọc cookie nào ở đây). Không có cookie hoặc phiên hết hạn thì backend trả 401.
+  const cookieHeader = (await headers()).get("cookie");
+  if (!cookieHeader) return <SessionExpired />;
 
-  const result = await getPagePreview(pageKey, lang, token);
+  const result = await getPagePreview(pageKey, lang, cookieHeader);
   if (result.status === "unauthenticated") return <SessionExpired />;
   if (result.status === "not-found") notFound();
   if (result.status === "error") return <EmptyPage variant="error" />;

@@ -11,17 +11,19 @@ export type PagePreviewResult =
   | { status: "not-found" } // 403 hoặc 404
   | { status: "error" }; // 5xx, mạng, timeout, body sai hình dạng
 
-// Lấy bản nháp (hoặc bản đã đăng nếu chưa có nháp) của một trang bằng token admin.
+// Lấy bản nháp (hoặc bản đã đăng nếu chưa có nháp) của một trang bằng phiên admin.
+// `cookieHeader` là nguyên header Cookie trình duyệt gửi tới trang xem trước: chuyển y nguyên sang backend
+// (backend tự tìm cookie phiên trong đó), server Next không đọc, không giữ token. Chỉ là GET nên không cần mã CSRF.
 // Không bao giờ ném lỗi: mọi trường hợp không chắc chắn trả "error".
 export async function getPagePreview(
   pageKey: string,
   lang: Locale,
-  token: string
+  cookieHeader: string
 ): Promise<PagePreviewResult> {
   const path = `/pages/${encodeURIComponent(pageKey)}/preview?lang=${lang}`;
   try {
     const res = await fetch(`${API_BASE}${path}`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Cookie: cookieHeader },
       cache: "no-store",
       // Backend treo thì sau 5 giây cho kết quả "error" (lỗi abort rơi vào catch bên dưới).
       signal: AbortSignal.timeout(5000),
